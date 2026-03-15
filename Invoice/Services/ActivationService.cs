@@ -23,24 +23,33 @@ public class ActivationService : IActivationService
 
     public async Task ActivateAsync(object activationArgs)
     {
-        // Execute tasks before activation.
-        await InitializeAsync();
-
-        // Set the MainWindow Content.
-        if (App.MainWindow.Content == null)
+        try
         {
-            _shell = App.GetService<ShellPage>();
-            App.MainWindow.Content = _shell ?? new Frame();
+            // Execute tasks before activation.
+            await InitializeAsync();
+
+            // Set the MainWindow Content.
+            if (App.MainWindow.Content == null)
+            {
+                _shell = App.GetService<ShellPage>();
+                App.MainWindow.Content = _shell ?? new Frame();
+            }
+
+            // Handle activation via ActivationHandlers.
+            await HandleActivationAsync(activationArgs);
+
+            // Activate the MainWindow.
+            App.MainWindow.Activate();
+
+            // Execute tasks after activation.
+            await StartupAsync();
         }
-
-        // Handle activation via ActivationHandlers.
-        await HandleActivationAsync(activationArgs);
-
-        // Activate the MainWindow.
-        App.MainWindow.Activate();
-
-        // Execute tasks after activation.
-        await StartupAsync();
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"ACTIVATION ERROR: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"ACTIVATION STACKTRACE: {ex.StackTrace}");
+            throw;
+        }
     }
 
     private async Task HandleActivationAsync(object activationArgs)
