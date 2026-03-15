@@ -1,0 +1,106 @@
+﻿<Page
+    x:Class="Invoice.Views.DetailPricePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="DataGridBorderColor" Color="Black"/>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="DataGridBorderColor" Color="Gray"/>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+
+            <Style x:Key="CustomHeaderStyle" TargetType="ContentControl">
+                <Setter Property="FontSize" Value="15"/>
+                <Setter Property="Foreground" Value="{ThemeResource TextFillColorPrimaryBrush}"/>
+                <Setter Property="FontWeight" Value="Bold"/>
+                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            </Style>
+        </ResourceDictionary>
+    </Page.Resources>
+    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollMode="Auto" VerticalScrollMode="Auto" ZoomMode="Disabled">
+        <Grid x:Name="ContentArea">
+            <!--<Grid.ColumnDefinitions>
+                <ColumnDefinition Width="330"/>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>-->
+            <StackPanel Margin="0,0,30,0" Spacing="10">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150" />
+                        <ColumnDefinition Width="150" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBox Margin="0,0,10,10" x:Name="txtKieng" Header="Kiếng : " TextAlignment="Right" Grid.Row="0" Grid.Column="0"
+                    Text="{x:Bind ViewModel.CurrentDetailPrice.PrKieng, Mode=TwoWay}" />
+
+                    <TextBox Margin="0,0,10,10" x:Name="txtNhL" Header="Nhựa lớn : " TextAlignment="Right" Grid.Row="1" Grid.Column="0"
+                    Text="{x:Bind ViewModel.CurrentDetailPrice.PrNhL, Mode=TwoWay}" />
+
+                    <TextBox Margin="0,0,10,10" x:Name="txtNhN" Header="Nhựa nhỏ : " TextAlignment="Right" Grid.Row="2" Grid.Column="0"
+                    Text="{x:Bind ViewModel.CurrentDetailPrice.PrNhN, Mode=TwoWay}" />
+
+                    <TextBox Margin="0,0,10,10" x:Name="txtG_l" Header="Gỗ lớn : " TextAlignment="Right" Grid.Row="3" Grid.Column="0"
+                    Text="{x:Bind ViewModel.CurrentDetailPrice.PrG_l, Mode=TwoWay}" />
+
+                    <TextBox Margin="0,0,10,10" x:Name="txtG_n" Header="Gỗ nhỏ : " TextAlignment="Right" Grid.Row="4" Grid.Column="0"
+                    Text="{x:Bind ViewModel.CurrentDetailPrice.PrG_n, Mode=TwoWay}" />
+
+                    <TextBox Margin="0,0,10,10" x:Name="txtDl" Header="Đen lớn : " TextAlignment="Right" Grid.Row="5" Grid.Column="0"
+                    Text="{x:Bind ViewModel.CurrentDetailPrice.PrDl, Mode=TwoWay}" />
+
+                    <TextBox Margin="0,0,10,0" x:Name="txtHau" Header="Hậu : " TextAlignment="Right" Grid.Row="6" Grid.Column="0"
+                    Text="{x:Bind ViewModel.CurrentDetailPrice.PrHau, Mode=TwoWay}" />
+
+                    <TextBox Margin="0,0,0,10" x:Name="txtLua" Header="Lụa : " TextAlignment="Right" Grid.Row="0" Grid.Column="1"
+                    Text="{x:Bind ViewModel.CurrentDetailPrice.PrLua, Mode=TwoWay}" />
+
+                    <TextBox Margin="0,0,0,10" x:Name="txtKt" Header="Kim tuyến : " TextAlignment="Right" Grid.Row="1" Grid.Column="1"
+                    Text="{x:Bind ViewModel.CurrentDetailPrice.PrKt, Mode=TwoWay}" />
+
+                    <TextBox Margin="0,0,0,10" x:Name="txtOc" Header="Ốc : " TextAlignment="Right" Grid.Row="2" Grid.Column="1"
+                    Text="{x:Bind ViewModel.CurrentDetailPrice.PrOc, Mode=TwoWay}" />
+
+                    <TextBox Margin="0,0,0,10" x:Name="txtNhom" Header="Nhôm : " TextAlignment="Right" Grid.Row="3" Grid.Column="1"
+                    Text="{x:Bind ViewModel.CurrentDetailPrice.PrNhom, Mode=TwoWay}" />
+
+                    <TextBox Margin="0,0,0,10" x:Name="txt7f" Header="Gỗ 7F : " TextAlignment="Right" Grid.Row="4" Grid.Column="1"
+                    Text="{x:Bind ViewModel.CurrentDetailPrice.Pr7f, Mode=TwoWay}" />
+
+                    <TextBox Margin="0,0,0,10" x:Name="txt2D" Header="2D : " TextAlignment="Right" Grid.Row="5" Grid.Column="1"
+                    Text="{x:Bind ViewModel.CurrentDetailPrice.Pr2D, Mode=TwoWay}" />
+
+                    <TextBox Margin="0,0,0,0" x:Name="txtDecal" Header="Decal : " TextAlignment="Right" Grid.Row="6" Grid.Column="1"
+                    Text="{x:Bind ViewModel.CurrentDetailPrice.PrDecal, Mode=TwoWay}" />
+                </Grid>
+                <CommandBar Background="Transparent" DefaultLabelPosition="Right" HorizontalAlignment="Left" Margin="-5,0,0,0">
+                    <AppBarButton Background="#07af00" CornerRadius="10" Icon="Save" Label="Lưu" Click="BtnUpdate_Click"/>
+                </CommandBar>
+            </StackPanel>
+            <ProgressRing
+              IsActive="{x:Bind ViewModel.IsLoading, Mode=OneWay}"
+              Visibility="{x:Bind ViewModel.IsLoading, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+              Width="60" Height="60"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center" />
+        </Grid>
+    </ScrollViewer>
+</Page>

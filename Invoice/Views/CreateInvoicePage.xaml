@@ -1,0 +1,203 @@
+﻿<Page
+    x:Class="Invoice.Views.CreateInvoicePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"    
+    xmlns:converters="using:Invoice.Helpers"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="DataGridBorderColor" Color="Black"/>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="DataGridBorderColor" Color="Gray"/>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+
+            <Style x:Key="CustomHeaderStyle" TargetType="ContentControl">
+                <Setter Property="FontSize" Value="15"/>
+                <Setter Property="Foreground" Value="{ThemeResource TextFillColorPrimaryBrush}"/>
+                <Setter Property="FontWeight" Value="Bold"/>
+                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            </Style>
+            <converters:IntToStringConverter x:Key="IntToStringConverter"/>
+            <converters:DoubleToStringConverter x:Key="FormatConverter"/>
+        </ResourceDictionary>
+    </Page.Resources>
+    <Grid x:Name="ContentArea">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Vertical" Grid.Row="0">
+            <StackPanel Orientation="Horizontal" Spacing="20">
+                <!--Code-->
+                <StackPanel Spacing="5">
+                    <TextBlock>                    
+                        <Run Text="Mã hoá đơn :"/>
+                    </TextBlock>
+                    <TextBox x:Name="txtCode" Width="200" HorizontalAlignment="Left" IsReadOnly="True"
+                             Text="{x:Bind ViewModel.GeneratedInvoiceCode, Mode=OneWay}"/>
+                </StackPanel>
+                <!--Name-->
+                <StackPanel Spacing="5">
+                    <TextBlock>
+                        <Run Text="(*)" Foreground="Red"/>
+                        <Run Text="Tên khách hàng :"/>
+                    </TextBlock>
+                    <AutoSuggestBox x:Name="asbCustomer"
+                        Width="200" 
+                        HorizontalAlignment="Left"
+                        PlaceholderText="Nhập tên..."
+                        Text="{x:Bind ViewModel.SelectedCustomer.Name, Mode=OneWay}"
+                        DisplayMemberPath="Name"
+                        TextChanged="asbCustomer_TextChanged"
+                        IsEnabled="{x:Bind ViewModel.IsEditing, Converter={StaticResource BoolToNegationConverter}}"
+                        SuggestionChosen="asbCustomer_SuggestionChosen"/>
+                </StackPanel>
+                <!--Phone No-->
+                <StackPanel Spacing="5">
+                    <TextBlock>
+                        <Run Text="Số điện thoại :"/>
+                    </TextBlock>
+                    <TextBox x:Name="txtPhoneNo" Text="{x:Bind ViewModel.SelectedCustomer.Phone, Mode=OneWay}" Width="200" HorizontalAlignment="Left" IsReadOnly="True"/>
+                </StackPanel>
+                <!--Phone No-->
+                <StackPanel Spacing="5">
+                    <TextBlock>
+                        <Run Text="Loại giá :"/>
+                    </TextBlock>
+                    <TextBox x:Name="txtTypePrice" Text="{x:Bind ViewModel.SelectedCustomer.PriceGroup, Mode=OneWay}" Width="80" TextAlignment="Center" IsReadOnly="True"/>
+                </StackPanel>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,10,0,10" Spacing="10">
+                <AppBarButton Background="#07af00" CornerRadius="10" Icon="Add" Label="Tạo mới" Click="BtnAddProduct_Click" ToolTipService.ToolTip="Press F1">
+                    <AppBarButton.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="F1"/>
+                    </AppBarButton.KeyboardAccelerators>
+                </AppBarButton>
+                <AppBarButton Background="#6514db" CornerRadius="10" Icon="Save" Label="Lưu HĐ" Click="SaveInvoice_Click" ToolTipService.ToolTip="Press F2">
+                    <AppBarButton.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="F2"/>
+                    </AppBarButton.KeyboardAccelerators>
+                </AppBarButton>
+                <AppBarButton Background="#24a6d5" CornerRadius="10" Icon="Refresh" Label="Reset" Click="ResetInvoice_Click" ToolTipService.ToolTip="Press F5">
+                    <AppBarButton.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="F5"/>
+                    </AppBarButton.KeyboardAccelerators>
+                </AppBarButton>
+                <AppBarButton Background="#b48b14" CornerRadius="10" Icon="copy" Label="Copy HĐ" Click="CopyInvoice_Click" ToolTipService.ToolTip="Press F3">
+                    <AppBarButton.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="F3"/>
+                    </AppBarButton.KeyboardAccelerators>
+                </AppBarButton>
+                <AppBarButton Background="#516dcf" CornerRadius="10" Icon="Edit" Label="Sửa HĐ" Click="EditInvoice_Click" ToolTipService.ToolTip="Ctrl + P">
+                    <AppBarButton.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="P"/>
+                    </AppBarButton.KeyboardAccelerators>
+                </AppBarButton>
+            </StackPanel>
+        </StackPanel>
+        <StackPanel Grid.Row="1">
+            <controls:DataGrid
+                x:Name="InvoicesGrid"                
+                MaxHeight="600"
+                ColumnWidth="Auto"
+                VerticalAlignment="Top"
+                HorizontalAlignment="Left"
+                AutoGenerateColumns="False"            
+                GridLinesVisibility="All"                            
+                SelectionMode="Single"
+                IsReadOnly="False"
+                CanUserReorderColumns="False"
+                CanUserSortColumns="False"            
+                ScrollViewer.VerticalScrollBarVisibility="Auto"
+                ColumnHeaderStyle="{StaticResource CustomHeaderStyle}"
+                HorizontalGridLinesBrush="{ThemeResource DataGridBorderColor}"
+                VerticalGridLinesBrush="{ThemeResource DataGridBorderColor}"                
+                BorderThickness="1"
+                ItemsSource="{Binding InvoiceItems, Mode=OneWay}">
+
+                <controls:DataGrid.Resources>
+                    <SolidColorBrush x:Key="DataGridColumnHeaderBackgroundColor" Color="blue" />
+                </controls:DataGrid.Resources>
+                
+                <controls:DataGrid.Columns>
+                    <!--ReadOnly-->
+                    <controls:DataGridTextColumn Width="Auto" Binding="{Binding ProductID}" Header="Mã SP" IsReadOnly="True"/>
+
+                    <!--Editable-->
+                    <controls:DataGridTextColumn Width="Auto" Binding="{Binding ProductName, Mode=TwoWay}" Header="Tên SP" />
+
+                    <!--Editable-->                    
+                    <controls:DataGridTemplateColumn Header="Đơn giá">
+                        <controls:DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding SellPrice, Converter={StaticResource FormatConverter}, ConverterParameter='N0'}" 
+                                            HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            </DataTemplate>
+                        </controls:DataGridTemplateColumn.CellTemplate>
+
+                        <controls:DataGridTemplateColumn.CellEditingTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding SellPrice, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource IntToStringConverter}}"
+                                         InputScope="Number"
+                                         BeforeTextChanging="AmountTextBox_BeforeTextChanging"/>
+                            </DataTemplate>
+                        </controls:DataGridTemplateColumn.CellEditingTemplate>
+                    </controls:DataGridTemplateColumn>
+
+                    <!--Editable-->                    
+                    <controls:DataGridTemplateColumn Header="Số lượng">
+                        <controls:DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Amount}" 
+                                           HorizontalAlignment="Right" 
+                                           VerticalAlignment="Center"
+                                           Margin="0,0,10,0"/>
+                            </DataTemplate>
+                        </controls:DataGridTemplateColumn.CellTemplate>
+
+                        <controls:DataGridTemplateColumn.CellEditingTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding Amount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource IntToStringConverter}}"
+                                         InputScope="Number" 
+                                         BeforeTextChanging="AmountTextBox_BeforeTextChanging"
+                                         LostFocus="AmountTextBox_LostFocus"/>
+                            </DataTemplate>
+                        </controls:DataGridTemplateColumn.CellEditingTemplate>
+                    </controls:DataGridTemplateColumn>
+
+                    <!--ReadOnly-->
+                    <controls:DataGridTextColumn Binding="{Binding LineTotal, Converter={StaticResource FormatConverter}, ConverterParameter='N0'}" Header="Thành tiền" IsReadOnly="True" Width="Auto">
+                        <controls:DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                                <Setter Property="TextAlignment" Value="Right"/>
+                            </Style>
+                        </controls:DataGridTextColumn.ElementStyle>
+                    </controls:DataGridTextColumn>
+
+                    <!--Editable-->
+                    <controls:DataGridTextColumn Binding="{Binding Note, Mode=TwoWay}" Header="Ghi chú" Width="Auto"/>
+                    
+                    <!--Button delete data-->
+                    <controls:DataGridTemplateColumn Header="Xoá" Width="Auto">
+                        <controls:DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Click="BtnRemoveItem_Click" Background="Transparent" BorderThickness="0" HorizontalAlignment="Center" ToolTipService.ToolTip="Xóa dòng này">
+                                    <SymbolIcon Symbol="Delete" Foreground="Red"/>
+                                </Button>
+                            </DataTemplate>
+                        </controls:DataGridTemplateColumn.CellTemplate>
+                    </controls:DataGridTemplateColumn>
+                </controls:DataGrid.Columns>
+            </controls:DataGrid>
+        </StackPanel>
+    </Grid>
+</Page>
