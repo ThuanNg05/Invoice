@@ -7,11 +7,13 @@ using Invoice.Models;
 using Invoice.Services;
 using Invoice.ViewModels;
 using Invoice.Views;
-
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Supabase;
+using Windows.Globalization;
 
 namespace Invoice;
 
@@ -45,17 +47,42 @@ public partial class App : Application
 
     public App()
     {
+        QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
+        ApplicationLanguages.PrimaryLanguageOverride = "vi-VN";
         InitializeComponent();
 
         Host = Microsoft.Extensions.Hosting.Host.
         CreateDefaultBuilder().
         UseContentRoot(AppContext.BaseDirectory).
+        ConfigureAppConfiguration((context, builder) =>
+        {
+            builder.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+        }).
         ConfigureServices((context, services) =>
         {
+            // Supabase service
+            var supabaseUrl = context.Configuration["Supabase:Url"];
+            var supabaseKey = context.Configuration["Supabase:Key"];
+
+            if (string.IsNullOrEmpty(supabaseUrl) || string.IsNullOrEmpty(supabaseKey))
+            {
+                throw new InvalidOperationException("Supabase configuration is missing. Please check appsettings.json.");
+            }
+
             // Default Activation Handler
             services.AddTransient<ActivationHandler<LaunchActivatedEventArgs>, DefaultActivationHandler>();
 
             // Other Activation Handlers
+            services.AddSingleton<Supabase.Client>(provider =>
+            {
+                var options = new SupabaseOptions
+                {
+                    AutoRefreshToken = true,
+                    AutoConnectRealtime = true
+                };
+
+                return new Supabase.Client(supabaseUrl, supabaseKey, options);
+            });
 
             // Services
             services.AddSingleton<ILocalSettingsService, LocalSettingsService>();
@@ -71,6 +98,8 @@ public partial class App : Application
             services.AddSingleton<IFileService, FileService>();
 
             // Views and ViewModels
+            services.AddTransient<PlanksViewModel>();
+            services.AddTransient<PlanksPage>();
             services.AddTransient<IOPlanksViewModel>();
             services.AddTransient<IOPlanksPage>();
             services.AddTransient<ReportingViewModel>();
@@ -117,8 +146,14 @@ public partial class App : Application
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
     {
         base.OnLaunched(args);
+        var splash = new SplashScreenWindow();
+        splash.Activate();
+
+        await Task.Delay(3000);
 
         await App.GetService<IActivationService>().ActivateAsync(args);
+
+        splash.Close();
     }
 
     public static async Task ShowMessageAsync(string title, string content)

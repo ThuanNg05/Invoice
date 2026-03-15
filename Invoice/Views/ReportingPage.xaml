@@ -4,9 +4,112 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+	xmlns:lvc="using:LiveChartsCore.SkiaSharpView.WinUI"
+	xmlns:helpers="using:Invoice.Helpers"
     mc:Ignorable="d">
 
-    <Grid x:Name="ContentArea">
-        
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+            </ResourceDictionary.MergedDictionaries>
+
+            <Style x:Key="PageTitleStyle" TargetType="TextBlock">
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="FontWeight" Value="SemiLight" />
+                <Setter Property="FontSize" Value="{StaticResource LargeFontSize}" />
+                <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+                <Setter Property="TextWrapping" Value="NoWrap" />
+                <Setter Property="Foreground" Value="{ThemeResource TextFillColorPrimaryBrush}" />
+            </Style>
+
+            <Style x:Key="BodyTextStyle" TargetType="TextBlock">
+                <Setter Property="FontWeight" Value="Normal" />
+                <Setter Property="FontSize" Value="{StaticResource MediumFontSize}" />
+                <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+                <Setter Property="TextWrapping" Value="Wrap" />
+                <Setter Property="Foreground" Value="{ThemeResource TextFillColorPrimaryBrush}" />
+            </Style>
+
+            <helpers:BoolToVisibilityNegationConverter x:Key="BoolToVisibilityNegationConverter"/>
+            <helpers:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+            <helpers:DoubleToStringConverter x:Key="DoubleToStringConverter"/>
+        </ResourceDictionary>
+    </Page.Resources>
+
+    <Grid>
+        <Grid Visibility="{x:Bind ViewModel.IsLocked, Mode=OneWay, Converter={StaticResource BoolToVisibilityNegationConverter}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Orientation="Horizontal" Spacing="20" Padding="20">
+                <Button Command="{x:Bind ViewModel.ExportAndEmailCommand}" Content="Gửi Báo Cáo Email" Style="{StaticResource AccentButtonStyle}"/>
+            </StackPanel>
+
+            <ScrollViewer Grid.Row="1" Padding="20">
+                <StackPanel Spacing="20">
+                    <StackPanel Orientation="Horizontal" Spacing="20">
+                        <Border Width="200" Height="100" Background="{ThemeResource SystemControlBackgroundAccentBrush}" CornerRadius="8" Padding="15">
+                            <StackPanel>
+                                <TextBlock Text="Doanh Thu Năm" Foreground="White" Opacity="0.8" Style="{StaticResource BodyTextStyle}"/>
+                                <TextBlock Text="{x:Bind ViewModel.TotalRevenue, Mode=OneWay, Converter={StaticResource DoubleToStringConverter}}" Foreground="White" FontSize="24" FontWeight="Bold"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Width="200" Height="100" Background="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}" CornerRadius="8" Padding="15">
+                            <StackPanel>
+                                <TextBlock Text="Lợi Nhuận (Ước tính)" Opacity="0.8" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource BodyTextStyle}"/>
+                                <TextBlock Text="{x:Bind ViewModel.TotalProfit, Mode=OneWay, Converter={StaticResource DoubleToStringConverter}}" FontSize="24" FontWeight="Bold" Foreground="{ThemeResource SystemFillColorSuccessBrush}"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <TextBlock Text="Biểu đồ đơn hàng theo tháng" Style="{StaticResource SubtitleTextBlockStyle}" FontWeight="SemiBold"/>
+                    <Grid Height="300" Background="{ThemeResource LayerFillColorDefaultBrush}" CornerRadius="8" Padding="10">
+                        <lvc:CartesianChart Series="{x:Bind ViewModel.Series, Mode=OneWay}" XAxes="{x:Bind ViewModel.XAxes, Mode=OneWay}" TooltipPosition="Top"/>
+                    </Grid>
+
+                    <TextBlock Text="Top 10 Sản Phẩm" Style="{StaticResource SubtitleTextBlockStyle}" FontWeight="SemiBold"/>
+                    <ListView ItemsSource="{x:Bind ViewModel.TopProducts}" Background="{ThemeResource LayerFillColorDefaultBrush}" CornerRadius="8"
+                                  Padding="5">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Padding="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding ProductName}"
+											   Style="{StaticResource BodyTextStyle}"
+											   FontWeight="SemiBold"/>
+
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="5">
+                                        <TextBlock Text="{Binding TotalQuantity}"
+												   Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+
+        <Grid Visibility="{x:Bind ViewModel.IsLocked, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+          Background="{ThemeResource SolidBackgroundFillColorBaseBrush}">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="15" Width="300">
+                <FontIcon Glyph="&#xE1F6;" FontSize="40" Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
+                <TextBlock Text="Khu vực hạn chế" HorizontalAlignment="Center" Style="{StaticResource PageTitleStyle}"/>
+                <PasswordBox Header="Nhập mật khẩu" Password="{x:Bind ViewModel.PasswordInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <TextBlock Text="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}" Foreground="{ThemeResource SystemFillColorCriticalBrush}"/>
+                <Button Content="Mở khóa" Command="{x:Bind ViewModel.UnlockCommand}" HorizontalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}"/>
+            </StackPanel>
+        </Grid>
+
+        <Grid Visibility="{x:Bind ViewModel.IsLoading, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" 
+			  Background="{ThemeResource SystemControlPageBackgroundMediumAltMediumBrush}">
+            <ProgressRing IsActive="True" Width="50" Height="50"/>
+        </Grid>
     </Grid>
 </Page>

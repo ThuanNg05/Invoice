@@ -13,8 +13,7 @@ public class PageService : IPageService
     private readonly Dictionary<string, Type> _pages = new();
 
     public PageService()
-    {
-        Configure<DataGridViewModel, DataGridPage>();
+    {        
         Configure<SettingsViewModel, SettingsPage>();
         Configure<CreateInvoiceViewModel, CreateInvoicePage>();
         Configure<CustomersViewModel, CustomersPage>();
@@ -28,6 +27,7 @@ public class PageService : IPageService
         Configure<ProductsViewModel, ProductsPage>();
         Configure<ReportingViewModel, ReportingPage>();
         Configure<IOPlanksViewModel, IOPlanksPage>();
+        Configure<PlanksViewModel, PlanksPage>();
     }
 
     public Type GetPageType(string key)

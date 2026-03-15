@@ -1,12 +1,11 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Invoice;
 using Invoice.Contracts.ViewModels;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
 
-namespace InvoiceApp.ViewModels;
+namespace Invoice.ViewModels;
 
 public partial class HistoryViewModel : ObservableRecipient, INavigationAware
 {

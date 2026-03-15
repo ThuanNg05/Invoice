@@ -1,6 +1,5 @@
 ﻿using Invoice.Contracts.Services;
 using Invoice.ViewModels;
-
 using Microsoft.UI.Xaml;
 
 namespace Invoice.Activation;
@@ -22,7 +21,7 @@ public class DefaultActivationHandler : ActivationHandler<LaunchActivatedEventAr
 
     protected async override Task HandleInternalAsync(LaunchActivatedEventArgs args)
     {
-        _navigationService.NavigateTo(typeof(DataGridViewModel).FullName!, args.Arguments);
+        _navigationService.NavigateTo(typeof(CreateInvoiceViewModel).FullName!, args.Arguments);
 
         await Task.CompletedTask;
     }

@@ -4,9 +4,232 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"        
     mc:Ignorable="d">
 
-    <Grid x:Name="ContentArea">
-        
-    </Grid>
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="DataGridBorderColor" Color="Black"/>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="DataGridBorderColor" Color="Gray"/>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+
+            <Style x:Key="CustomHeaderStyle" TargetType="ContentControl">
+                <Setter Property="FontSize" Value="15"/>
+                <Setter Property="Foreground" Value="{ThemeResource TextFillColorPrimaryBrush}"/>
+                <Setter Property="FontWeight" Value="Bold"/>
+                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            </Style>
+        </ResourceDictionary>
+    </Page.Resources>
+    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollMode="Auto" VerticalScrollMode="Auto" ZoomMode="Disabled">
+        <Grid x:Name="ContentArea">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="470"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" Margin="0,0,20,0">
+                <StackPanel Orientation="Vertical" Margin="0,0,0,10">
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel Margin="0,0,10,10">
+                            <TextBlock>
+                                <Run Text="(*) " Foreground="Red"/>
+                                <Run Text="Mã SP:"/>
+                            </TextBlock>
+                            <TextBox x:Name="txtProductID" Width="140" HorizontalAlignment="Left"/>
+                        </StackPanel>
+                        <StackPanel>
+                            <TextBlock>
+                                <Run Text="(*) " Foreground="Red"/>
+                                <Run Text="Tên SP:"/>
+                            </TextBlock>
+                            <TextBox x:Name="txtName" Width="300" HorizontalAlignment="Left"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,0,0,10">
+                        <StackPanel>
+                            <TextBlock>                                
+                                <Run Text="Giá Gốc :"/>
+                            </TextBlock>
+                            <TextBox x:Name="txtBasePrice" Width="140" TextAlignment="Right"/>
+                        </StackPanel>
+                        <StackPanel>
+                            <TextBlock>                                
+                                <Run Text="Giá Lẻ :"/>
+                            </TextBlock>
+                            <TextBox x:Name="txtPriceOdd" Width="150" TextAlignment="Right" />
+                        </StackPanel>
+                        <StackPanel>
+                            <TextBlock>                                
+                                <Run Text="Giá Sỉ :"/>
+                            </TextBlock>
+                            <TextBox x:Name="txtPriceEven" Width="140" TextAlignment="Right" />
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Vertical" Margin="0,0,10,0">
+                            <TextBlock>
+                                <Run Text="(*) " Foreground="Red"/>
+                                <Run Text="Tiền công :"/>
+                            </TextBlock>
+                            <TextBox x:Name="txtWage" Width="220" HorizontalAlignment="Left" BeforeTextChanging="inputDecimal" TextChanged="computeBasePrice"/>
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Vertical" Margin="0,0,10,0" Grid.Column="0">
+                        <CommandBar Background="Transparent" DefaultLabelPosition="Right">
+                            <AppBarButton x:Name="btnAdd" Background="#07af00" CornerRadius="10" Icon="Add" Label="Mới" Click="BtnNew_Click" ToolTipService.ToolTip="Press F1"
+                                          IsEnabled="{x:Bind ViewModel.IsLoading, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}">
+                                <AppBarButton.KeyboardAccelerators>
+                                    <KeyboardAccelerator Key="F1"/>
+                                </AppBarButton.KeyboardAccelerators>
+                            </AppBarButton>
+                        </CommandBar>
+                        <CommandBar Background="Transparent" DefaultLabelPosition="Right">
+                            <AppBarButton x:Name="btnUpdate" Background="#b48b14" CornerRadius="10" Icon="Edit" Label="Sửa" Click="BtnUpdate_Click" ToolTipService.ToolTip="Press F2">
+                                <AppBarButton.KeyboardAccelerators>
+                                    <KeyboardAccelerator Key="F2"/>
+                                </AppBarButton.KeyboardAccelerators>
+                            </AppBarButton>
+                        </CommandBar>
+                        <CommandBar Background="Transparent" DefaultLabelPosition="Right">
+                            <AppBarButton x:Name="btnDelete" Background="#ff3800" CornerRadius="10" Icon="Delete" Label="Xoá" Click="BtnDelete_Click" ToolTipService.ToolTip="Press F3">
+                                <AppBarButton.KeyboardAccelerators>
+                                    <KeyboardAccelerator Key="F3"/>
+                                </AppBarButton.KeyboardAccelerators>
+                            </AppBarButton>
+                        </CommandBar>
+                        <CommandBar Background="Transparent" DefaultLabelPosition="Right">
+                            <AppBarButton x:Name="btnReset" Background="#24a6d5" CornerRadius="10" Icon="Refresh" Label="Reset" Click="BtnReset_Click" ToolTipService.ToolTip="Press F5">
+                                <AppBarButton.KeyboardAccelerators>
+                                    <KeyboardAccelerator Key="F5"/>
+                                </AppBarButton.KeyboardAccelerators>
+                            </AppBarButton>
+                        </CommandBar>
+                    </StackPanel>
+                    <Grid RowSpacing="4" HorizontalAlignment="Stretch" Grid.Column="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="100" />
+                            <ColumnDefinition Width="100" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Column 1 -->
+                        <TextBox Margin="0,0,10,4" BeforeTextChanging="inputDecimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="0" Grid.Column="0" x:Name="txtKieng" Header="Kiếng : " />
+                        <TextBox Margin="0,0,10,4" BeforeTextChanging="inputDecimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="1" Grid.Column="0" x:Name="txtNhL" Header="Nhựa lớn : "/>
+                        <TextBox Margin="0,0,10,4" BeforeTextChanging="inputDecimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="2" Grid.Column="0" x:Name="txtNhN" Header="Nhựa nhỏ : "/>
+                        <TextBox Margin="0,0,10,4" BeforeTextChanging="inputDecimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="3" Grid.Column="0" x:Name="txtG_l" Header="Gỗ lớn : "  />
+                        <TextBox Margin="0,0,10,4" BeforeTextChanging="inputDecimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="4" Grid.Column="0" x:Name="txtG_n" Header="Gỗ nhỏ : "  />
+                        <TextBox Margin="0,0,10,4" BeforeTextChanging="inputDecimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="5" Grid.Column="0" x:Name="txtDl" Header="Đen lớn : "  />
+                        <TextBox Margin="0,0,10,0" BeforeTextChanging="inputDecimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="6" Grid.Column="0" x:Name="txtHau" Header="Hậu : "      />
+
+                        <!-- Column 2 -->
+                        <TextBox Margin="0,0,10,4" BeforeTextChanging="inputDecimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="0" Grid.Column="1" x:Name="txtLua" Header="Lụa : "/>
+                        <TextBox Margin="0,0,10,4" BeforeTextChanging="inputDecimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="1" Grid.Column="1" x:Name="txtKt" Header="Kim tuyến : "/>
+                        <TextBox Margin="0,0,10,4" BeforeTextChanging="inputDecimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="2" Grid.Column="1" x:Name="txtOc" Header="Ốc : "/>
+                        <TextBox Margin="0,0,10,4" BeforeTextChanging="inputDecimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="3" Grid.Column="1" x:Name="txtNhom" Header="Nhôm : "/>
+                        <TextBox Margin="0,0,10,4" BeforeTextChanging="inputDecimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="4" Grid.Column="1" x:Name="txt7f" Header="Gỗ 7F : "/>
+                        <TextBox Margin="0,0,10,4" BeforeTextChanging="inputDecimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="5" Grid.Column="1" x:Name="txt2D" Header="2D : "/>
+                        <TextBox Margin="0,0,10,0" BeforeTextChanging="inputDecimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="6" Grid.Column="1" x:Name="txtDecal" Header="Decal : "/>
+
+                        <!-- Column 3-->
+                        <TextBox Margin="0,0,0,4" TextAlignment="Right" Grid.Row="0" Grid.Column="2" x:Name="txtMDFodd" Header="MDF Lẻ : "/>
+                        <TextBox Margin="0,0,0,4" TextAlignment="Right" Grid.Row="1" Grid.Column="2" x:Name="txtMDFeven" Header="MDF Sỉ : "/>
+                        <TextBox Margin="0,0,0,4" TextAlignment="Right" Grid.Row="2" Grid.Column="2" x:Name="txtHPodd" Header="HP Lẻ : "/>
+                        <TextBox Margin="0,0,0,4" TextAlignment="Right" Grid.Row="3" Grid.Column="2" x:Name="txtHPeven" Header="HP Sỉ : "/>
+                        <TextBox Margin="0,0,0,4" TextAlignment="Right" Grid.Row="4" Grid.Column="2" x:Name="txtTG" Header="TG : "/>
+                        <TextBox Margin="0,0,0,4" TextAlignment="Right" Grid.Row="5" Grid.Column="2" x:Name="txtHoanh" Header="Hoành : "/>
+                        <TextBox Margin="0,0,0,0" TextAlignment="Right" Grid.Row="6" Grid.Column="2" x:Name="txtLieng" Header="Liễng : "/>
+                    </Grid>
+                </Grid>
+                <StackPanel>
+                    <TextBlock Margin="0,20,0,0">                                
+                        <Run Text="* Phải có ít nhất 3 thành phần khác 0"/>
+                    </TextBlock>
+                </StackPanel>
+            </StackPanel>
+
+            <StackPanel
+                Grid.Column="1"
+                Orientation="Vertical">
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                    <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">                        
+                        <Run Text="Tìm kiếm :"/>
+                    </TextBlock>
+                    <TextBox x:Name="txtSearch" Width="250" TextChanged="txtSearch_TextChanged" PlaceholderText="Tìm theo Mã SP hoặc Tên SP..."/>
+                </StackPanel>
+
+                <controls:DataGrid
+                    x:Name="ProductGrid" MaxHeight="600"
+                    VerticalAlignment="Top" AutoGenerateColumns="False" GridLinesVisibility="All"            
+                    IsReadOnly="True" SelectionMode="Single" CanUserReorderColumns="False"
+                    CanUserSortColumns="False" CanUserResizeColumns="False" ScrollViewer.VerticalScrollBarVisibility="Auto"
+                    ColumnHeaderStyle="{StaticResource CustomHeaderStyle}" ItemsSource="{x:Bind ViewModel.Source, Mode=OneWay}"
+                    HorizontalGridLinesBrush="{ThemeResource DataGridBorderColor}"
+                    VerticalGridLinesBrush="{ThemeResource DataGridBorderColor}"  
+                    BorderThickness="1"
+                    LoadingRow="ProductGrid_LoadingRow"
+                    SelectionChanged="ProductGrid_SelectionChanged">
+
+                    <controls:DataGrid.Resources>
+                        <SolidColorBrush x:Key="DataGridColumnHeaderBackgroundColor" Color="Transparent" />
+                    </controls:DataGrid.Resources>
+                    <controls:DataGrid.Columns>
+                        <controls:DataGridTextColumn Binding="{Binding ProductID}" Header="Mã SP" />
+                        <controls:DataGridTextColumn Width="200" Binding="{Binding Name}" Header="Tên SP" />
+                        <controls:DataGridTextColumn Binding="{Binding BasePrice}" Header="Giá Gốc">
+                            <controls:DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                                    <Setter Property="TextAlignment" Value="Right"/>
+                                </Style>
+                            </controls:DataGridTextColumn.ElementStyle>
+                        </controls:DataGridTextColumn>
+                        <controls:DataGridTextColumn Binding="{Binding PriceOdd}" Header="Giá Lẻ">
+                            <controls:DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                                    <Setter Property="TextAlignment" Value="Right"/>
+                                </Style>
+                            </controls:DataGridTextColumn.ElementStyle>
+                        </controls:DataGridTextColumn>
+                        <controls:DataGridTextColumn Binding="{Binding PriceEven}" Header="Giá Sỉ">
+                            <controls:DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                                    <Setter Property="TextAlignment" Value="Right"/>
+                                </Style>
+                            </controls:DataGridTextColumn.ElementStyle>
+                        </controls:DataGridTextColumn>
+                    </controls:DataGrid.Columns>
+                </controls:DataGrid>
+                <ProgressRing
+                      IsActive="{x:Bind ViewModel.IsLoading, Mode=OneWay}"
+                      Visibility="{x:Bind ViewModel.IsLoading, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                      Width="60" Height="60"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Center" />
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
 </Page>

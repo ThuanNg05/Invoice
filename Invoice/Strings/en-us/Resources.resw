@@ -130,4 +130,7 @@
   <data name="Shell_IOPlanks.Content" xml:space="preserve">
     <value>IOPlanks</value>
   </data>
+  <data name="Shell_Planks.Content" xml:space="preserve">
+    <value>Planks</value>
+  </data>
 </root>

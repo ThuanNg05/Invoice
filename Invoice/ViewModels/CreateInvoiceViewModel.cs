@@ -9,6 +9,7 @@ using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
 using Invoice.Helpers;
 using Invoice.Services;
+using Invoice.Views;
 using Microsoft.UI.Xaml.Controls;
 
 namespace Invoice.ViewModels;

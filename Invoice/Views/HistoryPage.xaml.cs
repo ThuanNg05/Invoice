@@ -1,8 +1,4 @@
-﻿using Invoice;
-using Invoice.Core.Contracts.Services;
-using Invoice.Core.Models;
-using Invoice.ViewModels;
-using Invoice.Core.Contracts.Services;
+﻿using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
 using Invoice.ViewModels;
 using Microsoft.UI.Xaml;
