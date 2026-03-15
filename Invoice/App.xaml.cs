@@ -2,7 +2,6 @@ using Invoice.Activation;
 using Invoice.Contracts.Services;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Services;
-using Invoice.Helpers;
 using Invoice.Models;
 using Invoice.Services;
 using Invoice.ViewModels;
@@ -41,16 +40,19 @@ public partial class App : Application
         return service;
     }
 
-    public static WindowEx MainWindow { get; } = new MainWindow();
+    public static WindowEx MainWindow { get; private set; } = null!;
 
     public static UIElement? AppTitlebar { get; set; }
-public App()
-{
-    try
+
+    public App()
     {
-        System.Console.WriteLine("App Constructor started.");
-        QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
-        InitializeComponent();
+        try
+        {
+            InitializeComponent();
+            MainWindow = new MainWindow();
+            
+            System.Console.WriteLine("App Constructor started.");
+            QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 
         System.Console.WriteLine("Building Host...");
         // ... (rest of registration)
@@ -172,19 +174,19 @@ public App()
             // ApplicationLanguages.PrimaryLanguageOverride = "vi-VN"; // Causes crash in WinUI 3
             base.OnLaunched(args);
             
-            System.Console.WriteLine("Creating SplashScreen...");
-            var splash = new SplashScreenWindow();
-            splash.Activate();
-            System.Console.WriteLine("SplashScreen activated.");
+            //System.Console.WriteLine("Creating SplashScreen...");
+            //var splash = new SplashScreenWindow();
+            //splash.Activate();
+            //System.Console.WriteLine("SplashScreen activated.");
 
-            await Task.Delay(3000);
+            //await Task.Delay(3000);
 
             System.Console.WriteLine("Activating services...");
             await App.GetService<IActivationService>().ActivateAsync(args);
             System.Console.WriteLine("Services activated.");
 
-            splash.Close();
-            System.Console.WriteLine("SplashScreen closed.");
+            //splash.Close();
+            //System.Console.WriteLine("SplashScreen closed.");
         }
         catch (Exception ex)
         {

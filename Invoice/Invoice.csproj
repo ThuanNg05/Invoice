@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>Invoice</RootNamespace>
@@ -12,11 +12,14 @@
 	<ImplicitUsings>enable</ImplicitUsings>
 	<Nullable>enable</Nullable>
 	<UseWinUI>true</UseWinUI>
-    <EnableMsixTooling>true</EnableMsixTooling>
-    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <EnableMsixTooling>true</EnableMsixTooling>	
+    <!--<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>-->
+    <!--<RepositoryUrl>https://github.com/ThuanNg05/Invoice</RepositoryUrl>-->
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="Views\SplashScreenWindow.xaml" />
+    <None Remove="Styles\FontSizes.xaml" />
+    <None Remove="Styles\TextBlock.xaml" />
+    <None Remove="Styles\Thickness.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -40,13 +43,20 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Invoice.Core\Invoice.Core.csproj" />
-  </ItemGroup>
+  </ItemGroup>  
+
   <ItemGroup>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Page Update="Views\SplashScreenWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
+    <Page Update="Styles\FontSizes.xaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Page>
+    <Page Update="Styles\TextBlock.xaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Page>
+    <Page Update="Styles\Thickness.xaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Page>
   </ItemGroup>
 
