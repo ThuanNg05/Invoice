@@ -7,10 +7,7 @@ namespace Invoice.Core.Models;
 public class DetailPlanks : BaseModel
 {
     [PrimaryKey("size_id")]
-    public string sizeID
-    {
-        get; set;
-    }
+    public string sizeID { get; set; }
 
     [Column("inventory")]
     public int inventory

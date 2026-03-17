@@ -77,10 +77,14 @@
                 <Grid>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                         <CommandBar Background="Transparent" DefaultLabelPosition="Right" >
-                            <AppBarButton x:Name="btnAdd"    Background="#07af00" CornerRadius="10" Icon="Add" Label="Mới" Click="BtnNew_Click"/>
-                            <AppBarButton x:Name="btnDelete" Background="#ff3800" CornerRadius="10" Icon="Delete" Label="Xoá" Click="BtnDelete_Click"/>
-                            <AppBarButton x:Name="btnUpdate" Background="#b48b14" CornerRadius="10" Icon="Edit" Label="Cập nhật" Click="BtnUpdate_Click"/>
-                            <AppBarButton x:Name="btnReset"  Background="#24a6d5" CornerRadius="10" Icon="Refresh" Label="Reset" Click="BtnReset_Click"/>
+                            <AppBarButton x:Name="btnAdd"    Background="#07af00" Foreground="{ThemeResource SettingsForegroundBrush}"
+                                          CornerRadius="10" Icon="Add" Label="Mới" Click="BtnNew_Click"/>
+                            <AppBarButton x:Name="btnDelete" Background="#ff3800" Foreground="{ThemeResource SettingsForegroundBrush}"
+                                          CornerRadius="10" Icon="Delete" Label="Xoá" Click="BtnDelete_Click"/>
+                            <AppBarButton x:Name="btnUpdate" Background="#b48b14" Foreground="{ThemeResource SettingsForegroundBrush}"
+                                          CornerRadius="10" Icon="Edit" Label="Cập nhật" Click="BtnUpdate_Click"/>
+                            <AppBarButton x:Name="btnReset"  Background="#24a6d5" Foreground="{ThemeResource SettingsForegroundBrush}"
+                                          CornerRadius="10" Icon="Refresh" Label="Reset" Click="BtnReset_Click"/>
                         </CommandBar>
                     </StackPanel>
                 </Grid>

@@ -79,7 +79,7 @@ public partial class ReportingViewModel : ObservableObject
             {
                 new ColumnSeries<int>
                 {
-                    Name = "Đơn hàng",
+                    Name = "Đơn hàng: ",
                     Values = data.MonthlyStats.Select(x => x.OrderCount).ToArray()
                 }
             };

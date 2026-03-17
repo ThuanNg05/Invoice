@@ -76,27 +76,32 @@
                 </StackPanel>
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,10,0,10" Spacing="10">
-                <AppBarButton Background="#07af00" CornerRadius="10" Icon="Add" Label="Tạo mới" Click="BtnAddProduct_Click" ToolTipService.ToolTip="Press F1">
+                <AppBarButton Background="#07af00" Foreground="{ThemeResource SettingsForegroundBrush}" 
+                              CornerRadius="10" Icon="Add" Label="Tạo mới" Click="BtnAddProduct_Click" ToolTipService.ToolTip="Press F1">
                     <AppBarButton.KeyboardAccelerators>
                         <KeyboardAccelerator Key="F1"/>
                     </AppBarButton.KeyboardAccelerators>
                 </AppBarButton>
-                <AppBarButton Background="#6514db" CornerRadius="10" Icon="Save" Label="Lưu HĐ" Click="SaveInvoice_Click" ToolTipService.ToolTip="Press F2">
+                <AppBarButton Background="#6514db" Foreground="{ThemeResource SettingsForegroundBrush}"
+                              CornerRadius="10" Icon="Save" Label="Lưu HĐ" Click="SaveInvoice_Click" ToolTipService.ToolTip="Press F2">
                     <AppBarButton.KeyboardAccelerators>
                         <KeyboardAccelerator Key="F2"/>
                     </AppBarButton.KeyboardAccelerators>
                 </AppBarButton>
-                <AppBarButton Background="#24a6d5" CornerRadius="10" Icon="Refresh" Label="Reset" Click="ResetInvoice_Click" ToolTipService.ToolTip="Press F5">
+                <AppBarButton Background="#24a6d5" Foreground="{ThemeResource SettingsForegroundBrush}"
+                              CornerRadius="10" Icon="Refresh" Label="Reset" Click="ResetInvoice_Click" ToolTipService.ToolTip="Press F5">
                     <AppBarButton.KeyboardAccelerators>
                         <KeyboardAccelerator Key="F5"/>
                     </AppBarButton.KeyboardAccelerators>
                 </AppBarButton>
-                <AppBarButton Background="#b48b14" CornerRadius="10" Icon="copy" Label="Copy HĐ" Click="CopyInvoice_Click" ToolTipService.ToolTip="Press F3">
+                <AppBarButton Background="#b48b14" Foreground="{ThemeResource SettingsForegroundBrush}"
+                              CornerRadius="10" Icon="copy" Label="Copy HĐ" Click="CopyInvoice_Click" ToolTipService.ToolTip="Press F3">
                     <AppBarButton.KeyboardAccelerators>
                         <KeyboardAccelerator Key="F3"/>
                     </AppBarButton.KeyboardAccelerators>
                 </AppBarButton>
-                <AppBarButton Background="#516dcf" CornerRadius="10" Icon="Edit" Label="Sửa HĐ" Click="EditInvoice_Click" ToolTipService.ToolTip="Ctrl + P">
+                <AppBarButton Background="#516dcf" Foreground="{ThemeResource SettingsForegroundBrush}"
+                              CornerRadius="10" Icon="Edit" Label="Sửa HĐ" Click="EditInvoice_Click" ToolTipService.ToolTip="Ctrl + P">
                     <AppBarButton.KeyboardAccelerators>
                         <KeyboardAccelerator Key="P"/>
                     </AppBarButton.KeyboardAccelerators>

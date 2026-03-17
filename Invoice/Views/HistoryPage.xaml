@@ -73,8 +73,9 @@
             </StackPanel>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Spacing="10" Margin="0,10,0,0">
-                <CommandBar Background="Transparent" DefaultLabelPosition="Right">
-                    <AppBarButton Background="#b48b14" Label="Tìm" Click="BtnQuery_Click" ToolTipService.ToolTip="Press F1" CornerRadius="10">
+                <CommandBar Background="Transparent" DefaultLabelPosition="Right" >
+                    <AppBarButton Background="#b48b14" Label="Tìm" Foreground="{ThemeResource SettingsForegroundBrush}"
+                                  Click="BtnQuery_Click" ToolTipService.ToolTip="Press F1" CornerRadius="10">
                         <AppBarButton.Icon>
                             <FontIcon Glyph="&#xE721;"/>
                         </AppBarButton.Icon>
@@ -82,7 +83,8 @@
                             <KeyboardAccelerator Key="F1"/>
                         </AppBarButton.KeyboardAccelerators>
                     </AppBarButton>
-                    <AppBarButton Background="#24a6d5" Icon="Refresh" Label="Reset" Click="BtnReset_Click" ToolTipService.ToolTip="Press F2" CornerRadius="10">
+                    <AppBarButton Background="#24a6d5" Icon="Refresh" Label="Reset" Foreground="{ThemeResource SettingsForegroundBrush}"
+                                  Click="BtnReset_Click" ToolTipService.ToolTip="Press F2" CornerRadius="10">
                         <AppBarButton.KeyboardAccelerators>
                             <KeyboardAccelerator Key="F2"/>
                         </AppBarButton.KeyboardAccelerators>

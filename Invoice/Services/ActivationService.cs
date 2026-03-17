@@ -23,6 +23,12 @@ public class ActivationService : IActivationService
 
     public async Task ActivateAsync(object activationArgs)
     {
+        if (App.MainWindow == null)
+        {
+            System.Diagnostics.Debug.WriteLine("ACTIVATION ERROR: App.MainWindow is null.");
+            return;
+        }
+
         try
         {
             // Execute tasks before activation.

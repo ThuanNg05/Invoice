@@ -5,7 +5,7 @@ namespace Invoice.Core.Models;
 public partial class InventoryItem : ObservableObject
 {
     [ObservableProperty]
-    private string productID;
+    private long productID;
 
     [ObservableProperty]
     private string name;

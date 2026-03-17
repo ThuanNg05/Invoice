@@ -69,6 +69,7 @@
 					<AppBarButton x:Name="btnAdd" Background="#07af00"
                                   CornerRadius="10" Icon="Add" Label="Mới"
                                   Click="BtnAdd_Click" ToolTipService.ToolTip="Press F1"
+                                  Foreground="{ThemeResource SettingsForegroundBrush}"
                                   IsEnabled="{x:Bind ViewModel.IsLoading, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}">
 						<AppBarButton.KeyboardAccelerators>
 							<KeyboardAccelerator Key="F1"/>
@@ -77,6 +78,7 @@
 					<AppBarButton x:Name="btnUpdate" Background="#b48b14"
                                   CornerRadius="10" Icon="Edit" Label="Sửa"
                                   Click="BtnUpdate_Click" ToolTipService.ToolTip="Press F2"
+                                  Foreground="{ThemeResource SettingsForegroundBrush}"
                                   IsEnabled="{x:Bind ViewModel.IsLoading, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}">
 						<AppBarButton.KeyboardAccelerators>
 							<KeyboardAccelerator Key="F2"/>
@@ -85,6 +87,7 @@
 					<AppBarButton x:Name="btnDelete" Background="#ff3800"
                                   CornerRadius="10" Icon="Delete" Label="Xoá"
                                   Click="BtnDelete_Click" ToolTipService.ToolTip="Press F3"
+                                  Foreground="{ThemeResource SettingsForegroundBrush}"
                                   IsEnabled="{x:Bind ViewModel.IsLoading, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}">
 						<AppBarButton.KeyboardAccelerators>
 							<KeyboardAccelerator Key="F3"/>
@@ -93,6 +96,7 @@
 					<AppBarButton x:Name="btnReset" Background="#24a6d5"
                                   CornerRadius="10" Icon="Refresh" Label="Reset"
                                   Click="BtnReset_Click" ToolTipService.ToolTip="Press F5"
+                                  Foreground="{ThemeResource SettingsForegroundBrush}"
                                   IsEnabled="{x:Bind ViewModel.IsLoading, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}">
 						<AppBarButton.KeyboardAccelerators>
 							<KeyboardAccelerator Key="F5"/>

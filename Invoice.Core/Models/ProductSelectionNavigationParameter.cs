@@ -10,11 +10,11 @@ public class ProductSelectionNavigationParameter
     {
         get; set;
     }
-    public Func<string, bool> CheckProductExists
+    public Func<long, bool> CheckProductExists
     {
         get; set;
     }
-    public Action<string, int> OnIncreaseAmount
+    public Action<long, int> OnIncreaseAmount
     {
         get; set;
     }

@@ -31,9 +31,6 @@
                 <Setter Property="Foreground" Value="{ThemeResource TextFillColorPrimaryBrush}" />
             </Style>
 
-            <helpers:BoolToVisibilityNegationConverter x:Key="BoolToVisibilityNegationConverter"/>
-            <helpers:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-            <helpers:DoubleToStringConverter x:Key="DoubleToStringConverter"/>
         </ResourceDictionary>
     </Page.Resources>
 

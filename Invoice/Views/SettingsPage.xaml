@@ -7,15 +7,12 @@
     xmlns:helpers="using:Invoice.Helpers"
     xmlns:xaml="using:Microsoft.UI.Xaml"
     mc:Ignorable="d">
-    <Page.Resources>
-        <helpers:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
-    </Page.Resources>
     <Grid>
         <StackPanel
             x:Name="ContentArea">
-            <TextBlock x:Uid="Settings_Personalization" Style="{ThemeResource SubtitleTextBlockStyle}" />
+            <TextBlock x:Uid="Settings_Personalization" Style="{ThemeResource SubtitleTextBlockStyle}"/>
             <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
-                <TextBlock x:Uid="Settings_Theme" />
+                <TextBlock x:Uid="Settings_Theme"/>
 
                 <StackPanel Margin="{StaticResource XSmallTopMargin}">
                     <RadioButton
@@ -30,14 +27,14 @@
                         Command="{x:Bind ViewModel.SwitchThemeCommand}"
                         IsChecked="{x:Bind ViewModel.ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Dark, Mode=TwoWay}"
                         FontSize="15"                        
-                        GroupName="AppTheme">
+                        GroupName="AppTheme" >
                     </RadioButton>
                     <RadioButton
                         x:Uid="Settings_Theme_Default"
                         Command="{x:Bind ViewModel.SwitchThemeCommand}"
                         IsChecked="{x:Bind ViewModel.ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Default, Mode=TwoWay}"
                         FontSize="15"                        
-                        GroupName="AppTheme">
+                        GroupName="AppTheme" >
                     </RadioButton>
                 </StackPanel>
                 <StackPanel Spacing="10" >
@@ -63,8 +60,7 @@
                         </Grid>
 
                         <TextBlock Text="Các hoá đơn xuất ra sẽ được lưu tại đây. Nếu chưa chọn, mặc định sẽ lưu tại thư mục Documents." 
-                                   Style="{ThemeResource CaptionTextBlockStyle}" 
-                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                   Style="{ThemeResource CaptionTextBlockStyle}"/>
                     </StackPanel>
                 </StackPanel>
             </StackPanel>
@@ -72,12 +68,12 @@
             <TextBlock x:Uid="Settings_About" Style="{ThemeResource SubtitleTextBlockStyle}" />
 
             <StackPanel Margin="{StaticResource XSmallTopMargin}">
-                <TextBlock Text="{x:Bind ViewModel.VersionDescription, Mode=OneWay}" Style="{ThemeResource BodyTextBlockStyle}" />
+                <TextBlock Text="{x:Bind ViewModel.VersionDescription, Mode=OneWay}" Style="{ThemeResource BodyTextBlockStyle}" Foreground="{ThemeResource SettingsForegroundBrush}" />
 
                 <TextBlock
                     x:Uid="Settings_AboutDescription"
                     Margin="{StaticResource XSmallTopMargin}"
-                    Style="{ThemeResource BodyTextBlockStyle}" />
+                    Style="{ThemeResource BodyTextBlockStyle}"/>
                 <HyperlinkButton x:Uid="SettingsPage_PrivacyTermsLink" Margin="{StaticResource SettingsPageHyperlinkButtonMargin}" />
             </StackPanel>
         </StackPanel>

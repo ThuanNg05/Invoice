@@ -6,8 +6,8 @@ namespace Invoice.Core.Models;
 [Table("materials")]
 public class Materials : BaseModel
 {
-    [PrimaryKey("product_id", shouldInsert: true)]
-    public string ProductID { get; set; }
+    [PrimaryKey("product_id", false)]
+    public long ProductID { get; set; }
 
     [Column("name")]
     public string Name { get; set; }

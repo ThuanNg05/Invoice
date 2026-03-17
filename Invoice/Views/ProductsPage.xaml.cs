@@ -106,9 +106,8 @@ public sealed partial class ProductsPage : Page
 
     private Products CreateProductFromInputs()
     {
-        return new Products
+        var product = new Products
         {
-            ProductID = StringHelper.CleanStringSimple(txtProductID.Text.Trim()),
             Name = StringHelper.CleanStringSimple(txtName.Text.Trim()),
             BasePrice = ParseDouble(txtBasePrice.Text),
             PriceOdd = (int)ParseDouble(txtPriceOdd.Text),
@@ -136,21 +135,28 @@ public sealed partial class ProductsPage : Page
             lieng = ParseDouble(txtLieng.Text),
             tg = ParseDouble(txtTG.Text)
         };
+
+        if (long.TryParse(txtProductID.Text, out long id) && id > 0)
+        {
+            product.ProductID = id;
+        }
+
+        return product;
     }
 
     private async void BtnUpdate_Click(object sender, RoutedEventArgs e)
     {
         if (ProductGrid.SelectedItem is not ProductSummary selectedSummary) return;
-        if (await ValidateProductInputs() == false) return;
+        if (await ValidateProductInputs(isUpdate: true) == false) return;
 
         var product = CreateProductFromInputs();
+        product.ProductID = selectedSummary.ProductID; // Ensure ID is preserved for update
 
         try
         {
             await ViewModel.UpdateProductAsync(product);
             await App.ShowMessageAsync("Thông báo", "Cập nhật thành công!");
-            ClearInputs(this);
-            //RefreshData();
+            BtnReset_Click(null, null);
         }
         catch (Exception ex)
         {
@@ -164,7 +170,7 @@ public sealed partial class ProductsPage : Page
         ContentDialog deleteDialog = new()
         {
             Title = "Xác nhận xóa",
-            Content = $"Bạn có chắc muốn xóa sản phẩm {selected.ProductID}?",
+            Content = $"Bạn có chắc muốn xóa sản phẩm {selected.Name} (ID: {selected.ProductID})?",
             PrimaryButtonText = "Xóa",
             CloseButtonText = "Hủy",
             DefaultButton = ContentDialogButton.Close,
@@ -176,7 +182,7 @@ public sealed partial class ProductsPage : Page
         {
             try
             {
-                await ViewModel.DeleteProductAsync(selected.ProductID);
+                await ViewModel.DeleteProductAsync(selected.ProductID.ToString());
                 await App.ShowMessageAsync("Thông báo", "Xóa thành công!");
                 BtnReset_Click(null, null);
             }
@@ -196,14 +202,14 @@ public sealed partial class ProductsPage : Page
     private async void ProductGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (ProductGrid.SelectedItem is not ProductSummary summary) return;
-        await ViewModel.LoadProductForEditingAsync(summary.ProductID);
+        await ViewModel.LoadProductForEditingAsync(summary.ProductID.ToString());
         var selected = ViewModel.SelectedProductFull;
 
         if (selected == null) return;
         btnAdd.IsEnabled = false;
         btnDelete.IsEnabled = true;
         btnUpdate.IsEnabled = true;
-        txtProductID.Text = selected.ProductID;
+        txtProductID.Text = selected.ProductID.ToString();
         txtProductID.IsReadOnly = true;
         txtName.Text = selected.Name;
         txtBasePrice.Text = selected.BasePrice.ToString();
@@ -246,14 +252,15 @@ public sealed partial class ProductsPage : Page
         }
     }
 
-    private async Task<bool> ValidateProductInputs()
+    private async Task<bool> ValidateProductInputs(bool isUpdate = false)
     {
-        if (string.IsNullOrWhiteSpace(txtProductID.Text))
+        if (!isUpdate && string.IsNullOrWhiteSpace(txtName.Text))
         {
-            await App.ShowMessageAsync("Validation Error", "Mã sản phẩm không được bỏ trống.");
-            txtProductID.Focus(FocusState.Programmatic);
+            await App.ShowMessageAsync("Validation Error", "Tên sản phẩm không được bỏ trống.");
+            txtName.Focus(FocusState.Programmatic);
             return false;
         }
+
         if (string.IsNullOrWhiteSpace(txtName.Text))
         {
             await App.ShowMessageAsync("Validation Error", "Tên sản phẩm không được bỏ trống.");

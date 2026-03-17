@@ -5,7 +5,7 @@ namespace Invoice.Core.Models;
 public partial class InvoiceProduct : ObservableObject
 {
     [ObservableProperty]
-    private string proCode;
+    private long proCode;
     
     [ObservableProperty]
     private string proName;

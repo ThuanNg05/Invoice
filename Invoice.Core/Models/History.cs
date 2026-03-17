@@ -14,10 +14,7 @@ public class History
     {
         get; set;
     }
-    public string ProductID
-    {
-        get; set;
-    }
+    public long ProductID { get; set; }
     public string ProductName
     {
         get; set;

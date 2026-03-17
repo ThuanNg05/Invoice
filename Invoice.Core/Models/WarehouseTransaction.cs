@@ -21,7 +21,7 @@ public class WarehouseTransaction : BaseModel, INotifyPropertyChanged
     public int Id { get; set; }
 
     [Column("product_id")]
-    public string ProductID { get; set; }
+    public long ProductID { get; set; }
     [Column("invoice_id")]
     public string InvoiceID { get; set; }        
     

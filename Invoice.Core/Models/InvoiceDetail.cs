@@ -10,7 +10,7 @@ public class InvoiceDetail : BaseModel
     [PrimaryKey("invoice_id", true)]
     public string InvoiceID { get; set; }
     [PrimaryKey("product_id", true)]
-    public string ProductID { get; set; }    
+    public long ProductID { get; set; }    
     [Column("product_name")]
     public string ProductName { get; set; }   
     [Column("sell_price")]

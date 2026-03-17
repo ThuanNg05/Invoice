@@ -36,7 +36,7 @@
             <StackPanel Grid.Column="0" Margin="0,0,20,0">
                 <StackPanel Orientation="Vertical" Margin="0,0,0,10">
                     <StackPanel Orientation="Horizontal">
-                        <StackPanel Margin="0,0,10,10">
+                        <StackPanel Margin="0,0,10,10" Visibility="Collapsed">
                             <TextBlock>
                                 <Run Text="(*) " Foreground="Red"/>
                                 <Run Text="Mã SP:"/>
@@ -88,7 +88,8 @@
                     </Grid.ColumnDefinitions>
                     <StackPanel Orientation="Vertical" Margin="0,0,10,0" Grid.Column="0">
                         <CommandBar Background="Transparent" DefaultLabelPosition="Right">
-                            <AppBarButton x:Name="btnAdd" Background="#07af00" CornerRadius="10" Icon="Add" Label="Mới" Click="BtnNew_Click" ToolTipService.ToolTip="Press F1"
+                            <AppBarButton x:Name="btnAdd" Background="#07af00" Foreground="{ThemeResource SettingsForegroundBrush}"
+                                          CornerRadius="10" Icon="Add" Label="Mới" Click="BtnNew_Click" ToolTipService.ToolTip="Press F1"
                                           IsEnabled="{x:Bind ViewModel.IsLoading, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}">
                                 <AppBarButton.KeyboardAccelerators>
                                     <KeyboardAccelerator Key="F1"/>
@@ -96,21 +97,24 @@
                             </AppBarButton>
                         </CommandBar>
                         <CommandBar Background="Transparent" DefaultLabelPosition="Right">
-                            <AppBarButton x:Name="btnUpdate" Background="#b48b14" CornerRadius="10" Icon="Edit" Label="Sửa" Click="BtnUpdate_Click" ToolTipService.ToolTip="Press F2">
+                            <AppBarButton x:Name="btnUpdate" Background="#b48b14" Foreground="{ThemeResource SettingsForegroundBrush}"
+                                          CornerRadius="10" Icon="Edit" Label="Sửa" Click="BtnUpdate_Click" ToolTipService.ToolTip="Press F2">
                                 <AppBarButton.KeyboardAccelerators>
                                     <KeyboardAccelerator Key="F2"/>
                                 </AppBarButton.KeyboardAccelerators>
                             </AppBarButton>
                         </CommandBar>
                         <CommandBar Background="Transparent" DefaultLabelPosition="Right">
-                            <AppBarButton x:Name="btnDelete" Background="#ff3800" CornerRadius="10" Icon="Delete" Label="Xoá" Click="BtnDelete_Click" ToolTipService.ToolTip="Press F3">
+                            <AppBarButton x:Name="btnDelete" Background="#ff3800" Foreground="{ThemeResource SettingsForegroundBrush}"
+                                          CornerRadius="10" Icon="Delete" Label="Xoá" Click="BtnDelete_Click" ToolTipService.ToolTip="Press F3">
                                 <AppBarButton.KeyboardAccelerators>
                                     <KeyboardAccelerator Key="F3"/>
                                 </AppBarButton.KeyboardAccelerators>
                             </AppBarButton>
                         </CommandBar>
                         <CommandBar Background="Transparent" DefaultLabelPosition="Right">
-                            <AppBarButton x:Name="btnReset" Background="#24a6d5" CornerRadius="10" Icon="Refresh" Label="Reset" Click="BtnReset_Click" ToolTipService.ToolTip="Press F5">
+                            <AppBarButton x:Name="btnReset" Background="#24a6d5" Foreground="{ThemeResource SettingsForegroundBrush}"
+                                          CornerRadius="10" Icon="Refresh" Label="Reset" Click="BtnReset_Click" ToolTipService.ToolTip="Press F5">
                                 <AppBarButton.KeyboardAccelerators>
                                     <KeyboardAccelerator Key="F5"/>
                                 </AppBarButton.KeyboardAccelerators>
@@ -195,7 +199,7 @@
                         <SolidColorBrush x:Key="DataGridColumnHeaderBackgroundColor" Color="Transparent" />
                     </controls:DataGrid.Resources>
                     <controls:DataGrid.Columns>
-                        <controls:DataGridTextColumn Binding="{Binding ProductID}" Header="Mã SP" />
+                        <controls:DataGridTextColumn Binding="{Binding ProductID}" Header="Mã SP" Visibility="Collapsed" />
                         <controls:DataGridTextColumn Width="200" Binding="{Binding Name}" Header="Tên SP" />
                         <controls:DataGridTextColumn Binding="{Binding BasePrice}" Header="Giá Gốc">
                             <controls:DataGridTextColumn.ElementStyle>

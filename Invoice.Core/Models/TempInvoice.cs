@@ -5,7 +5,7 @@ namespace Invoice.Core.Models;
 public partial class TempInvoice : ObservableObject
 {
     [ObservableProperty]
-    private string productID;
+    private long productID;
 
     [ObservableProperty]
     private string productName;

@@ -40,22 +40,17 @@ public partial class App : Application
         return service;
     }
 
-    public static WindowEx MainWindow { get; private set; } = null!;
+    public static WindowEx MainWindow { get; } = new MainWindow();
 
     public static UIElement? AppTitlebar { get; set; }
 
     public App()
     {
-        try
-        {
-            InitializeComponent();
-            MainWindow = new MainWindow();
-            
-            System.Console.WriteLine("App Constructor started.");
+            System.Diagnostics.Debug.WriteLine("App Constructor started.");
             QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
-
-        System.Console.WriteLine("Building Host...");
-        // ... (rest of registration)
+            InitializeComponent();
+        
+            System.Diagnostics.Debug.WriteLine("Building Host...");          
             Host = Microsoft.Extensions.Hosting.Host.
             CreateDefaultBuilder().
             UseContentRoot(AppContext.BaseDirectory).
@@ -83,7 +78,7 @@ public partial class App : Application
                     var options = new SupabaseOptions
                     {
                         AutoRefreshToken = true,
-                        AutoConnectRealtime = true
+                        AutoConnectRealtime = false
                     };
 
                     return new Supabase.Client(supabaseUrl, supabaseKey, options);
@@ -99,8 +94,7 @@ public partial class App : Application
                 services.AddSingleton<INavigationService, NavigationService>();
 
                 // Core Services            
-                services.AddSingleton<IDataService, SupabaseDataService>();
-                services.AddSingleton<ISampleDataService, SampleDataService>();
+                services.AddSingleton<IDataService, SupabaseDataService>();                
                 services.AddSingleton<IFileService, FileService>();
 
                 // App Services
@@ -146,15 +140,16 @@ public partial class App : Application
             }).
             Build();
 
-            System.Console.WriteLine("Host built successfully.");
+            System.Diagnostics.Debug.WriteLine("Host built successfully.");
+            
             UnhandledException += App_UnhandledException;
-        }
-        catch (Exception ex)
-        {
-            System.Console.WriteLine($"CRITICAL CONSTRUCTOR ERROR: {ex.Message}");
-            System.Console.WriteLine($"STACKTRACE: {ex.StackTrace}");
-            throw;
-        }
+        //}
+        //catch (Exception ex)
+        //{
+        //    System.Diagnostics.Debug.WriteLine($"CRITICAL CONSTRUCTOR ERROR: {ex.Message}");
+        //    System.Diagnostics.Debug.WriteLine($"STACKTRACE: {ex.StackTrace}");
+        //    throw;
+        //}
     }
 
     private void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
@@ -162,63 +157,54 @@ public partial class App : Application
         var error = $"UNHANDLED EXCEPTION: {e.Message}\nDETAILS: {e.Exception}";
         System.Diagnostics.Debug.WriteLine(error);
         System.Diagnostics.Trace.WriteLine(error);
-        System.Console.WriteLine(error);
         e.Handled = true;
     }
 
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
     {
         try
-        {
-            System.Console.WriteLine("OnLaunched started.");
+        {                        
             // ApplicationLanguages.PrimaryLanguageOverride = "vi-VN"; // Causes crash in WinUI 3
-            base.OnLaunched(args);
-            
-            //System.Console.WriteLine("Creating SplashScreen...");
-            //var splash = new SplashScreenWindow();
-            //splash.Activate();
-            //System.Console.WriteLine("SplashScreen activated.");
+            base.OnLaunched(args);                       
 
-            //await Task.Delay(3000);
-
-            System.Console.WriteLine("Activating services...");
+            System.Diagnostics.Debug.WriteLine("Activating services...");
             await App.GetService<IActivationService>().ActivateAsync(args);
-            System.Console.WriteLine("Services activated.");
-
-            //splash.Close();
-            //System.Console.WriteLine("SplashScreen closed.");
+            System.Diagnostics.Debug.WriteLine("Services activated.");
+            
         }
         catch (Exception ex)
         {
             var error = $"LAUNCH ERROR: {ex.Message}\nSTACKTRACE: {ex.StackTrace}";
             System.Diagnostics.Debug.WriteLine(error);
             System.Diagnostics.Trace.WriteLine(error);
-            System.Console.WriteLine(error);
             await ShowMessageAsync("Lỗi khởi động", $"Có lỗi xảy ra khi khởi động ứng dụng: {ex.Message}");
         }
     }
 
     public static async Task ShowMessageAsync(string title, string content)
-    {
-        // Kiểm tra xem MainWindow có Content không để lấy XamlRoot
-        if (MainWindow.Content is FrameworkElement element)
+    {       
+        if (MainWindow != null && MainWindow.Content is FrameworkElement element)
         {
             var dialog = new ContentDialog
             {
                 Title = title,
                 Content = content,
                 CloseButtonText = "Đóng",
-                XamlRoot = element.XamlRoot // Quan trọng: WinUI 3 yêu cầu phải gán XamlRoot
+                XamlRoot = element.XamlRoot
             };
 
             try
             {
                 await dialog.ShowAsync();
             }
-            catch
+            catch (Exception e)
             {
-                // Bỏ qua lỗi nếu có dialog khác đang mở
+                System.Diagnostics.Debug.WriteLine(e.Message);
             }
+        }
+        else
+        {
+            System.Diagnostics.Debug.WriteLine($"CANNOT SHOW DIALOG: {title} - {content}. MainWindow or Content is null.");
         }
     }
 }

@@ -80,33 +80,34 @@
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0" Spacing="10" Grid.ColumnSpan="3" Grid.Row="2">
                     <AppBarButton x:Name="btnAdd" Background="#07af00"
                                   IsEnabled="{x:Bind ViewModel.IsLoading, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}"
-                                  CornerRadius="10" Icon="Add" Label="Thêm" Click="BtnAddProduct_Click" ToolTipService.ToolTip="Press F1">
+                                  CornerRadius="10" Icon="Add" Label="Thêm" Foreground="{ThemeResource SettingsForegroundBrush}"
+                                  Click="BtnAddProduct_Click" ToolTipService.ToolTip="Press F1">
                         <AppBarButton.KeyboardAccelerators>
                             <KeyboardAccelerator Key="F1"/>
                         </AppBarButton.KeyboardAccelerators>
                     </AppBarButton>
                     <AppBarButton x:Name="btnEdit" Background="#6514db"
-                                  
+                                  Foreground="{ThemeResource SettingsForegroundBrush}"
                                   CornerRadius="10" Icon="Edit" Label="Cập nhật" Click="BtnEdit_Click" ToolTipService.ToolTip="Press F2">
                         <AppBarButton.KeyboardAccelerators>
                             <KeyboardAccelerator Key="F2"/>
                         </AppBarButton.KeyboardAccelerators>
                     </AppBarButton>
                     <AppBarButton x:Name="btnDelete"
-                                  
+                                  Foreground="{ThemeResource SettingsForegroundBrush}"
                                   Background="#ff3800" CornerRadius="10" Icon="Delete" Label="Xoá" Click="BtnDelete_Click" ToolTipService.ToolTip="Press F3">
                         <AppBarButton.KeyboardAccelerators>
                             <KeyboardAccelerator Key="F3"/>
                         </AppBarButton.KeyboardAccelerators>
                     </AppBarButton>
-                    <AppBarButton Background="#b48b14"
+                    <AppBarButton Background="#b48b14" Foreground="{ThemeResource SettingsForegroundBrush}"
                                   IsEnabled="{x:Bind ViewModel.IsLoading, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}"
                                   CornerRadius="10" Icon="Refresh" Label="Làm mới" Click="BtnReset_Click" ToolTipService.ToolTip="Press F5">
                         <AppBarButton.KeyboardAccelerators>
                             <KeyboardAccelerator Key="F5"/>
                         </AppBarButton.KeyboardAccelerators>
                     </AppBarButton>
-                    <AppBarButton x:Name="btnSave" Background="#516dcf"
+                    <AppBarButton x:Name="btnSave" Background="#516dcf" Foreground="{ThemeResource SettingsForegroundBrush}"
                                   IsEnabled="{x:Bind ViewModel.IsLoading, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}"
                                   CornerRadius="10" Icon="Save" Label="Lưu kho" Click="BtnSave_Click" ToolTipService.ToolTip="Press F4">
                         <AppBarButton.KeyboardAccelerators>

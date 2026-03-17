@@ -36,9 +36,17 @@ public class SupabaseDataService : IDataService
 
     private async Task EnsureConnectionAsync()
     {
-        if (_client.Auth.CurrentSession == null)
+        try
         {
-            await _client.InitializeAsync();
+            if (_client.Auth.CurrentSession == null)
+            {
+                await _client.InitializeAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Supabase Initialization Error: {ex.Message}");
+            throw new Exception("Không thể kết nối với máy chủ Supabase. Vui lòng kiểm tra kết nối mạng.", ex);
         }
     }
 
@@ -757,17 +765,27 @@ public class SupabaseDataService : IDataService
 
     public async Task SubscribeToProductsRealtime(Action<string, Products> onDataChanged)
     {
-        await EnsureConnectionAsync();
-        
-        await _client.From<Products>()
-                     .On(PostgresChangesOptions.ListenType.All, (sender, change) =>
-                     {
-                         // Fix: Model is a method, call it with <Products>()
-                         var product = change.Model<Products>();
-                         
-                         // Fix: Use change.Event (which is an enum)
-                         onDataChanged?.Invoke(change.Event.ToString().ToUpper(), product);
-                     });
+        try
+        {
+            await EnsureConnectionAsync();
+
+            // Safely attempt to connect. ConnectAsync is idempotent in most Supabase SDK versions
+            // or we just catch if it's already connected.
+            await _client.Realtime.ConnectAsync();
+
+            await _client.From<Products>()
+                         .On(PostgresChangesOptions.ListenType.All, (sender, change) =>
+                         {
+                             var product = change.Model<Products>();
+                             onDataChanged?.Invoke(change.Event.ToString().ToUpper(), product);
+                         });
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Realtime Subscription Error: {ex.Message}");
+            // We don't throw here to avoid crashing the UI if realtime fails, 
+            // as the app can still function with REST.
+        }
     }
 
     public async Task<IEnumerable<Invoices>> GetAllInvoices()

@@ -92,7 +92,8 @@
                     Text="{x:Bind ViewModel.CurrentDetailPrice.PrDecal, Mode=TwoWay}" />
                 </Grid>
                 <CommandBar Background="Transparent" DefaultLabelPosition="Right" HorizontalAlignment="Left" Margin="-5,0,0,0">
-                    <AppBarButton Background="#07af00" CornerRadius="10" Icon="Save" Label="Lưu" Click="BtnUpdate_Click"/>
+                    <AppBarButton Background="#07af00" Foreground="{ThemeResource SettingsForegroundBrush}"
+                                  CornerRadius="10" Icon="Save" Label="Lưu" Click="BtnUpdate_Click"/>
                 </CommandBar>
             </StackPanel>
             <ProgressRing
