@@ -82,7 +82,7 @@ public partial class ProductSelectionViewModel : ObservableRecipient, INavigatio
         }
     }
 
-    public async Task<Products> GetProductDetailAsync(string productId)
+    public async Task<Products> GetProductDetailAsync(long productId)
     {
         return await _dataService.GetProductById(productId);
     }

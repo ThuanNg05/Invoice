@@ -21,11 +21,7 @@ public sealed partial class IOActionsPage : Page
 
     private void ClearInput()
     {
-        txtSearch.Text = string.Empty;
-        txtID.Text = string.Empty;
-        txtName.Text = string.Empty;
-        txtAmount.Text = string.Empty;
-        txtInventory.Text = string.Empty;
+        StringHelper.ClearInputs(this);
         cmbType.SelectedIndex = -1;
 
         SourceDataGrid.SelectedItem = null;
@@ -50,11 +46,17 @@ public sealed partial class IOActionsPage : Page
             return;
         }
 
+        if (!long.TryParse(txtID.Text, out long productId))
+        {
+            await App.ShowMessageAsync("Lỗi", "Mã sản phẩm không hợp lệ.");
+            return;
+        }
+
         string actionType = cmbType.SelectedValue.ToString();
         int currentInventory = int.Parse(txtInventory.Text);
 
         var existingTransaction = ViewModel.TransactionList
-            .FirstOrDefault(t => t.ProductID == txtID.Text && t.ActionType == actionType);
+            .FirstOrDefault(t => t.ProductID == productId && t.ActionType == actionType);
 
         if (existingTransaction != null)
         {
@@ -93,8 +95,8 @@ public sealed partial class IOActionsPage : Page
 
             var newTransaction = new WarehouseTransaction
             {
-                InvoiceID = string.Empty,
-                ProductID = txtID.Text,
+                InvoiceID = null,
+                ProductID = productId,
                 Name = txtName.Text,
                 Amount = amount,
                 ActionType = actionType,
@@ -170,7 +172,7 @@ public sealed partial class IOActionsPage : Page
     {
         if (SourceDataGrid.SelectedItem is InventoryItem selected)
         {
-            txtID.Text = selected.ProductID;
+            txtID.Text = selected.ProductID.ToString();
             txtName.Text = selected.Name;
             txtInventory.Text = selected.Inventory.ToString();
             txtAmount.Text = string.Empty;
@@ -187,7 +189,7 @@ public sealed partial class IOActionsPage : Page
     {
         if (TransactionDataGrid.SelectedItem is WarehouseTransaction selected)
         {
-            txtID.Text = selected.ProductID;
+            txtID.Text = selected.ProductID.ToString();
             txtName.Text = selected.Name ?? "";
             txtAmount.Text = selected.Amount.ToString();
             cmbType.SelectedItem = selected.ActionType;

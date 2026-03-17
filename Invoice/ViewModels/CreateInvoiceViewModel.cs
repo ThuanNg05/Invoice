@@ -89,58 +89,44 @@ public partial class CreateInvoiceViewModel : ObservableRecipient, IRecipient<Pr
         Debug.WriteLine($"[DEBUG] Sản phẩm: {message.Product.Name} | Tồn kho (Inventory): {message.Product.Inventory} | Số lượng chọn: {message.Amount}");
 
         int inputAmount = message.Amount <= 0 ? 1 : message.Amount;
-
         int currentStock = message.Product.Inventory;
 
-        int finalAmount = inputAmount;
+        var existingItem = InvoiceItems.FirstOrDefault(x => x.ProductID == message.Product.ProductID);
 
-        if (currentStock > 0 && inputAmount > currentStock)
+        if (existingItem != null && message.IsMerge)
         {
-            finalAmount = currentStock;
-        }
-        else if (currentStock <= 0)
-        {
-            finalAmount = 0;
-        }
+            existingItem.MaxStock = currentStock;
+            int newTotal = existingItem.Amount + inputAmount;
 
-        if (message.IsMerge)
-        {
-            var existingItem = InvoiceItems.FirstOrDefault(x => x.ProductID == message.Product.ProductID);
-            if (existingItem != null)
+            if (currentStock > 0 && newTotal > currentStock)
             {
-                existingItem.MaxStock = currentStock;
-
-                int newTotal = existingItem.Amount + inputAmount;
-
-                if (currentStock > 0 && newTotal > currentStock)
-                {
-                    existingItem.Amount = currentStock;
-                }
-                else
-                {
-                    existingItem.Amount = newTotal;
-                }
+                existingItem.Amount = currentStock;
+            }
+            else
+            {
+                existingItem.Amount = newTotal;
             }
         }
         else
         {
+            int finalAmount = inputAmount;
+            if (currentStock > 0 && inputAmount > currentStock)
+            {
+                finalAmount = currentStock;
+            }
+            else if (currentStock <= 0)
+            {
+                finalAmount = 0;
+            }
+
             var newItem = new TempInvoice
             {
-                MaxStock = message.Product.Inventory,
+                MaxStock = currentStock,
                 ProductID = message.Product.ProductID,
                 ProductName = message.Product.Name,
                 SellPrice = message.FinalPrice,
                 Note = message.Note,
                 Amount = finalAmount
-            };
-
-            // Đăng ký sự kiện (giữ nguyên code cũ)
-            newItem.PropertyChanged += (o, e) =>
-            {
-                if (e.PropertyName == nameof(TempInvoice.LineTotal))
-                {
-                    RecalculateGrandTotal();
-                }
             };
 
             InvoiceItems.Add(newItem);
@@ -292,8 +278,6 @@ public partial class CreateInvoiceViewModel : ObservableRecipient, IRecipient<Pr
             return;
         }
 
-        var existingIDs = InvoiceItems.Select(x => x.ProductID).ToHashSet();
-
         var newWindow = new WindowEx();
         newWindow.Title = "Chọn sản phẩm";
         newWindow.Height = 800;
@@ -311,28 +295,10 @@ public partial class CreateInvoiceViewModel : ObservableRecipient, IRecipient<Pr
 
         var navParam = new ProductSelectionNavigationParameter
         {
-            PriceGroup = SelectedCustomer.PriceGroup,
-
-            OnProductAdded = (newItem) =>
-            {
-                App.MainWindow.DispatcherQueue.TryEnqueue(() =>
-                {
-                    AddInvoiceItem(newItem);
-                });
-            },
-
-            CheckProductExists = (id) => ProductExists(id),
-
-            OnIncreaseAmount = (id, amount) =>
-            {
-                App.MainWindow.DispatcherQueue.TryEnqueue(() =>
-                {
-                    IncreaseProductAmount(id, amount);
-                });
-            }
+            PriceGroup = SelectedCustomer.PriceGroup
         };
 
-        frame.Navigate(typeof(ProductSelectionPage), SelectedCustomer.PriceGroup);
+        frame.Navigate(typeof(ProductSelectionPage), navParam);
 
         newWindow.Activate();
     }
@@ -505,12 +471,12 @@ public partial class CreateInvoiceViewModel : ObservableRecipient, IRecipient<Pr
         RecalculateGrandTotal();
     }
 
-    public bool ProductExists(string productId)
+    public bool ProductExists(long productId)
     {
         return InvoiceItems.Any(x => x.ProductID == productId);
     }
 
-    public void IncreaseProductAmount(string productId, int amountToAdd)
+    public void IncreaseProductAmount(long productId, int amountToAdd)
     {
         var item = InvoiceItems.FirstOrDefault(x => x.ProductID == productId);
         if (item != null)

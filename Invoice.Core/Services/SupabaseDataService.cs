@@ -23,16 +23,13 @@ public class SupabaseDataService : IDataService
 
 
 
-    public IEnumerable<Customers> CachedCustomers { get; private set; } = new List<Customers>();
-    public IEnumerable<Materials> CachedMaterials { get; private set; } = new List<Materials>();
-    public IEnumerable<Frames> CachedFrames { get; private set; } = new List<Frames>();
-    public IEnumerable<DetailPlanks> CachedPlanks { get; private set; } = new List<DetailPlanks>();
-    public IEnumerable<DetailPrice> CachedPrices { get; private set; } = new List<DetailPrice>();
+    public IEnumerable<Customers> CachedCustomers { get; private set; } = [];
+    public IEnumerable<Materials> CachedMaterials { get; private set; } = [];
+    public IEnumerable<Frames> CachedFrames { get; private set; } = [];
+    public IEnumerable<DetailPlanks> CachedPlanks { get; private set; } = [];
+    public IEnumerable<DetailPrice> CachedPrices { get; private set; } = [];
 
-    public SupabaseDataService(SupabaseClient client)
-    {
-        _client = client;
-    }
+    public SupabaseDataService(SupabaseClient client) => _client = client;
 
     private async Task EnsureConnectionAsync()
     {
@@ -180,11 +177,13 @@ public class SupabaseDataService : IDataService
         var newMaterial = response.Models.FirstOrDefault();
 
         if (newMaterial != null)
+        {
             material.ProductID = newMaterial.ProductID;
+        }
 
         _cache.Invalidate(InMemoryCache.MATERIALS);
     }
-    public async Task DeleteMaterial(string productId)
+    public async Task DeleteMaterial(long productId)
     {
         //await EnsureConnectionAsync();
         //await _client.From<Materials>().Where(m => m.ProductID == productId).Delete();
@@ -261,7 +260,9 @@ public class SupabaseDataService : IDataService
         var newFrame = response.Models.FirstOrDefault();
 
         if (newFrame != null)
+        {
             frame.FrameNO = newFrame.FrameNO;
+        }
 
         _cache.Invalidate(InMemoryCache.FRAMES);
     }
@@ -278,7 +279,11 @@ public class SupabaseDataService : IDataService
         //    CachedFrames = list;
         //}
         await EnsureConnectionAsync();
-        if (frameID == null) return;
+        if (frameID == null)
+        {
+            return;
+        }
+
         await _client.From<Frames>().Where(p => p.FrameID == frameID).Delete();
         _cache.Invalidate(InMemoryCache.FRAMES);
     }
@@ -344,7 +349,11 @@ public class SupabaseDataService : IDataService
     public async Task DeletePlank(string plankId)
     {
         await EnsureConnectionAsync();
-        if (plankId == null) return;
+        if (plankId == null)
+        {
+            return;
+        }
+
         await _client.From<DetailPlanks>().Where(p => p.sizeID == plankId).Delete();
         var list = CachedPlanks.ToList();
         var item = list.FirstOrDefault(p => p.sizeID == plankId);
@@ -450,13 +459,13 @@ public class SupabaseDataService : IDataService
             Note = d.Note
         });
 
-        return result.OrderByDescending(x => x.CreatedDate).ThenBy(x => x.InvoiceID).ToList();
+        return [.. result.OrderByDescending(x => x.CreatedDate).ThenBy(x => x.InvoiceID)];
     }
 
 
 
     // Transactions Frames
-    public async Task ProcessInventoryTransaction(Frames frame, int amount, string sourcePlank = null)
+    public async Task ProcessInventoryTransaction(Frames frame, int amount, long? sourcePlankId = null)
     {
         await EnsureConnectionAsync();
 
@@ -469,17 +478,21 @@ public class SupabaseDataService : IDataService
             int lastDashIndex = rawData.LastIndexOf('-');
             if (lastDashIndex > 0)
             {
-                string sizeId = rawData.Substring(0, lastDashIndex).Trim();
-                string amountStr = rawData.Substring(lastDashIndex + 1).Trim();
+                string sizeId = rawData[..lastDashIndex].Trim();
+                string amountStr = rawData[(lastDashIndex + 1)..].Trim();
 
                 if (int.TryParse(amountStr, out int amountPerFrame))
                 {
                     int totalSmallPlanks = amountPerFrame * amount;
 
                     if (smallPlanksMap.ContainsKey(sizeId))
+                    {
                         smallPlanksMap[sizeId] += totalSmallPlanks;
+                    }
                     else
+                    {
                         smallPlanksMap[sizeId] = totalSmallPlanks;
+                    }
                 }
             }
         }
@@ -496,25 +509,25 @@ public class SupabaseDataService : IDataService
         ParseAndAccumulate(frame.size10);
 
         // Check what kind of plank (HP or MDF)
-        if (!string.IsNullOrEmpty(sourcePlank))
+        if (sourcePlankId.HasValue)
         {
-            // Get material where id = sourcePlank
+            // Get material where id = sourcePlankId
             var materialResponse = await _client.From<Materials>()
-                                        .Where(m => m.ProductID == sourcePlank)
+                                        .Where(m => m.ProductID == sourcePlankId.Value)
                                         .Single();
 
             // Update inventory of big plank
             if (materialResponse != null)
             {                
                 await _client.From<Materials>()
-                             .Where(m => m.ProductID == sourcePlank)
+                             .Where(m => m.ProductID == sourcePlankId.Value)
                              .Set(x => x.Inventory, materialResponse.Inventory - amount)
                              .Update();
 
                 // Save transaction for big plank OUT
                 var transOut = new WarehouseTransaction
                 {
-                    ProductID = sourcePlank,
+                    ProductID = sourcePlankId.Value,
                     Amount = -amount,
                     ActionType = "Xuất kho",
                     Note = $"Cắt rập: {frame.FrameNO}",
@@ -556,14 +569,19 @@ public class SupabaseDataService : IDataService
                     inventory = finalInventory
                 });
 
-                transactionsToInsert.Add(new WarehouseTransaction
+                // DetailPlanks.sizeID is string, but ProductID in WarehouseTransaction is long.
+                // This logic might need further review if sizeID references Products/Materials.
+                if (long.TryParse(sizeId, out long sizeIdLong))
                 {
-                    ProductID = sizeId,
-                    Amount = quantityToAdd,
-                    ActionType = "Nhập kho",
-                    Note = $"Cắt rập từ {amount} tấm lớn ({frame.FrameNO})",
-                    CreatedDate = DateTime.Now
-                });
+                    transactionsToInsert.Add(new WarehouseTransaction
+                    {
+                        ProductID = sizeIdLong,
+                        Amount = quantityToAdd,
+                        ActionType = "Nhập kho",
+                        Note = $"Cắt rập từ {amount} tấm lớn ({frame.FrameNO})",
+                        CreatedDate = DateTime.Now
+                    });
+                }
             }
 
             if (planksToUpsert.Count > 0)
@@ -577,14 +595,14 @@ public class SupabaseDataService : IDataService
             }
         }        
     }        
-    public async Task<bool> ValidateMaterialStock(string materialId, int requiredAmount)
+    public async Task<bool> ValidateMaterialStock(long productId, int requiredAmount)
     {
         await EnsureConnectionAsync();
 
         try
         {            
             var response = await _client.From<Materials>()
-                                        .Where(m => m.ProductID == materialId)
+                                        .Where(m => m.ProductID == productId)
                                         .Single();
 
             return response != null && response.Inventory >= requiredAmount;
@@ -605,13 +623,7 @@ public class SupabaseDataService : IDataService
         var request = _client.From<Products>().Select("product_id,name,base_price,price_odd,price_even,inventory");
         if (!string.IsNullOrEmpty(query))
         {
-            var filters = new List<IPostgrestQueryFilter>
-            {
-                new QueryFilter("product_id", Operator.ILike, $"%{query}%"),
-                new QueryFilter("name", Operator.ILike, $"%{query}%")
-            };
-
-            request = request.Or(filters);            
+            request = request.Filter("name", Operator.ILike, $"%{query}%");
         }
 
         var response = await request
@@ -629,7 +641,7 @@ public class SupabaseDataService : IDataService
             Inventory = p.Inventory
         });
     }
-    public async Task<Products> GetProductById(string productId)
+    public async Task<Products> GetProductById(long productId)
     {
         await EnsureConnectionAsync();
         var response = await _client.From<Products>()
@@ -647,7 +659,7 @@ public class SupabaseDataService : IDataService
         await EnsureConnectionAsync();
         await _client.From<Products>().Update(product);
     }
-    public async Task DeleteProduct(string productId)
+    public async Task DeleteProduct(long productId)
     {
         await EnsureConnectionAsync();
         await _client.From<Products>().Where(p => p.ProductID == productId).Delete();
@@ -708,7 +720,7 @@ public class SupabaseDataService : IDataService
         }
     }
     
-    public async Task UpdateProductInventory(string productId, int amountChange)
+    public async Task UpdateProductInventory(long productId, int amountChange)
     {
         await EnsureConnectionAsync();
         var productResponse = await _client.From<Products>()

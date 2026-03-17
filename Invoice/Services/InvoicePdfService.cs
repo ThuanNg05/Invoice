@@ -190,11 +190,10 @@ public class InvoicePdfService
             table.ColumnsDefinition(columns =>
             {
                 columns.ConstantColumn(30);  // STT
-                columns.ConstantColumn(60);  // Mã SP
-                columns.RelativeColumn();   // Tên SP
-                columns.ConstantColumn(70);  // Đơn giá
+                columns.RelativeColumn(3);   // Tên SP
+                columns.ConstantColumn(80);  // Đơn giá
                 columns.ConstantColumn(40);  // SL
-                columns.ConstantColumn(80);  // Thành tiền
+                columns.ConstantColumn(90);  // Thành tiền
                 columns.RelativeColumn(1);   // Ghi chú
             });
 
@@ -204,7 +203,6 @@ public class InvoicePdfService
             table.Header(header =>
             {
                 header.Cell().Element(HeaderStyle).PaddingBottom(1).PaddingTop(1).AlignCenter().Text("#");
-                header.Cell().Element(HeaderStyle).PaddingBottom(1).PaddingTop(1).AlignMiddle().AlignCenter().Text("Mã SP");
                 header.Cell().Element(HeaderStyle).PaddingBottom(1).PaddingTop(1).AlignMiddle().AlignCenter().Text("Tên Sản Phẩm");
                 header.Cell().Element(HeaderStyle).PaddingBottom(1).PaddingTop(1).AlignMiddle().AlignCenter().Text("Đơn giá");
                 header.Cell().Element(HeaderStyle).PaddingBottom(1).PaddingTop(1).AlignMiddle().AlignCenter().Text("SL");
@@ -219,7 +217,6 @@ public class InvoicePdfService
             foreach (var item in items)
             {
                 table.Cell().Element(CellStyle).AlignCenter().Text(index++);
-                table.Cell().Element(CellStyle).Text(item.ProductID);
                 table.Cell().Element(CellStyle).Text(item.ProductName);
                 table.Cell().Element(CellStyle).AlignRight().Text(item.SellPrice.ToString("N0"));
                 table.Cell().Element(CellStyle).AlignCenter().Text(item.Amount.ToString());
@@ -232,11 +229,11 @@ public class InvoicePdfService
             {
                 double grandTotal = items.Sum(x => x.LineTotal);
                 int totalAmount = items.Sum(x => x.Amount);
-                footer.Cell().ColumnSpan(4).Border(1).Padding(5).AlignRight().Text("Tổng Cộng:");
+                footer.Cell().ColumnSpan(3).Border(1).Padding(5).AlignRight().Text("Tổng Cộng:");
                 footer.Cell().Border(1).Padding(5).AlignCenter().Text(totalAmount.ToString("N0")).Bold().FontSize(12);
                 footer.Cell().Border(1).Padding(2).AlignRight().AlignMiddle().Text(grandTotal.ToString("N0")).Bold().FontSize(12);
                 footer.Cell().Border(1);
-                footer.Cell().ColumnSpan(7).Border(1).Padding(5).AlignLeft().Text($"Bằng chữ: {StringHelper.NumberToTextVN(grandTotal)}").Italic().FontSize(14).FontFamily("Times New Roman");
+                footer.Cell().ColumnSpan(6).Border(1).Padding(5).AlignLeft().Text($"Bằng chữ: {StringHelper.NumberToTextVN(grandTotal)}").Italic().FontSize(14).FontFamily("Times New Roman");
                 footer.Cell().Border(1).Background(Colors.White);
             });
         });
@@ -251,8 +248,7 @@ public class InvoicePdfService
             table.ColumnsDefinition(columns =>
             {
                 columns.ConstantColumn(30);  // STT
-                columns.ConstantColumn(60);  // Mã SP
-                columns.RelativeColumn();   // Tên SP                
+                columns.RelativeColumn(3);   // Tên SP                
                 columns.ConstantColumn(40);  // SL                
                 columns.RelativeColumn(1);   // Ghi chú
             });
@@ -263,7 +259,6 @@ public class InvoicePdfService
             table.Header(header =>
             {
                 header.Cell().Element(HeaderStyle).PaddingBottom(1).PaddingTop(1).AlignCenter().Text("#");
-                header.Cell().Element(HeaderStyle).PaddingBottom(1).PaddingTop(1).AlignMiddle().AlignCenter().Text("Mã SP");
                 header.Cell().Element(HeaderStyle).PaddingBottom(1).PaddingTop(1).AlignMiddle().AlignCenter().Text("Tên Sản Phẩm");
                 header.Cell().Element(HeaderStyle).PaddingBottom(1).PaddingTop(1).AlignMiddle().AlignCenter().Text("SL");
                 header.Cell().Element(HeaderStyle).PaddingBottom(1).PaddingTop(1).AlignMiddle().AlignCenter().Text("Ghi chú");
@@ -276,7 +271,6 @@ public class InvoicePdfService
             foreach (var item in items)
             {
                 table.Cell().Element(CellStyle).AlignCenter().Text(index++.ToString());
-                table.Cell().Element(CellStyle).Text(item.ProductID);
                 table.Cell().Element(CellStyle).Text(item.ProductName);
                 table.Cell().Element(CellStyle).AlignCenter().Text(item.Amount.ToString());
                 table.Cell().Element(CellStyle).Text(item.Note ?? "");
@@ -287,10 +281,10 @@ public class InvoicePdfService
             {
                 double grandTotal = items.Sum(x => x.LineTotal);
                 int totalAmount = items.Sum(x => x.Amount);
-                footer.Cell().ColumnSpan(3).Border(1).Padding(5).AlignRight().Text("Tổng Cộng:");
+                footer.Cell().ColumnSpan(2).Border(1).Padding(5).AlignRight().Text("Tổng Cộng:");
                 footer.Cell().Border(1).Padding(5).AlignCenter().Text(totalAmount.ToString("N0")).Bold().FontSize(12);
                 footer.Cell().Border(1).Padding(5).AlignRight().Text(grandTotal.ToString("N0")).Bold().FontSize(12);
-                footer.Cell().ColumnSpan(5).Border(1).Padding(5).AlignLeft().Text($"Bằng chữ: {StringHelper.NumberToTextVN(grandTotal)}").Italic().FontSize(14).FontFamily("Times New Roman");
+                footer.Cell().ColumnSpan(4).Border(1).Padding(5).AlignLeft().Text($"Bằng chữ: {StringHelper.NumberToTextVN(grandTotal)}").Italic().FontSize(14).FontFamily("Times New Roman");
                 footer.Cell().Border(1).Background(Colors.White);
             });
         });

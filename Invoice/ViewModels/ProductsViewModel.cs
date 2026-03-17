@@ -98,7 +98,7 @@ public partial class ProductsViewModel : ObservableRecipient, INavigationAware
         }
     }
 
-    public async Task LoadProductForEditingAsync(string productId)
+    public async Task LoadProductForEditingAsync(long productId)
     {
         IsLoading = true;
         try
@@ -139,22 +139,18 @@ public partial class ProductsViewModel : ObservableRecipient, INavigationAware
         await _dataService.UpdateProduct(p);
         WeakReferenceMessenger.Default.Send(new ProductsChangedMessage(DataAction.Update, p));
     }
-    public async Task DeleteProductAsync(string id)
+    public async Task DeleteProductAsync(long id)
     {
         await _dataService.DeleteProduct(id);
         WeakReferenceMessenger.Default.Send(new ProductsChangedMessage(DataAction.Delete, id));
     }
 
     private void HandleDataChange(ProductsChangedMessage message)
-    {
-        // Đảm bảo chạy trên UI Thread vì ta thao tác với ObservableCollection
+    {        
         App.MainWindow.DispatcherQueue.TryEnqueue(() =>
         {
             switch (message.Action)
             {
-                case DataAction.Create:
-                    AddToSource(message.Product);
-                    break;
                 case DataAction.Update:
                     UpdateInSource(message.Product);
                     break;
@@ -188,24 +184,9 @@ public partial class ProductsViewModel : ObservableRecipient, INavigationAware
 
         if (itemToUpdate != null)
         {
-            // Cách 1: Cập nhật thuộc tính (Nếu ProductSummary có implement INotifyPropertyChanged)
-            // itemToUpdate.Name = product.name;
-            // itemToUpdate.BasePrice = product.basePrice;
-
-            // Cách 2: Thay thế object tại index đó (An toàn nhất để trigger UI update)
             int index = Source.IndexOf(itemToUpdate);
             if (index != -1)
-            {
-                //var newSummary = new ProductSummary
-                //{
-                //    ProductID = product.productID,
-                //    Name = product.name,
-                //    BasePrice = product.basePrice,
-                //    PriceOdd = product.priceOdd,
-                //    PriceEven = product.priceEven,
-                //    Inventory = product.inventory
-                //};
-                //Source[index] = newSummary;
+            {         
                 Source.RemoveAt(index);
                 Source.Insert(index, new ProductSummary
                 {
@@ -219,7 +200,7 @@ public partial class ProductsViewModel : ObservableRecipient, INavigationAware
             }
         }
     }
-    private void RemoveFromSource(string productId)
+    private void RemoveFromSource(long productId)
     {
         var itemToDelete = Source.FirstOrDefault(x => x.ProductID == productId);
         if (itemToDelete != null)

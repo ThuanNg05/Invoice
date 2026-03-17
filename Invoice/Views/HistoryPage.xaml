@@ -142,7 +142,7 @@
                     </controls:DataGridTextColumn.ElementStyle>
                 </controls:DataGridTextColumn>
 
-                <controls:DataGridTextColumn IsReadOnly="True" Header="Mã SP" Binding="{Binding ProductID}">
+                <controls:DataGridTextColumn IsReadOnly="True" Header="Mã SP" Binding="{Binding ProductID}" Visibility="Collapsed">
                     <controls:DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="HorizontalAlignment" Value="Stretch"/>

@@ -134,7 +134,7 @@
                 
                 <controls:DataGrid.Columns>
                     <!--ReadOnly-->
-                    <controls:DataGridTextColumn Width="Auto" Binding="{Binding ProductID}" Header="Mã SP" IsReadOnly="True"/>
+                    <controls:DataGridTextColumn Width="Auto" Binding="{Binding ProductID}" Header="Mã SP" IsReadOnly="True" Visibility="Collapsed"/>
 
                     <!--Editable-->
                     <controls:DataGridTextColumn Width="Auto" Binding="{Binding ProductName, Mode=TwoWay}" Header="Tên SP" />

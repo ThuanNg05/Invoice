@@ -6,16 +6,4 @@ public class ProductSelectionNavigationParameter
     {
         get; set;
     }    
-    public Action<TempInvoice> OnProductAdded
-    {
-        get; set;
-    }
-    public Func<long, bool> CheckProductExists
-    {
-        get; set;
-    }
-    public Action<long, int> OnIncreaseAmount
-    {
-        get; set;
-    }
 }

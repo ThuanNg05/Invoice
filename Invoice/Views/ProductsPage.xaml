@@ -36,19 +36,19 @@
             <StackPanel Grid.Column="0" Margin="0,0,20,0">
                 <StackPanel Orientation="Vertical" Margin="0,0,0,10">
                     <StackPanel Orientation="Horizontal">
-                        <StackPanel Margin="0,0,10,10" Visibility="Collapsed">
-                            <TextBlock>
-                                <Run Text="(*) " Foreground="Red"/>
-                                <Run Text="Mã SP:"/>
-                            </TextBlock>
-                            <TextBox x:Name="txtProductID" Width="140" HorizontalAlignment="Left"/>
-                        </StackPanel>
-                        <StackPanel>
+                        <StackPanel Margin="0,0,10,10">
                             <TextBlock>
                                 <Run Text="(*) " Foreground="Red"/>
                                 <Run Text="Tên SP:"/>
                             </TextBlock>
                             <TextBox x:Name="txtName" Width="300" HorizontalAlignment="Left"/>
+                        </StackPanel>
+                        <StackPanel>
+                            <TextBlock>
+                                <Run Text="(*) " Foreground="Red"/>
+                                <Run Text="Tiền công :"/>
+                            </TextBlock>
+                            <TextBox x:Name="txtWage" Width="140" HorizontalAlignment="Left" BeforeTextChanging="inputDecimal" TextChanged="computeBasePrice"/>
                         </StackPanel>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,0,0,10">
@@ -69,15 +69,6 @@
                                 <Run Text="Giá Sỉ :"/>
                             </TextBlock>
                             <TextBox x:Name="txtPriceEven" Width="140" TextAlignment="Right" />
-                        </StackPanel>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <StackPanel Orientation="Vertical" Margin="0,0,10,0">
-                            <TextBlock>
-                                <Run Text="(*) " Foreground="Red"/>
-                                <Run Text="Tiền công :"/>
-                            </TextBlock>
-                            <TextBox x:Name="txtWage" Width="220" HorizontalAlignment="Left" BeforeTextChanging="inputDecimal" TextChanged="computeBasePrice"/>
                         </StackPanel>
                     </StackPanel>
                 </StackPanel>
@@ -166,11 +157,6 @@
                         <TextBox Margin="0,0,0,0" TextAlignment="Right" Grid.Row="6" Grid.Column="2" x:Name="txtLieng" Header="Liễng : "/>
                     </Grid>
                 </Grid>
-                <StackPanel>
-                    <TextBlock Margin="0,20,0,0">                                
-                        <Run Text="* Phải có ít nhất 3 thành phần khác 0"/>
-                    </TextBlock>
-                </StackPanel>
             </StackPanel>
 
             <StackPanel

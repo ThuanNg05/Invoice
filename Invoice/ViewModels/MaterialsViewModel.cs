@@ -14,7 +14,8 @@ public partial class MaterialsViewModel : ObservableRecipient, INavigationAware
     [ObservableProperty]
     private bool isLoading;
 
-    public ObservableCollection<Materials> Materials { get; } = new();
+    public List<Materials> AllMaterials = new();
+    public ObservableCollection<Materials> MaterialsCollection { get; } = new();
 
     public MaterialsViewModel(IDataService dataService)
     {
@@ -39,11 +40,12 @@ public partial class MaterialsViewModel : ObservableRecipient, INavigationAware
     private async Task LoadData()
     {
         IsLoading = true;
-        Materials.Clear();
+        MaterialsCollection.Clear();
         var data = await _dataService.GetMaterials(forceRefresh: false);
+        AllMaterials = data.ToList();
         foreach (var item in data)
         {
-            Materials.Add(item);
+            MaterialsCollection.Add(item);
         }
         IsLoading = false;
     }
@@ -54,7 +56,7 @@ public partial class MaterialsViewModel : ObservableRecipient, INavigationAware
 
     public async Task AddMaterialAsync(Materials material)
     {
-        if (Materials.Any(m => m.Name.Equals(material.Name, StringComparison.OrdinalIgnoreCase)))
+        if (MaterialsCollection.Any(m => m.Name.Equals(material.Name, StringComparison.OrdinalIgnoreCase)))
         {
             Debug.WriteLine("Lỗi: Tên vật tư đã tồn tại!");
             await App.ShowMessageAsync("Lỗi", "Tên vật tư đã tồn tại!");
@@ -64,7 +66,8 @@ public partial class MaterialsViewModel : ObservableRecipient, INavigationAware
         try
         {
             await _dataService.AddMaterial(material);
-            Materials.Add(material);
+            MaterialsCollection.Add(material);
+            AllMaterials.Add(material);
             await App.ShowMessageAsync("Thông báo", "Vật tư đã được thêm thành công.");
         }
         catch (Exception ex)
@@ -84,7 +87,9 @@ public partial class MaterialsViewModel : ObservableRecipient, INavigationAware
         try
         {
             await _dataService.DeleteMaterial(material.ProductID);
-            Materials.Remove(material);
+            MaterialsCollection.Remove(material);
+            var itemAll = AllMaterials.FirstOrDefault(m => m.ProductID == material.ProductID);
+            if (itemAll != null) AllMaterials.Remove(itemAll);
             await App.ShowMessageAsync("Thông báo", "Vật tư đã được xóa thành công.");
         }
         catch (Exception ex)
@@ -100,7 +105,7 @@ public partial class MaterialsViewModel : ObservableRecipient, INavigationAware
 
     public async Task UpdateMaterialAsync(Materials material)
     {
-        if (Materials.Any(m => m.Name.Equals(material.Name, StringComparison.OrdinalIgnoreCase) && m.ProductID != material.ProductID))
+        if (MaterialsCollection.Any(m => m.Name.Equals(material.Name, StringComparison.OrdinalIgnoreCase) && m.ProductID != material.ProductID))
         {
             Debug.WriteLine("Lỗi: Tên vật tư đã tồn tại!");
             await App.ShowMessageAsync("Lỗi", "Tên vật tư đã tồn tại!");
@@ -111,15 +116,25 @@ public partial class MaterialsViewModel : ObservableRecipient, INavigationAware
         {
             await _dataService.UpdateMaterial(material);
 
-            var itemToUpdate = Materials.FirstOrDefault(c => c.ProductID == material.ProductID);
+            var itemToUpdate = MaterialsCollection.FirstOrDefault(c => c.ProductID == material.ProductID);
 
             if (itemToUpdate != null)
             {
-                var index = Materials.IndexOf(itemToUpdate);
+                var index = MaterialsCollection.IndexOf(itemToUpdate);
                 if (index != -1)
                 {
-                    Materials.RemoveAt(index);
-                    Materials.Insert(index, material);
+                    MaterialsCollection.RemoveAt(index);
+                    MaterialsCollection.Insert(index, material);
+                }
+            }
+
+            var itemInAll = AllMaterials.FirstOrDefault(c => c.ProductID == material.ProductID);
+            if (itemInAll != null)
+            {
+                var indexAll = AllMaterials.IndexOf(itemInAll);
+                if (indexAll != -1)
+                {
+                    AllMaterials[indexAll] = material;
                 }
             }
             await App.ShowMessageAsync("Thông báo", "Vật tư đã được cập nhật thành công.");

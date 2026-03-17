@@ -96,15 +96,7 @@ public sealed partial class DetailPlanksPage : Page
 
     // Helper function        
     private bool IsValidSizeFormat(string input)
-    {
-        // Cập nhật Regex:
-        // ^            : Bắt đầu chuỗi
-        // [1-9]        : Số đầu tiên phải là 1-9 (Chặn số 0)
-        // [0-9]{0,2}   : Theo sau là tối đa 2 chữ số nữa (Tổng cộng tối đa 3 số: 1 -> 999)
-        // x            : Dấu x ở giữa
-        // [1-9][0-9]{0,2} : Logic tương tự cho số thứ 2
-        // $            : Kết thúc chuỗi
-
+    {        
         string pattern = @"^[1-9][0-9]{0,2}x[1-9][0-9]{0,2}$";
 
         return Regex.IsMatch(input, pattern);

@@ -60,6 +60,30 @@ public static class StringHelper
     /// <summary>
     /// Converts a number to Vietnamese currency text (e.g., 10500 -> "Mười nghìn năm trăm đồng")
     /// </summary>
+    public static double ParseDouble(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return 0;
+        return double.TryParse(text.Trim().Replace(",", ""), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double val) ? val : 0;
+    }
+
+    public static void ClearInputs(Microsoft.UI.Xaml.DependencyObject parent)
+    {
+        int count = Microsoft.UI.Xaml.Media.VisualTreeHelper.GetChildrenCount(parent);
+
+        for (int i = 0; i < count; i++)
+        {
+            var child = Microsoft.UI.Xaml.Media.VisualTreeHelper.GetChild(parent, i);
+
+            if (child is Microsoft.UI.Xaml.Controls.TextBox textBox &&
+                !string.IsNullOrEmpty(textBox.Name) &&
+                textBox.Name.StartsWith("txt"))
+            {
+                textBox.Text = string.Empty;
+            }
+            ClearInputs(child);
+        }
+    }
+
     public static string NumberToTextVN(double inputNumber)
     {
         long number = (long)inputNumber; // Convert to long to handle currency as integer

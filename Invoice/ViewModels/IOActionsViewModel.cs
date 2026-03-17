@@ -108,7 +108,7 @@ public partial class IOActionsViewModel : ObservableRecipient, INavigationAware
         else
         {
             var filtered = _allItems.Where(x =>
-                (x.ProductID != null && x.ProductID.Contains(keyword, StringComparison.OrdinalIgnoreCase)) ||
+                x.ProductID.ToString().Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
                 (x.Name != null && x.Name.Contains(keyword, StringComparison.OrdinalIgnoreCase))
             );
 
@@ -116,7 +116,7 @@ public partial class IOActionsViewModel : ObservableRecipient, INavigationAware
         }
     }
 
-    public int GetCurrentInventory(string productId)
+    public int GetCurrentInventory(long productId)
     {
         var item = _allItems.FirstOrDefault(x => x.ProductID == productId);
         return item != null ? item.Inventory : 0;

@@ -1,7 +1,4 @@
-﻿using Invoice;
-using Invoice.Core.Models;
-using Invoice.ViewModels;
-using Invoice.Core.Models;
+﻿using Invoice.Core.Models;
 using Invoice.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -43,6 +40,7 @@ public sealed partial class DetailPricePage : Page
         };
 
         await ViewModel.UpdateDetailPriceAsync(tmpPrice);
+
     }
 
 

@@ -22,11 +22,12 @@ public sealed partial class ProductsPage : Page
     {
         ViewModel = App.GetService<ProductsViewModel>();
         InitializeComponent();
+        InitDebounce(); // <--- Add this call
         Loaded += ProductsPage_Loaded;
         btnAdd.IsEnabled = true;
         btnUpdate.IsEnabled = false;
         btnDelete.IsEnabled = false;
-        txtProductID.IsReadOnly = false;
+        //txtProductID.IsReadOnly = false;
         txtSearch.Focus(FocusState.Programmatic);
     }
 
@@ -50,27 +51,13 @@ public sealed partial class ProductsPage : Page
         _currentPriceConfig = prices.FirstOrDefault();
     }
 
-    private void ClearInputs(DependencyObject parent)
+    private void ClearInputs()
     {
-        int count = VisualTreeHelper.GetChildrenCount(parent);
-
-        for (int i = 0; i < count; i++)
-        {
-            var child = VisualTreeHelper.GetChild(parent, i);
-
-            if (child is TextBox textBox &&
-                !string.IsNullOrEmpty(textBox.Name) &&
-                textBox.Name.StartsWith("txt"))
-            {
-                textBox.Text = string.Empty;
-            }
-            ClearInputs(child);
-        }
+        StringHelper.ClearInputs(this);
         btnAdd.IsEnabled = true;
         btnUpdate.IsEnabled = false;
         btnDelete.IsEnabled = false;
-        txtProductID.IsReadOnly = false;
-        txtProductID.Focus(FocusState.Programmatic);
+        txtName.Focus(FocusState.Programmatic);
     }
 
     private void RefreshData()
@@ -98,48 +85,37 @@ public sealed partial class ProductsPage : Page
         }
     }
 
-    private double ParseDouble(string text)
-    {
-        if (string.IsNullOrWhiteSpace(text)) return 0;
-        return double.TryParse(text.Trim(), System.Globalization.NumberStyles.Any, null, out double val) ? val : 0;
-    }
-
     private Products CreateProductFromInputs()
     {
         var product = new Products
         {
             Name = StringHelper.CleanStringSimple(txtName.Text.Trim()),
-            BasePrice = ParseDouble(txtBasePrice.Text),
-            PriceOdd = (int)ParseDouble(txtPriceOdd.Text),
-            PriceEven = (int)ParseDouble(txtPriceEven.Text),
-            PrWage = ParseDouble(txtWage.Text),
-            sKieng = ParseDouble(txtKieng.Text),
-            sNhL = ParseDouble(txtNhL.Text),
-            sNhN = ParseDouble(txtNhN.Text),
-            sG_l = ParseDouble(txtG_l.Text),
-            sG_n = ParseDouble(txtG_n.Text),
-            sDl = ParseDouble(txtDl.Text),
-            sHau = ParseDouble(txtHau.Text),
-            sLua = ParseDouble(txtLua.Text),
-            sKt = ParseDouble(txtKt.Text),
-            sOc = ParseDouble(txtOc.Text),
-            sNhom = ParseDouble(txtNhom.Text),
-            s7f = ParseDouble(txt7f.Text),
-            s2D = ParseDouble(txt2D.Text),
-            sDecal = ParseDouble(txtDecal.Text),
-            mdfOdd = ParseDouble(txtMDFodd.Text),
-            mdfEven = ParseDouble(txtMDFeven.Text),
-            hpOdd = ParseDouble(txtHPodd.Text),
-            hpEven = ParseDouble(txtHPeven.Text),
-            hoanh = ParseDouble(txtHoanh.Text),
-            lieng = ParseDouble(txtLieng.Text),
-            tg = ParseDouble(txtTG.Text)
-        };
-
-        if (long.TryParse(txtProductID.Text, out long id) && id > 0)
-        {
-            product.ProductID = id;
-        }
+            BasePrice = StringHelper.ParseDouble(txtBasePrice.Text),
+            PriceOdd = (int)StringHelper.ParseDouble(txtPriceOdd.Text),
+            PriceEven = (int)StringHelper.ParseDouble(txtPriceEven.Text),
+            PrWage = StringHelper.ParseDouble(txtWage.Text),
+            sKieng = StringHelper.ParseDouble(txtKieng.Text),
+            sNhL = StringHelper.ParseDouble(txtNhL.Text),
+            sNhN = StringHelper.ParseDouble(txtNhN.Text),
+            sG_l = StringHelper.ParseDouble(txtG_l.Text),
+            sG_n = StringHelper.ParseDouble(txtG_n.Text),
+            sDl = StringHelper.ParseDouble(txtDl.Text),
+            sHau = StringHelper.ParseDouble(txtHau.Text),
+            sLua = StringHelper.ParseDouble(txtLua.Text),
+            sKt = StringHelper.ParseDouble(txtKt.Text),
+            sOc = StringHelper.ParseDouble(txtOc.Text),
+            sNhom = StringHelper.ParseDouble(txtNhom.Text),
+            s7f = StringHelper.ParseDouble(txt7f.Text),
+            s2D = StringHelper.ParseDouble(txt2D.Text),
+            sDecal = StringHelper.ParseDouble(txtDecal.Text),
+            mdfOdd = StringHelper.ParseDouble(txtMDFodd.Text),
+            mdfEven = StringHelper.ParseDouble(txtMDFeven.Text),
+            hpOdd = StringHelper.ParseDouble(txtHPodd.Text),
+            hpEven = StringHelper.ParseDouble(txtHPeven.Text),
+            hoanh = StringHelper.ParseDouble(txtHoanh.Text),
+            lieng = StringHelper.ParseDouble(txtLieng.Text),
+            tg = StringHelper.ParseDouble(txtTG.Text)
+        };        
 
         return product;
     }
@@ -182,7 +158,7 @@ public sealed partial class ProductsPage : Page
         {
             try
             {
-                await ViewModel.DeleteProductAsync(selected.ProductID.ToString());
+                await ViewModel.DeleteProductAsync(selected.ProductID);
                 await App.ShowMessageAsync("Thông báo", "Xóa thành công!");
                 BtnReset_Click(null, null);
             }
@@ -195,22 +171,20 @@ public sealed partial class ProductsPage : Page
 
     private void BtnReset_Click(object sender, RoutedEventArgs e)
     {
-        ClearInputs(this);
+        ClearInputs();
         RefreshData();
     }
 
     private async void ProductGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (ProductGrid.SelectedItem is not ProductSummary summary) return;
-        await ViewModel.LoadProductForEditingAsync(summary.ProductID.ToString());
+        await ViewModel.LoadProductForEditingAsync(summary.ProductID);
         var selected = ViewModel.SelectedProductFull;
 
         if (selected == null) return;
         btnAdd.IsEnabled = false;
         btnDelete.IsEnabled = true;
-        btnUpdate.IsEnabled = true;
-        txtProductID.Text = selected.ProductID.ToString();
-        txtProductID.IsReadOnly = true;
+        btnUpdate.IsEnabled = true;        
         txtName.Text = selected.Name;
         txtBasePrice.Text = selected.BasePrice.ToString();
         txtPriceOdd.Text = selected.PriceOdd.ToString();
@@ -280,28 +254,7 @@ public sealed partial class ProductsPage : Page
             await App.ShowMessageAsync("Validation Error", "Giá gốc, sỉ và lẻ không được bỏ trống.");
             txtBasePrice.Focus(FocusState.Programmatic);
             return false;
-        }
-
-        int sCount = 0;
-
-        var sControls = new List<TextBox> {
-            txtKieng, txtNhL, txtNhN, txtG_l, txtG_n, txtDl, txtHau,
-            txtLua, txtKt, txtOc, txtNhom, txt7f, txt2D, txtDecal
-        };
-
-        foreach (var ctrl in sControls)
-        {
-            if (double.TryParse(ctrl.Text, out double val) && val > 0)
-            {
-                sCount++;
-            }
-        }
-
-        if (sCount < 3)
-        {
-            await App.ShowMessageAsync("Validation Error", $"Bạn mới nhập {sCount} thành phần. Cần ít nhất 3 thành phần khác 0.");
-            return false;
-        }
+        }        
 
         return true;
     }
@@ -312,23 +265,23 @@ public sealed partial class ProductsPage : Page
 
         try
         {
-            double wage = ParseDouble(txtWage.Text);
+            double wage = StringHelper.ParseDouble(txtWage.Text);
 
             double total = wage +
-                (ParseDouble(txtKieng.Text) * _currentPriceConfig.PrKieng) +
-                (ParseDouble(txtNhL.Text) * _currentPriceConfig.PrNhL) +
-                (ParseDouble(txtNhN.Text) * _currentPriceConfig.PrNhN) +
-                (ParseDouble(txtG_l.Text) * _currentPriceConfig.PrG_l) +
-                (ParseDouble(txtG_n.Text) * _currentPriceConfig.PrG_n) +
-                (ParseDouble(txtDl.Text) * _currentPriceConfig.PrDl) +
-                (ParseDouble(txtHau.Text) * _currentPriceConfig.PrHau) +
-                (ParseDouble(txtLua.Text) * _currentPriceConfig.PrLua) +
-                (ParseDouble(txtKt.Text) * _currentPriceConfig.PrKt) +
-                (ParseDouble(txtOc.Text) * _currentPriceConfig.PrOc) +
-                (ParseDouble(txtNhom.Text) * _currentPriceConfig.PrNhom) +
-                (ParseDouble(txt7f.Text) * _currentPriceConfig.Pr7f) +
-                (ParseDouble(txt2D.Text) * _currentPriceConfig.Pr2D) +
-                (ParseDouble(txtDecal.Text) * _currentPriceConfig.PrDecal);
+                (StringHelper.ParseDouble(txtKieng.Text) * _currentPriceConfig.PrKieng) +
+                (StringHelper.ParseDouble(txtNhL.Text) * _currentPriceConfig.PrNhL) +
+                (StringHelper.ParseDouble(txtNhN.Text) * _currentPriceConfig.PrNhN) +
+                (StringHelper.ParseDouble(txtG_l.Text) * _currentPriceConfig.PrG_l) +
+                (StringHelper.ParseDouble(txtG_n.Text) * _currentPriceConfig.PrG_n) +
+                (StringHelper.ParseDouble(txtDl.Text) * _currentPriceConfig.PrDl) +
+                (StringHelper.ParseDouble(txtHau.Text) * _currentPriceConfig.PrHau) +
+                (StringHelper.ParseDouble(txtLua.Text) * _currentPriceConfig.PrLua) +
+                (StringHelper.ParseDouble(txtKt.Text) * _currentPriceConfig.PrKt) +
+                (StringHelper.ParseDouble(txtOc.Text) * _currentPriceConfig.PrOc) +
+                (StringHelper.ParseDouble(txtNhom.Text) * _currentPriceConfig.PrNhom) +
+                (StringHelper.ParseDouble(txt7f.Text) * _currentPriceConfig.Pr7f) +
+                (StringHelper.ParseDouble(txt2D.Text) * _currentPriceConfig.Pr2D) +
+                (StringHelper.ParseDouble(txtDecal.Text) * _currentPriceConfig.PrDecal);
 
             txtBasePrice.Text = total.ToString("N0");
         }

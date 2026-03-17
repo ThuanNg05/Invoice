@@ -1,4 +1,6 @@
-﻿using CommunityToolkit.WinUI.UI.Controls;
+﻿using CommunityToolkit.Mvvm.Messaging;
+using CommunityToolkit.WinUI.UI.Controls;
+using Invoice.Core.Contracts;
 using Invoice.Core.Models;
 using Invoice.Helpers;
 using Invoice.ViewModels;
@@ -26,6 +28,12 @@ public sealed partial class ProductSelectionPage : Page
 
     private async void BtnAdd_Click(object sender, RoutedEventArgs e)
     {
+        if (ProductGrid.SelectedItem is not ProductSummary summary)
+        {
+            await App.ShowMessageAsync("Lỗi", "Vui lòng chọn một sản phẩm từ danh sách.");
+            return;
+        }
+
         if (string.IsNullOrEmpty(txtName.Text))
         {
             await App.ShowMessageAsync("Lỗi xác thực", "Tên hàng hoá không được bỏ trống.");
@@ -33,7 +41,7 @@ public sealed partial class ProductSelectionPage : Page
         }
 
         string cleanedPriceText = txtBasePrice.Text.Replace(",", "").Replace(".", "");
-        if (!double.TryParse(cleanedPriceText, out double sellPrice) || cleanedPriceText.Equals("0"))
+        if (!int.TryParse(cleanedPriceText, out int sellPrice) || cleanedPriceText.Equals("0"))
         {
             await App.ShowMessageAsync("Lỗi xác thực", "Đơn giá không hợp lệ.");
             txtBasePrice.Focus(FocusState.Programmatic);
@@ -44,9 +52,9 @@ public sealed partial class ProductSelectionPage : Page
         int amount = 1;
         if (!string.IsNullOrEmpty(txtAmount.Text))
         {
-            if (!int.TryParse(txtAmount.Text, out amount) || amount > _currentInventory)
+            if (!int.TryParse(txtAmount.Text, out amount) || amount <= 0)
             {
-                await App.ShowMessageAsync("Lỗi xác thực", "Số lượng phải nhỏ hơn tồn kho.");
+                await App.ShowMessageAsync("Lỗi xác thực", "Số lượng không hợp lệ.");
                 return;
             }
         }
@@ -57,49 +65,17 @@ public sealed partial class ProductSelectionPage : Page
             return;
         }
 
-        var mainVM = App.GetService<CreateInvoiceViewModel>();
-        string currentID = txtProductID.Text;
+        var fullProduct = await ViewModel.GetProductDetailAsync(summary.ProductID);
+        if (fullProduct == null) return;
 
-        if (mainVM.ProductExists(currentID))
+        // Send message instead of manual VM manipulation
+        WeakReferenceMessenger.Default.Send(new ProductsSelectedMessage
         {
-            ContentDialog dialog = new()
-            {
-                Title = "Xác nhận",
-                Content = $"Sản phẩm '{txtName.Text}' đã có trong hóa đơn.\nBạn có muốn cộng thêm số lượng không?",
-                PrimaryButtonText = "Có",
-                CloseButtonText = "Không",
-                DefaultButton = ContentDialogButton.Primary,
-                XamlRoot = this.Content.XamlRoot
-            };
-
-            var result = await dialog.ShowAsync();
-
-            if (result == ContentDialogResult.Primary)
-            {
-                App.MainWindow.DispatcherQueue.TryEnqueue(() =>
-                {
-                    mainVM.IncreaseProductAmount(currentID, amount);
-                });
-
-                ClearSelection();
-                txtSearch.Focus(FocusState.Programmatic);
-            }
-            return;
-        }
-
-        var newItem = new TempInvoice
-        {
-            MaxStock = _currentInventory,
-            ProductID = txtProductID.Text ?? string.Empty,
-            ProductName = StringHelper.CleanStringSimple(txtName.Text.Trim()),
-            SellPrice = (int)sellPrice,
+            Product = fullProduct,
             Amount = amount,
-            Note = txtNote.Text?.Trim() ?? string.Empty
-        };
-
-        App.MainWindow.DispatcherQueue.TryEnqueue(() =>
-        {
-            mainVM.AddInvoiceItem(newItem);
+            FinalPrice = sellPrice,
+            Note = txtNote.Text?.Trim() ?? string.Empty,
+            IsMerge = true // Default to merging if product exists
         });
 
         ClearSelection();
@@ -110,31 +86,23 @@ public sealed partial class ProductSelectionPage : Page
         ClearSelection();
         txtSearch_TextChanged(txtSearch, null);
     }
+private void ClearSelection()
+{
+    StringHelper.ClearInputs(this);
+    ProductGrid.SelectedIndex = -1;
+    txtTotal.Text = "0";
+    txtName.IsReadOnly = false;
+    _currentInventory = 0;
 
-    private void ClearSelection()
-    {
-        ProductGrid.SelectedIndex = -1;
-        txtProductID.Text = string.Empty;
-        txtName.Text = string.Empty;
-        txtBasePrice.Text = string.Empty;
-        txtAmount.Text = string.Empty;
-        txtSearch.Text = string.Empty;
-        txtNote.Text = string.Empty;
-        txtTotal.Text = "0";
-        txtName.IsReadOnly = false;
-        _currentInventory = 0;
-
-        btnAdd.IsEnabled = false;
-        txtSearch.Focus(FocusState.Programmatic);
-    }
+    btnAdd.IsEnabled = false;
+    txtSearch.Focus(FocusState.Programmatic);
+}
 
     private async void ProductGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (ProductGrid.SelectedItem is ProductSummary summary)
-        {
-            txtProductID.Text = summary.ProductID;
+        {            
             txtName.Text = summary.Name;
-
             btnAdd.IsEnabled = false;
 
             var fullProduct = await ViewModel.GetProductDetailAsync(summary.ProductID);

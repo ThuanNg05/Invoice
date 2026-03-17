@@ -63,5 +63,8 @@ public class Products : BaseModel
     [Column("lieng")]
     public double lieng { get; set;}    
     [Column("tg")]
-    public double tg { get; set;}           
-}
+    public double tg { get; set; }           
+
+    [Column("size_id")]
+    public string SizeID { get; set; }
+    }

@@ -119,14 +119,14 @@ public sealed partial class IOPlanksPage : Page
         }
 
         string typePlank = selectedItem.Content.ToString();
-        string materialID = "";
+        long materialID;
         if (typePlank == "HP")
         {
-            materialID = "VHP";
+            materialID = 10012;
         }
         else if (typePlank == "MDF")
         {
-            materialID = "VMDF";
+            materialID = 10013;
         }
         else
         {

@@ -28,11 +28,6 @@
                 <StackPanel Orientation="Vertical" Spacing="10">
                     <TextBlock>
                         <Run Text="(*) " Foreground="Red"/>
-                        <Run Text="Mã SP:"/>
-                    </TextBlock>
-                    <TextBox x:Name="txtProductID" Width="140" HorizontalAlignment="Left" IsReadOnly="True"/>
-                    <TextBlock>
-                        <Run Text="(*) " Foreground="Red"/>
                         <Run Text="Tên SP:"/>
                     </TextBlock>
                     <TextBox x:Name="txtName" Width="300" HorizontalAlignment="Left"/>
@@ -109,7 +104,7 @@
                         <SolidColorBrush x:Key="DataGridColumnHeaderBackgroundColor" Color="Transparent" />
                     </controls:DataGrid.Resources>
                     <controls:DataGrid.Columns>
-                        <controls:DataGridTextColumn Binding="{Binding ProductID}" Header="Mã SP" />
+                        <controls:DataGridTextColumn Binding="{Binding ProductID}" Header="Mã SP" Visibility="Collapsed"/>
                         <controls:DataGridTextColumn Width="200" Binding="{Binding Name}" Header="Tên SP" />
                         <controls:DataGridTextColumn Binding="{Binding BasePrice}" Header="Giá Gốc">
                             <controls:DataGridTextColumn.ElementStyle>

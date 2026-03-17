@@ -19,7 +19,7 @@ public interface IDataService
 
     Task<IEnumerable<Materials>> GetMaterials(bool forceRefresh = false);
     Task AddMaterial(Materials material);
-    Task DeleteMaterial(string materialId);
+    Task DeleteMaterial(long productId);
     Task UpdateMaterial(Materials material);
 
 
@@ -46,10 +46,10 @@ public interface IDataService
     Task<IEnumerable<Invoices>> GetAllInvoices();
     Task<IEnumerable<History>> GetInvoiceHistory(DateTime? fromDate, DateTime? toDate, long? customerID);
     Task<IEnumerable<ProductSummary>> GetProducts(int skip, int take, string query);
-    Task<Products?> GetProductById(string productId);
+    Task<Products?> GetProductById(long productId);
     Task AddProduct(Products product);
     Task UpdateProduct(Products product);
-    Task DeleteProduct(string productId);
+    Task DeleteProduct(long productId);
     Task<IEnumerable<Products>> GetAllProducts();
     Task SubscribeToProductsRealtime(Action<string, Products> onDataChanged);
 
@@ -59,11 +59,13 @@ public interface IDataService
     Task<int> GetInvoiceCountByDate(DateTime date);
     Task AddInvoice(Invoices invoice, IEnumerable<InvoiceDetail> details, IEnumerable<WarehouseTransaction> transactions);
     Task DeleteInvoiceAndRevertInventory(string invoiceId);
-    Task UpdateProductInventory(string productId, int amountChange);
+    Task UpdateProductInventory(long productId, int amountChange);
 
 
 
     Task<IEnumerable<WarehouseTransaction>> GetWarehouseTransactions();
     Task AddWarehouseTransaction(WarehouseTransaction transaction);
+    Task ProcessInventoryTransaction(Frames frame, int amount, long? sourcePlankId = null);
+    Task<bool> ValidateMaterialStock(long productId, int requiredAmount);
 
 }
