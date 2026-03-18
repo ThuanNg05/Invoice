@@ -5,7 +5,6 @@ using Invoice.Helpers;
 using Invoice.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
 
 namespace Invoice.Views;
 
@@ -22,12 +21,11 @@ public sealed partial class ProductsPage : Page
     {
         ViewModel = App.GetService<ProductsViewModel>();
         InitializeComponent();
-        InitDebounce(); // <--- Add this call
+        InitDebounce();
         Loaded += ProductsPage_Loaded;
         btnAdd.IsEnabled = true;
         btnUpdate.IsEnabled = false;
-        btnDelete.IsEnabled = false;
-        //txtProductID.IsReadOnly = false;
+        btnDelete.IsEnabled = false;        
         txtSearch.Focus(FocusState.Programmatic);
     }
 
@@ -57,39 +55,34 @@ public sealed partial class ProductsPage : Page
         btnAdd.IsEnabled = true;
         btnUpdate.IsEnabled = false;
         btnDelete.IsEnabled = false;
+        ProductGrid.SelectedItem = -1;
         txtName.Focus(FocusState.Programmatic);
-    }
-
-    private void RefreshData()
-    {
-        ViewModel.Search(txtSearch.Text);
-    }
+    }    
 
     private async void BtnNew_Click(object sender, RoutedEventArgs e)
     {
-        if (await ValidateProductInputs() == false)
-        {
-            return;
-        }
+        if (await ValidateProductInputs() == false) return;
         var product = CreateProductFromInputs();
 
         try
         {
             await ViewModel.AddProductAsync(product);
-            await App.ShowMessageAsync("Thông báo", "Thêm sản phẩm thành công!");
-            BtnReset_Click(null, null);
+            await App.ShowSuccessAsync("Product_Add_Success".GetLocalized());
+            ClearInputs();
         }
         catch (Exception ex)
         {
-            await App.ShowMessageAsync("Lỗi", $"Thêm thất bại: {ex.Message}");
+            await App.ShowErrorAsync("Thêm sản phẩm thất bại", ex);
         }
     }
 
     private Products CreateProductFromInputs()
     {
+        string sizeIdInput = txtSizeID.Text.Trim();
         var product = new Products
         {
             Name = StringHelper.CleanStringSimple(txtName.Text.Trim()),
+            SizeID = string.IsNullOrEmpty(sizeIdInput) ? null : sizeIdInput,
             BasePrice = StringHelper.ParseDouble(txtBasePrice.Text),
             PriceOdd = (int)StringHelper.ParseDouble(txtPriceOdd.Text),
             PriceEven = (int)StringHelper.ParseDouble(txtPriceEven.Text),
@@ -126,53 +119,45 @@ public sealed partial class ProductsPage : Page
         if (await ValidateProductInputs(isUpdate: true) == false) return;
 
         var product = CreateProductFromInputs();
-        product.ProductID = selectedSummary.ProductID; // Ensure ID is preserved for update
+        product.ProductID = selectedSummary.ProductID;
 
         try
         {
             await ViewModel.UpdateProductAsync(product);
-            await App.ShowMessageAsync("Thông báo", "Cập nhật thành công!");
-            BtnReset_Click(null, null);
+            await App.ShowSuccessAsync("Cập nhật thành công!");
+            ClearInputs();
         }
         catch (Exception ex)
         {
-            await App.ShowMessageAsync("Lỗi", $"Cập nhật thất bại: {ex.Message}");
+            await App.ShowErrorAsync("Cập nhật thất bại", ex);
         }
     }
 
     private async void BtnDelete_Click(object sender, RoutedEventArgs e)
     {
         if (ProductGrid.SelectedItem is not ProductSummary selected) return;
-        ContentDialog deleteDialog = new()
-        {
-            Title = "Xác nhận xóa",
-            Content = $"Bạn có chắc muốn xóa sản phẩm {selected.Name} (ID: {selected.ProductID})?",
-            PrimaryButtonText = "Xóa",
-            CloseButtonText = "Hủy",
-            DefaultButton = ContentDialogButton.Close,
-            XamlRoot = this.Content.XamlRoot
-        };
+        
+        bool isConfirmed = await App.ShowConfirmAsync("Xác nhận xóa", 
+            $"Bạn có chắc muốn xóa sản phẩm {selected.Name} (ID: {selected.ProductID})?", "Xóa");
 
-        var result = await deleteDialog.ShowAsync();
-        if (result == ContentDialogResult.Primary)
+        if (isConfirmed)
         {
             try
             {
                 await ViewModel.DeleteProductAsync(selected.ProductID);
-                await App.ShowMessageAsync("Thông báo", "Xóa thành công!");
-                BtnReset_Click(null, null);
+                await App.ShowSuccessAsync("Xóa thành công!");
+                ClearInputs();
             }
             catch (Exception ex)
             {
-                await App.ShowMessageAsync("Lỗi", $"Xóa thất bại: {ex.Message}");
+                await App.ShowErrorAsync("Xóa thất bại", ex);
             }
         }
     }
 
     private void BtnReset_Click(object sender, RoutedEventArgs e)
     {
-        ClearInputs();
-        RefreshData();
+        ClearInputs();        
     }
 
     private async void ProductGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -186,6 +171,7 @@ public sealed partial class ProductsPage : Page
         btnDelete.IsEnabled = true;
         btnUpdate.IsEnabled = true;        
         txtName.Text = selected.Name;
+        txtSizeID.Text = selected.SizeID ?? string.Empty;
         txtBasePrice.Text = selected.BasePrice.ToString();
         txtPriceOdd.Text = selected.PriceOdd.ToString();
         txtPriceEven.Text = selected.PriceEven.ToString();
@@ -228,30 +214,37 @@ public sealed partial class ProductsPage : Page
 
     private async Task<bool> ValidateProductInputs(bool isUpdate = false)
     {
-        if (!isUpdate && string.IsNullOrWhiteSpace(txtName.Text))
+        if (string.IsNullOrWhiteSpace(txtName.Text))
         {
-            await App.ShowMessageAsync("Validation Error", "Tên sản phẩm không được bỏ trống.");
+            await App.ShowMessageAsync("Common_Error".GetLocalized(), "Product_Validation_NameEmpty".GetLocalized());
             txtName.Focus(FocusState.Programmatic);
             return false;
         }
-
-        if (string.IsNullOrWhiteSpace(txtName.Text))
+        
+        string sizeId = txtSizeID.Text.Trim();
+        if (!string.IsNullOrEmpty(sizeId))
         {
-            await App.ShowMessageAsync("Validation Error", "Tên sản phẩm không được bỏ trống.");
-            txtName.Focus(FocusState.Programmatic);
-            return false;
+            var dataService = App.GetService<IDataService>();
+            var planks = await dataService.GetPlanks();
+            if (!planks.Any(p => p.sizeID == sizeId))
+            {
+                string errorMsg = string.Format("Product_Validation_SizeNotFound".GetLocalized(), sizeId);
+                await App.ShowMessageAsync("Common_Error".GetLocalized(), errorMsg);
+                txtSizeID.Focus(FocusState.Programmatic);
+                return false;
+            }
         }
 
         if (!double.TryParse(txtWage.Text, out double wage) || wage <= 0)
         {
-            await App.ShowMessageAsync("Validation Error", "Tiền công phải lớn hơn 0.");
+            await App.ShowMessageAsync("Common_Error".GetLocalized(), "Product_Validation_WageInvalid".GetLocalized());
             txtWage.Focus(FocusState.Programmatic);
             return false;
         }
 
         if (string.IsNullOrWhiteSpace(txtBasePrice.Text) || string.IsNullOrWhiteSpace(txtPriceOdd.Text) || string.IsNullOrWhiteSpace(txtPriceEven.Text))
         {
-            await App.ShowMessageAsync("Validation Error", "Giá gốc, sỉ và lẻ không được bỏ trống.");
+            await App.ShowMessageAsync("Common_Error".GetLocalized(), "Product_Validation_PricesEmpty".GetLocalized());
             txtBasePrice.Focus(FocusState.Programmatic);
             return false;
         }        

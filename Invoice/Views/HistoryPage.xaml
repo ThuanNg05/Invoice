@@ -101,12 +101,13 @@
                            CanUserReorderColumns="False"
                            CanUserSortColumns="False"
                            AutoGenerateColumns="False"                           
-                           IsReadOnly="True"
+                           IsReadOnly="True"                           
+                           RowHeight="35"
                            ScrollViewer.VerticalScrollBarVisibility="Auto"
                            ColumnHeaderStyle="{StaticResource CustomHeaderStyle}"
                            HorizontalGridLinesBrush="{ThemeResource DataGridBorderColor}"
-                            VerticalGridLinesBrush="{ThemeResource DataGridBorderColor}"  
-                            BorderThickness="1"
+                           VerticalGridLinesBrush="{ThemeResource DataGridBorderColor}"  
+                           BorderThickness="1"
                            ItemsSource="{x:Bind ViewModel.Source, Mode=OneWay}"
                            SelectionMode="Single">
 

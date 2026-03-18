@@ -17,15 +17,9 @@
     <!--<RepositoryUrl>https://github.com/ThuanNg05/Invoice</RepositoryUrl>-->
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="log\debug_log.txt" />
     <None Remove="Styles\FontSizes.xaml" />
     <None Remove="Styles\TextBlock.xaml" />
     <None Remove="Styles\Thickness.xaml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="log\debug_log.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
   <ItemGroup>

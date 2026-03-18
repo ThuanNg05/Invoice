@@ -46,27 +46,27 @@
                         <StackPanel>
                             <TextBlock>
                                 <Run Text="(*) " Foreground="Red"/>
-                                <Run Text="Tên SP:"/>
+                                <Run Text="Tên SP"/>
                             </TextBlock>
                             <TextBox x:Name="txtName" Width="300" HorizontalAlignment="Left"/>
                         </StackPanel>
                         <StackPanel HorizontalAlignment="Left">
                             <TextBlock>                                
                                 <Run Text="(*) " Foreground="Red"/>
-                                <Run Text="Giá :"/>
+                                <Run Text="Giá"/>
                             </TextBlock>
                             <TextBox x:Name="txtBasePrice" Width="140" TextAlignment="Right"
                                      BeforeTextChanging="Number_BeforeTextChanging"/>
                         </StackPanel>
                         <StackPanel HorizontalAlignment="Left">
                             <TextBlock>                                
-                                <Run Text="Tổng tiền :"/>
+                                <Run Text="Tổng tiền"/>
                             </TextBlock>
                             <TextBox x:Name="txtTotal" Width="140" TextAlignment="Right"/>
                         </StackPanel>
                         <StackPanel HorizontalAlignment="Left">
                             <TextBlock>                                
-                                <Run Text="Tồn kho tối thiểu :"/>
+                                <Run Text="Tồn kho tối thiểu"/>
                             </TextBlock>
                             <TextBox x:Name="txtMinAmount"
                                      BeforeTextChanging="Number_BeforeTextChanging"

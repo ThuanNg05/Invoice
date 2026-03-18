@@ -37,13 +37,13 @@ public sealed partial class CreateInvoicePage : Page
     {
         if (ViewModel.InvoiceItems.Count == 0)
         {
-            await App.ShowMessageAsync("Thông báo", "Không có dữ liệu để tạo phiếu.");
+            await App.ShowErrorAsync("Không có dữ liệu để tạo phiếu.");
             return;
         }
 
         if (ViewModel.SelectedCustomer == null)
         {
-            await App.ShowMessageAsync("Thông báo", "Vui lòng chọn khách hàng để sinh mã phiếu.");
+            await App.ShowErrorAsync("Vui lòng chọn khách hàng để sinh mã phiếu.");
             return;
         }
 
@@ -52,8 +52,11 @@ public sealed partial class CreateInvoicePage : Page
 
     private async void SaveInvoice_Click(object sender, RoutedEventArgs e)
     {
-        await ViewModel.SaveInvoice();
-        ResetInvoice_Click(sender, e);
+        bool success = await ViewModel.SaveInvoice();
+        if (success)
+        {
+            ResetInvoice_Click(sender, e);
+        }
     }
 
     private async void EditInvoice_Click(object sender, RoutedEventArgs e)

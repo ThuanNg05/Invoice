@@ -49,46 +49,46 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <TextBox Margin="0,0,10,10" x:Name="txtKieng" Header="Kiếng : " TextAlignment="Right" Grid.Row="0" Grid.Column="0"
+                    <TextBox Margin="0,0,10,10" x:Name="txtKieng" Header="Kiếng" TextAlignment="Right" Grid.Row="0" Grid.Column="0"
                     Text="{x:Bind ViewModel.CurrentDetailPrice.PrKieng, Mode=TwoWay}" />
 
-                    <TextBox Margin="0,0,10,10" x:Name="txtNhL" Header="Nhựa lớn : " TextAlignment="Right" Grid.Row="1" Grid.Column="0"
+                    <TextBox Margin="0,0,10,10" x:Name="txtNhL" Header="Nhựa lớn" TextAlignment="Right" Grid.Row="1" Grid.Column="0"
                     Text="{x:Bind ViewModel.CurrentDetailPrice.PrNhL, Mode=TwoWay}" />
 
-                    <TextBox Margin="0,0,10,10" x:Name="txtNhN" Header="Nhựa nhỏ : " TextAlignment="Right" Grid.Row="2" Grid.Column="0"
+                    <TextBox Margin="0,0,10,10" x:Name="txtNhN" Header="Nhựa nhỏ" TextAlignment="Right" Grid.Row="2" Grid.Column="0"
                     Text="{x:Bind ViewModel.CurrentDetailPrice.PrNhN, Mode=TwoWay}" />
 
-                    <TextBox Margin="0,0,10,10" x:Name="txtG_l" Header="Gỗ lớn : " TextAlignment="Right" Grid.Row="3" Grid.Column="0"
+                    <TextBox Margin="0,0,10,10" x:Name="txtG_l" Header="Gỗ lớn" TextAlignment="Right" Grid.Row="3" Grid.Column="0"
                     Text="{x:Bind ViewModel.CurrentDetailPrice.PrG_l, Mode=TwoWay}" />
 
-                    <TextBox Margin="0,0,10,10" x:Name="txtG_n" Header="Gỗ nhỏ : " TextAlignment="Right" Grid.Row="4" Grid.Column="0"
+                    <TextBox Margin="0,0,10,10" x:Name="txtG_n" Header="Gỗ nhỏ" TextAlignment="Right" Grid.Row="4" Grid.Column="0"
                     Text="{x:Bind ViewModel.CurrentDetailPrice.PrG_n, Mode=TwoWay}" />
 
-                    <TextBox Margin="0,0,10,10" x:Name="txtDl" Header="Đen lớn : " TextAlignment="Right" Grid.Row="5" Grid.Column="0"
+                    <TextBox Margin="0,0,10,10" x:Name="txtDl" Header="Đen lớn" TextAlignment="Right" Grid.Row="5" Grid.Column="0"
                     Text="{x:Bind ViewModel.CurrentDetailPrice.PrDl, Mode=TwoWay}" />
 
-                    <TextBox Margin="0,0,10,0" x:Name="txtHau" Header="Hậu : " TextAlignment="Right" Grid.Row="6" Grid.Column="0"
+                    <TextBox Margin="0,0,10,0" x:Name="txtHau" Header="Hậu" TextAlignment="Right" Grid.Row="6" Grid.Column="0"
                     Text="{x:Bind ViewModel.CurrentDetailPrice.PrHau, Mode=TwoWay}" />
 
-                    <TextBox Margin="0,0,0,10" x:Name="txtLua" Header="Lụa : " TextAlignment="Right" Grid.Row="0" Grid.Column="1"
+                    <TextBox Margin="0,0,0,10" x:Name="txtLua" Header="Lụa" TextAlignment="Right" Grid.Row="0" Grid.Column="1"
                     Text="{x:Bind ViewModel.CurrentDetailPrice.PrLua, Mode=TwoWay}" />
 
-                    <TextBox Margin="0,0,0,10" x:Name="txtKt" Header="Kim tuyến : " TextAlignment="Right" Grid.Row="1" Grid.Column="1"
+                    <TextBox Margin="0,0,0,10" x:Name="txtKt" Header="Kim tuyến" TextAlignment="Right" Grid.Row="1" Grid.Column="1"
                     Text="{x:Bind ViewModel.CurrentDetailPrice.PrKt, Mode=TwoWay}" />
 
-                    <TextBox Margin="0,0,0,10" x:Name="txtOc" Header="Ốc : " TextAlignment="Right" Grid.Row="2" Grid.Column="1"
+                    <TextBox Margin="0,0,0,10" x:Name="txtOc" Header="Ốc" TextAlignment="Right" Grid.Row="2" Grid.Column="1"
                     Text="{x:Bind ViewModel.CurrentDetailPrice.PrOc, Mode=TwoWay}" />
 
-                    <TextBox Margin="0,0,0,10" x:Name="txtNhom" Header="Nhôm : " TextAlignment="Right" Grid.Row="3" Grid.Column="1"
+                    <TextBox Margin="0,0,0,10" x:Name="txtNhom" Header="Nhôm" TextAlignment="Right" Grid.Row="3" Grid.Column="1"
                     Text="{x:Bind ViewModel.CurrentDetailPrice.PrNhom, Mode=TwoWay}" />
 
-                    <TextBox Margin="0,0,0,10" x:Name="txt7f" Header="Gỗ 7F : " TextAlignment="Right" Grid.Row="4" Grid.Column="1"
+                    <TextBox Margin="0,0,0,10" x:Name="txt7f" Header="Gỗ 7F" TextAlignment="Right" Grid.Row="4" Grid.Column="1"
                     Text="{x:Bind ViewModel.CurrentDetailPrice.Pr7f, Mode=TwoWay}" />
 
-                    <TextBox Margin="0,0,0,10" x:Name="txt2D" Header="2D : " TextAlignment="Right" Grid.Row="5" Grid.Column="1"
+                    <TextBox Margin="0,0,0,10" x:Name="txt2D" Header="2D" TextAlignment="Right" Grid.Row="5" Grid.Column="1"
                     Text="{x:Bind ViewModel.CurrentDetailPrice.Pr2D, Mode=TwoWay}" />
 
-                    <TextBox Margin="0,0,0,0" x:Name="txtDecal" Header="Decal : " TextAlignment="Right" Grid.Row="6" Grid.Column="1"
+                    <TextBox Margin="0,0,0,0" x:Name="txtDecal" Header="Decal" TextAlignment="Right" Grid.Row="6" Grid.Column="1"
                     Text="{x:Bind ViewModel.CurrentDetailPrice.PrDecal, Mode=TwoWay}" />
                 </Grid>
                 <CommandBar Background="Transparent" DefaultLabelPosition="Right" HorizontalAlignment="Left" Margin="-5,0,0,0">

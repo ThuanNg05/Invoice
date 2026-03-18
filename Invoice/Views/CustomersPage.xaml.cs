@@ -1,6 +1,6 @@
-﻿using System.Linq;
+﻿using Invoice.Core.Models;
+using Invoice.Helpers;
 using Invoice.ViewModels;
-using Invoice.Core.Models;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
@@ -19,6 +19,17 @@ public sealed partial class CustomersPage : Page
         InitializeComponent();
     }
 
+    private void ClearInputs()
+    {
+        StringHelper.ClearInputs(this);
+        CmbPriceType.SelectedIndex = -1;
+        CustomerGrid.SelectedItem = -1;
+        btnAdd.IsEnabled = true;
+        btnUpdate.IsEnabled = false;
+        btnDelete.IsEnabled = false;
+        txtName.Focus(FocusState.Programmatic);
+    }
+
     private void CustomerGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (CustomerGrid.SelectedItem is Customers selected)
@@ -33,33 +44,50 @@ public sealed partial class CustomersPage : Page
     {
         if (string.IsNullOrWhiteSpace(txtName.Text))
         {
-            await App.ShowMessageAsync("Lỗi", "Vui lòng nhập tên khách hàng.");
+            await App.ShowErrorAsync("Vui lòng nhập tên khách hàng.");
             return;
         }
 
-        var newCustomer = new Customers
+        try
         {
-            Name = txtName.Text,
-            Phone = txtPhoneNo.Text,
-            PriceGroup = (CmbPriceType.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "Lẻ"
-        };
+            var newCustomer = new Customers
+            {
+                Name = txtName.Text,
+                Phone = txtPhoneNo.Text,
+                PriceGroup = (CmbPriceType.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "Lẻ"
+            };
 
-        await ViewModel.AddCustomerAsync(newCustomer);
+            await ViewModel.AddCustomerAsync(newCustomer);
+            await App.ShowSuccessAsync("Thêm khách hàng thành công!");
+            ClearInputs();
+        }
+        catch (Exception ex)
+        {
+            await App.ShowErrorAsync("Thêm khách hàng thất bại", ex);
+        }
     }
 
     private async void BtnUpdate_Click(object sender, RoutedEventArgs e)
     {
         if (CustomerGrid.SelectedItem is Customers selected)
         {
-            selected.Name = txtName.Text;
-            selected.Phone = txtPhoneNo.Text;
-            selected.PriceGroup = (CmbPriceType.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "Lẻ";
-
-            await ViewModel.UpdateCustomerAsync(selected);
+            try
+            {
+                selected.Name = txtName.Text;
+                selected.Phone = txtPhoneNo.Text;
+                selected.PriceGroup = (CmbPriceType.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "Lẻ";
+                await ViewModel.UpdateCustomerAsync(selected);
+                await App.ShowSuccessAsync("Cập nhật thành công!");
+                ClearInputs();
+            }
+            catch (Exception ex)
+            {
+                await App.ShowErrorAsync("Cập nhật thất bại", ex);
+            }
         }
         else
         {
-            await App.ShowMessageAsync("Lỗi", "Vui lòng chọn khách hàng để sửa.");
+            await App.ShowErrorAsync("Vui lòng chọn khách hàng để sửa.");
         }
     }
 
@@ -67,20 +95,29 @@ public sealed partial class CustomersPage : Page
     {
         if (CustomerGrid.SelectedItem is Customers selected)
         {
-            await ViewModel.DeleteCustomerAsync(selected);
+            if (await App.ShowConfirmAsync("Xác nhận xóa", $"Bạn có chắc muốn xóa khách hàng {selected.Name}?", "Xóa"))
+            {
+                try
+                {
+                    await ViewModel.DeleteCustomerAsync(selected);
+                    await App.ShowSuccessAsync("Xóa thành công!");
+                    ClearInputs();
+                }
+                catch (Exception ex)
+                {
+                    await App.ShowErrorAsync("Xóa thất bại", ex);
+                }
+            }
         }
         else
         {
-            await App.ShowMessageAsync("Lỗi", "Vui lòng chọn khách hàng để xoá.");
+            await App.ShowErrorAsync("Vui lòng chọn khách hàng để xoá.");
         }
     }
 
     private void BtnReset_Click(object sender, RoutedEventArgs e)
     {
-        txtName.Text = string.Empty;
-        txtPhoneNo.Text = string.Empty;
-        CmbPriceType.SelectedIndex = -1;
-        CustomerGrid.SelectedItem = null;
+        ClearInputs();
     }
 
     private void txtPhoneNo_BeforeTextChanging(TextBox sender, TextBoxBeforeTextChangingEventArgs args)

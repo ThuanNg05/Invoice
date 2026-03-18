@@ -1,6 +1,9 @@
 ﻿using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Controls;
 
 namespace Invoice.Helpers;
 
@@ -63,20 +66,19 @@ public static class StringHelper
     public static double ParseDouble(string text)
     {
         if (string.IsNullOrWhiteSpace(text)) return 0;
-        return double.TryParse(text.Trim().Replace(",", ""), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double val) ? val : 0;
+        return double.TryParse(text.Trim().Replace(",", ""), NumberStyles.Any, CultureInfo.InvariantCulture, out double val) ? val : 0;
     }
 
-    public static void ClearInputs(Microsoft.UI.Xaml.DependencyObject parent)
+    public static void ClearInputs(DependencyObject parent)
     {
-        int count = Microsoft.UI.Xaml.Media.VisualTreeHelper.GetChildrenCount(parent);
+        int count = VisualTreeHelper.GetChildrenCount(parent);
 
         for (int i = 0; i < count; i++)
         {
-            var child = Microsoft.UI.Xaml.Media.VisualTreeHelper.GetChild(parent, i);
+            var child = VisualTreeHelper.GetChild(parent, i);
 
-            if (child is Microsoft.UI.Xaml.Controls.TextBox textBox &&
-                !string.IsNullOrEmpty(textBox.Name) &&
-                textBox.Name.StartsWith("txt"))
+            if (child is TextBox textBox &&
+                !string.IsNullOrEmpty(textBox.Name))
             {
                 textBox.Text = string.Empty;
             }

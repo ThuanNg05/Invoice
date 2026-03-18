@@ -37,29 +37,29 @@
 
 			<StackPanel Orientation="Vertical" Spacing="10">
 				<StackPanel Orientation="Horizontal" Spacing="10">
-					<TextBox x:Name="size1" Header="Size 1" TextAlignment="Left"/>
-					<TextBox x:Name="size2" Header="Size 2" TextAlignment="Left"/>
-					<TextBox x:Name="size3" Header="Size 3" TextAlignment="Left"/>
-					<TextBox x:Name="size4" Header="Size 4" TextAlignment="Left"/>
-					<TextBox x:Name="size5" Header="Size 5" TextAlignment="Left"/>
-					<TextBox x:Name="size6" Header="Size 6" TextAlignment="Left"/>
-					<TextBox x:Name="size7" Header="Size 7" TextAlignment="Left"/>
-					<TextBox x:Name="size8" Header="Size 8" TextAlignment="Left"/>
-					<TextBox x:Name="size9" Header="Size 9" TextAlignment="Left"/>
-					<TextBox x:Name="size10" Header="Size 10" TextAlignment="Left"/>
+					<TextBox x:Name="txtSize1" Header="Size 1" TextAlignment="Left"/>
+					<TextBox x:Name="txtSize2" Header="Size 2" TextAlignment="Left"/>
+					<TextBox x:Name="txtSize3" Header="Size 3" TextAlignment="Left"/>
+					<TextBox x:Name="txtSize4" Header="Size 4" TextAlignment="Left"/>
+					<TextBox x:Name="txtSize5" Header="Size 5" TextAlignment="Left"/>
+					<TextBox x:Name="txtSize6" Header="Size 6" TextAlignment="Left"/>
+					<TextBox x:Name="txtSize7" Header="Size 7" TextAlignment="Left"/>
+					<TextBox x:Name="txtSize8" Header="Size 8" TextAlignment="Left"/>
+					<TextBox x:Name="txtSize9" Header="Size 9" TextAlignment="Left"/>
+					<TextBox x:Name="txtSize10" Header="Size 10" TextAlignment="Left"/>
 				</StackPanel>
 
 				<StackPanel Orientation="Horizontal" Spacing="10">
-					<TextBox x:Name="amount1" TextAlignment="Right" BeforeTextChanging="Amount_BeforeTextChanging"/>
-					<TextBox x:Name="amount2" TextAlignment="Right" BeforeTextChanging="Amount_BeforeTextChanging"/>
-					<TextBox x:Name="amount3" TextAlignment="Right" BeforeTextChanging="Amount_BeforeTextChanging"/>
-					<TextBox x:Name="amount4" TextAlignment="Right" BeforeTextChanging="Amount_BeforeTextChanging"/>
-					<TextBox x:Name="amount5" TextAlignment="Right" BeforeTextChanging="Amount_BeforeTextChanging"/>
-					<TextBox x:Name="amount6" TextAlignment="Right" BeforeTextChanging="Amount_BeforeTextChanging"/>
-					<TextBox x:Name="amount7" TextAlignment="Right" BeforeTextChanging="Amount_BeforeTextChanging"/>
-					<TextBox x:Name="amount8" TextAlignment="Right" BeforeTextChanging="Amount_BeforeTextChanging"/>
-					<TextBox x:Name="amount9" TextAlignment="Right" BeforeTextChanging="Amount_BeforeTextChanging"/>
-					<TextBox x:Name="amount10" TextAlignment="Right" BeforeTextChanging="Amount_BeforeTextChanging"/>
+					<TextBox x:Name="txtAmount1" TextAlignment="Right" BeforeTextChanging="Amount_BeforeTextChanging"/>
+					<TextBox x:Name="txtAmount2" TextAlignment="Right" BeforeTextChanging="Amount_BeforeTextChanging"/>
+					<TextBox x:Name="txtAmount3" TextAlignment="Right" BeforeTextChanging="Amount_BeforeTextChanging"/>
+					<TextBox x:Name="txtAmount4" TextAlignment="Right" BeforeTextChanging="Amount_BeforeTextChanging"/>
+					<TextBox x:Name="txtAmount5" TextAlignment="Right" BeforeTextChanging="Amount_BeforeTextChanging"/>
+					<TextBox x:Name="txtAmount6" TextAlignment="Right" BeforeTextChanging="Amount_BeforeTextChanging"/>
+					<TextBox x:Name="txtAmount7" TextAlignment="Right" BeforeTextChanging="Amount_BeforeTextChanging"/>
+					<TextBox x:Name="txtAmount8" TextAlignment="Right" BeforeTextChanging="Amount_BeforeTextChanging"/>
+					<TextBox x:Name="txtAmount9" TextAlignment="Right" BeforeTextChanging="Amount_BeforeTextChanging"/>
+					<TextBox x:Name="txtAmount10" TextAlignment="Right" BeforeTextChanging="Amount_BeforeTextChanging"/>
 				</StackPanel>
 			</StackPanel>
 

@@ -18,18 +18,24 @@ public class WarehouseTransaction : BaseModel, INotifyPropertyChanged
     }
 
     [PrimaryKey("transaction_id", false)]
+    [JsonProperty("transaction_id")]
     public int Id { get; set; }
 
     [Column("product_id")]
+    [JsonProperty("product_id")]
     public long ProductID { get; set; }
+
     [Column("invoice_id")]
+    [JsonProperty("invoice_id")]
     public string InvoiceID { get; set; }        
     
     [Column("date")]
+    [JsonProperty("date")]
     public DateTime CreatedDate { get; set; }
 
     private int _amount;
     [Column("amount")]    
+    [JsonProperty("amount")]
     public int Amount
     {
         get => _amount;
@@ -46,6 +52,7 @@ public class WarehouseTransaction : BaseModel, INotifyPropertyChanged
 
     private string _actionType;
     [Column("type")]    
+    [JsonProperty("type")]
     public string ActionType
     {
         get => _actionType;
@@ -61,6 +68,7 @@ public class WarehouseTransaction : BaseModel, INotifyPropertyChanged
     }
 
     [Column("note")]
+    [JsonProperty("note")]
     public string Note { get; set; }
 
     [JsonIgnore]

@@ -17,7 +17,7 @@ public sealed partial class DetailPlanksPage : Page
     {
         ViewModel = App.GetService<DetailPlanksViewModel>();
         InitializeComponent();
-        ClearInputs();
+        btnDelete.IsEnabled = false;
     }
 
     private void ClearInputs()
@@ -25,7 +25,7 @@ public sealed partial class DetailPlanksPage : Page
         size.Text = string.Empty;
         btnAdd.IsEnabled = true;
         btnDelete.IsEnabled = false;
-        ListPlankGrid.SelectedIndex = -1;
+        ListPlankGrid.SelectedItem = -1;
         size.Focus(FocusState.Programmatic);
     }
 
@@ -33,52 +33,81 @@ public sealed partial class DetailPlanksPage : Page
     {
         if (string.IsNullOrEmpty(size.Text))
         {
-            await App.ShowMessageAsync("Thông báo", "Kích thước không được bỏ trống.");
+            await App.ShowErrorAsync("Kích thước không được bỏ trống.");
             size.Focus(FocusState.Programmatic);
             return;
         }
         if (!IsValidSizeFormat(size.Text.Trim().ToLower()))
         {
-            await App.ShowMessageAsync("Lỗi nhập liệu", "Kích thước không đúng định dạng. Vui lòng nhập theo định dạng 'DxR' (ví dụ: 20x30).");
+            await App.ShowErrorAsync("Kích thước không đúng định dạng. Vui lòng nhập theo định dạng 'DxR' (ví dụ: 20x30).");
             size.Focus(FocusState.Programmatic);
             return;
         }
-        var newSize = new DetailPlanks
+
+        try
         {
-            sizeID = size.Text.Trim().ToLower(),
-            inventory = 0
-        };
-        await ViewModel.AddPlankAsync(newSize);
-        ClearInputs();
+            var newSize = new DetailPlanks
+            {
+                sizeID = size.Text.Trim().ToLower(),
+                inventory = 0
+            };
+            await ViewModel.AddPlankAsync(newSize);
+            await App.ShowSuccessAsync("Thêm thành công!");
+            ClearInputs();
+        }
+        catch (Exception ex)
+        {
+            await App.ShowErrorAsync("Thêm thất bại", ex);
+        }
     }
 
     private async void BtnDelete_Click(object sender, RoutedEventArgs e)
     {
         if (ListPlankGrid.SelectedItem is not DetailPlanks selected) return;
-        await ViewModel.DeletePlankAsync(selected);
-        ClearInputs();
+        if (await App.ShowConfirmAsync("Xác nhận xóa", $"Bạn có chắc muốn xóa kích thước {selected.sizeID}?", "Xóa"))
+        {
+            try
+            {
+                await ViewModel.DeletePlankAsync(selected);
+                await App.ShowSuccessAsync("Xóa thành công!");
+                ClearInputs();
+            }
+            catch (Exception ex)
+            {
+                await App.ShowErrorAsync("Xóa thất bại", ex);
+            }
+        }
     }
 
     private async void BtnUpdate_Click(object sender, RoutedEventArgs e)
     {
         if (ListPlankGrid.SelectedItem is not DetailPlanks selected) return;
-        if (!IsValidSizeFormat(size.Text))
-        {
-            await App.ShowMessageAsync("Lỗi nhập liệu", "Định dạng không đúng, VD (DxR): 30x45");
-            return;
-        }
         if (string.IsNullOrEmpty(size.Text))
         {
-            await App.ShowMessageAsync("Lỗi", "Kích thước không được bỏ trống");
+            await App.ShowErrorAsync("Kích thước không được bỏ trống");
             return;
         }
-        var tmpPlank = new DetailPlanks
+        if (!IsValidSizeFormat(size.Text))
         {
-            sizeID = size.Text.Trim().ToLower()
-        };
+            await App.ShowErrorAsync("Định dạng không đúng, VD (DxR): 30x45");
+            return;
+        }
 
-        await ViewModel.UpdatePlankAsync(tmpPlank);
-        ClearInputs();
+        try
+        {
+            var tmpPlank = new DetailPlanks
+            {
+                sizeID = size.Text.Trim().ToLower()
+            };
+
+            await ViewModel.UpdatePlankAsync(tmpPlank);
+            await App.ShowSuccessAsync("Cập nhật thành công!");
+            ClearInputs();
+        }
+        catch (Exception ex)
+        {
+            await App.ShowErrorAsync("Cập nhật thất bại", ex);
+        }
     }
 
     private void BtnReset_Click(object sender, RoutedEventArgs e)

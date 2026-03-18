@@ -1,4 +1,4 @@
-﻿using Invoice.Core.Models;
+using Invoice.Core.Models;
 using Invoice.Helpers;
 using QuestPDF.Companion;
 using QuestPDF.Fluent;
@@ -23,139 +23,143 @@ public class InvoicePdfService
     // ==========================================
     // VERSION 1: FINAL INVOICE (Hóa Đơn)
     // ==========================================
-    public void GenerateOfficial(IEnumerable<TempInvoice> items, string customerName, string phoneNO, string invoiceCode, DateTime date, string filePath)
+    public async Task GenerateOfficialAsync(IEnumerable<TempInvoice> items, string customerName, string phoneNO, string invoiceCode, DateTime date, string filePath)
     {
-        Document.Create(container =>
+        await Task.Run(() => 
         {
-            for (int i = 1; i <= 2; i++)
+            Document.Create(container =>
             {
-
-                container.Page(page =>
+                for (int i = 1; i <= 2; i++)
                 {
-                    SetupPage(page);
-
-                    // Header
-                    page.Header().Column(col =>
+                    container.Page(page =>
                     {
-                        // ====================================================
-                        // 1. HÀNG ĐẦU TIÊN: LOGO (Trái) | THÔNG TIN HĐ (Phải)
-                        // ====================================================
-                        string titleText = (i == 1) ? "HÓA ĐƠN BÁN HÀNG" : "PHIẾU XUẤT KHO";
+                        SetupPage(page);
 
-                        col.Item().Row(row =>
+                        // Header
+                        page.Header().Column(col =>
                         {
-                            row.RelativeItem().AlignLeft().Height(74).Image(GetLogoPath()).FitArea();
+                            // ====================================================
+                            // 1. HÀNG ĐẦU TIÊN: LOGO (Trái) | THÔNG TIN HĐ (Phải)
+                            // ====================================================
+                            string titleText = (i == 1) ? "HÓA ĐƠN BÁN HÀNG" : "PHIẾU XUẤT KHO";
 
-
-                            // --- CỘT PHẢI (50%): THÔNG TIN HOÁ ĐƠN ---
-                            row.RelativeItem().PaddingRight(10).AlignRight().Column(info =>
+                            col.Item().Row(row =>
                             {
-                                // Số HĐ (Màu đỏ)
-                                info.Item().Text(text =>
-                                {
-                                    text.Span("Số HĐ: ").SemiBold().FontSize(fontSize);
-                                    text.Span(invoiceCode).Bold().FontSize(fontSize);
-                                });
-
-                                // Khách hàng
-                                info.Item().PaddingTop(5).Text(text =>
-                                {
-                                    text.Span("Khách hàng: ").SemiBold().FontSize(fontSize);
-                                    text.Span(customerName).FontSize(fontSize);
-                                });
-
-                                // SĐT
-                                info.Item().PaddingTop(5).Text(text =>
-                                {
-                                    text.Span("SĐT: ").SemiBold().FontSize(fontSize);
-                                    text.Span(phoneNO).FontSize(fontSize);
-                                });
+                                row.RelativeItem().AlignLeft().Height(74).Image(GetLogoPath()).FitArea();
 
 
-                                // Ngày tháng
-                                info.Item().PaddingTop(5).Text(text =>
+                                // --- CỘT PHẢI (50%): THÔNG TIN HOÁ ĐƠN ---
+                                row.RelativeItem().PaddingRight(10).AlignRight().Column(info =>
                                 {
-                                    text.Span("Ngày: ").SemiBold().FontSize(fontSize);
-                                    text.Span($"{date:dd/MM/yyyy HH:mm}").FontSize(fontSize);
+                                    // Số HĐ (Màu đỏ)
+                                    info.Item().Text(text =>
+                                    {
+                                        text.Span("Số HĐ: ").SemiBold().FontSize(fontSize);
+                                        text.Span(invoiceCode).Bold().FontSize(fontSize);
+                                    });
+
+                                    // Khách hàng
+                                    info.Item().PaddingTop(5).Text(text =>
+                                    {
+                                        text.Span("Khách hàng: ").SemiBold().FontSize(fontSize);
+                                        text.Span(customerName).FontSize(fontSize);
+                                    });
+
+                                    // SĐT
+                                    info.Item().PaddingTop(5).Text(text =>
+                                    {
+                                        text.Span("SĐT: ").SemiBold().FontSize(fontSize);
+                                        text.Span(phoneNO).FontSize(fontSize);
+                                    });
+
+
+                                    // Ngày tháng
+                                    info.Item().PaddingTop(5).Text(text =>
+                                    {
+                                        text.Span("Ngày: ").SemiBold().FontSize(fontSize);
+                                        text.Span($"{date:dd/MM/yyyy HH:mm}").FontSize(fontSize);
+                                    });
                                 });
                             });
+
+                            // ====================================================
+                            // 2. HÀNG THỨ HAI: ĐỊA CHỈ (Trái) | SĐT CỬA HÀNG (Phải)
+                            // ====================================================
+                            col.Item().PaddingTop(15).Row(row =>
+                            {
+                                row.RelativeItem().Column(c =>
+                                {
+                                    // Trái: Địa chỉ cửa hàng
+                                    c.Item().Text("ĐC: 397 tổ 15, ấp Long Tân,\r\n xã Long Điền, tỉnh An Giang").FontSize(13).Italic().AlignCenter();
+                                });
+
+                                row.RelativeItem().PaddingRight(10).AlignRight().Column(c =>
+                                {
+                                    c.Item().PaddingRight(10).Text("ĐT: 0907.504.311 - 0344.627.378\r\n0907.504.105 - 0338.213.129").FontSize(13).Italic().AlignRight();
+                                });
+                            });
+
+
+                            col.Item().PaddingTop(10).PaddingBottom(0).AlignCenter().Text(titleText)
+                                .FontFamily("Times New Roman").FontSize(22).Bold().FontColor(Colors.Black);
                         });
 
-                        // ====================================================
-                        // 2. HÀNG THỨ HAI: ĐỊA CHỈ (Trái) | SĐT CỬA HÀNG (Phải)
-                        // ====================================================
-                        col.Item().PaddingTop(15).Row(row =>
-                        {
-                            row.RelativeItem().Column(c =>
+                        // 2. Content                    
+                        page.Content().PaddingVertical(10).Element(c => {
+                            if (i == 1)
                             {
-                                // Trái: Địa chỉ cửa hàng
-                                c.Item().Text("ĐC: 397 tổ 15, ấp Long Tân,\r\n xã Long Điền, tỉnh An Giang").FontSize(13).Italic().AlignCenter();
-                            });
-
-                            row.RelativeItem().PaddingRight(10).AlignRight().Column(c =>
+                                ComposeTable(c, items);
+                            }
+                            else
                             {
-                                c.Item().PaddingRight(10).Text("ĐT: 0907.504.311 - 0344.627.378\r\n0907.504.105 - 0338.213.129").FontSize(13).Italic().AlignRight();
-                            });
+                                Sub_ComposeTable(c, items);
+                            }
                         });
 
-
-                        col.Item().PaddingTop(10).PaddingBottom(0).AlignCenter().Text(titleText)
-                            .FontFamily("Times New Roman").FontSize(22).Bold().FontColor(Colors.Black);
+                        // 3. Footer
+                        SetupFooter(page);
                     });
-
-                    // 2. Content                    
-                    page.Content().PaddingVertical(10).Element(c => {
-                        if (i == 1)
-                        {
-                            ComposeTable(c, items);
-                        }
-                        else
-                        {
-                            Sub_ComposeTable(c, items);
-                        }
-                    });
-
-                    // 3. Footer
-                    SetupFooter(page);
-                });
-            }
-        })
-        .GeneratePdf(filePath);
-        //.ShowInCompanion();
+                }
+            })
+            .GeneratePdf(filePath);
+        });
     }
 
     // ==========================================
     // VERSION 2: TEMP INVOICE (Phiếu Tạm)
     // ==========================================
-    public void GenerateTemp(IEnumerable<TempInvoice> items, string filePath)
+    public async Task GenerateTempAsync(IEnumerable<TempInvoice> items, string filePath)
     {
-        Document.Create(container =>
+        await Task.Run(() => 
         {
-            container.Page(page =>
+            Document.Create(container =>
             {
-                SetupPage(page);
-
-                // 1. Simple Header
-                page.Header().Element(header =>
+                container.Page(page =>
                 {
-                    header.Column(col =>
+                    SetupPage(page);
+
+                    // 1. Simple Header
+                    page.Header().Element(header =>
                     {
-                        col.Item().Text("PHIẾU TẠM TÍNH")
-                            .FontSize(20).SemiBold().AlignCenter();
+                        header.Column(col =>
+                        {
+                            col.Item().Text("PHIẾU TẠM TÍNH")
+                                .FontSize(20).SemiBold().AlignCenter();
 
-                        col.Item().AlignCenter().Text($"(Ngày: {DateTime.Now:dd/MM/yyyy HH:mm})").FontSize(10).Italic();
+                            col.Item().AlignCenter().Text($"(Ngày: {DateTime.Now:dd/MM/yyyy HH:mm})").FontSize(10).Italic();
 
-                        col.Item().PaddingVertical(5).LineHorizontal(1).LineColor(Colors.Grey.Lighten2);
+                            col.Item().PaddingVertical(5).LineHorizontal(1).LineColor(Colors.Grey.Lighten2);
+                        });
                     });
+
+                    // 2. Content
+                    page.Content().PaddingVertical(10).Element(c => ComposeTable(c, items));
+
+                    // 3. Footer
+                    SetupFooter(page);
                 });
-
-                // 2. Content
-                page.Content().PaddingVertical(10).Element(c => ComposeTable(c, items));
-
-                // 3. Footer
-                SetupFooter(page);
-            });
-        }).GeneratePdf(filePath);
+            }).GeneratePdf(filePath);
+        });
     }
 
     // --- Shared Helper Methods ---

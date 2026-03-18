@@ -2,6 +2,7 @@
 using Microsoft.UI.Xaml.Controls;
 using Invoice.Core.Models;
 using Invoice.ViewModels;
+using Invoice.Helpers;
 
 namespace Invoice.Views;
 
@@ -25,40 +26,43 @@ public sealed partial class MaterialsPage : Page
         txtName.Focus(FocusState.Programmatic);
         btnAdd.IsEnabled = true;
         btnDelete.IsEnabled = false;
-        btnUpdate.IsEnabled = false;        
-    }
-
-    private async Task RefreshData()
-    {
-        txtSearch_TextChanged(txtSearch, null);        
+        btnUpdate.IsEnabled = false;
         txtTotal.IsReadOnly = true;
-    }
+    }  
 
     private async void BtnNew_Click(object sender, RoutedEventArgs e)
     {
         if (string.IsNullOrWhiteSpace(txtName.Text))
         {
-            await App.ShowMessageAsync("Lỗi xác thực", "Tên SP không được rỗng.");
+            await App.ShowErrorAsync("Tên SP không được rỗng.");
             txtName.Focus(FocusState.Programmatic);
             return;
         }
         if (string.IsNullOrWhiteSpace(txtBasePrice.Text))
         {
-            await App.ShowMessageAsync("Lỗi xác thực", "Đơn giá không được rỗng.");
+            await App.ShowErrorAsync("Đơn giá không được rỗng.");
             txtBasePrice.Focus(FocusState.Programmatic);
             return;
         }
 
-        var material = new Materials
+        try
         {
-            Name = txtName.Text.Trim(),
-            BasePrice = decimal.TryParse(txtBasePrice.Text.Trim(), out decimal price) ? price : 0,
-            Inventory = 0,
-            MinAmount = int.TryParse(txtMinAmount.Text.Trim(), out int minAmt) ? minAmt : 0
-        };
+            var material = new Materials
+            {
+                Name = txtName.Text.Trim(),
+                BasePrice = decimal.TryParse(txtBasePrice.Text.Trim(), out decimal price) ? price : 0,
+                Inventory = 0,
+                MinAmount = int.TryParse(txtMinAmount.Text.Trim(), out int minAmt) ? minAmt : 0
+            };
 
-        await ViewModel.AddMaterialAsync(material);
-        ClearInputs();
+            await ViewModel.AddMaterialAsync(material);
+            await App.ShowSuccessAsync("Thêm thành công!");
+            ClearInputs();
+        }
+        catch (Exception ex)
+        {
+            await App.ShowErrorAsync("Thêm thất bại", ex);
+        }
     }
 
     private async void BtnUpdate_Click(object sender, RoutedEventArgs e)
@@ -66,39 +70,57 @@ public sealed partial class MaterialsPage : Page
         if (MaterialGrid.SelectedItem is not Materials selected) return;        
         if (string.IsNullOrWhiteSpace(txtName.Text))
         {
-            await App.ShowMessageAsync("Lỗi xác thực", "Tên SP không được rỗng.");
+            await App.ShowErrorAsync("Tên SP không được rỗng.");
             txtName.Focus(FocusState.Programmatic);
             return;
         }
         if (string.IsNullOrWhiteSpace(txtBasePrice.Text))
         {
-            await App.ShowMessageAsync("Lỗi xác thực", "Đơn giá không được rỗng.");
+            await App.ShowErrorAsync("Đơn giá không được rỗng.");
             txtBasePrice.Focus(FocusState.Programmatic);
             return;
         }
         
-        var tmpMaterial = new Materials
+        try
         {
-            ProductID = selected.ProductID,
-            Name = txtName.Text.Trim(),
-            BasePrice = decimal.TryParse(txtBasePrice.Text, out decimal price) ? price : 0,
-            MinAmount = int.TryParse(txtMinAmount.Text, out int minAmt) ? minAmt : 0,
-        };
-        await ViewModel.UpdateMaterialAsync(tmpMaterial);
-        ClearInputs();
+            var tmpMaterial = new Materials
+            {
+                ProductID = selected.ProductID,
+                Name = txtName.Text.Trim(),
+                BasePrice = decimal.TryParse(txtBasePrice.Text, out decimal price) ? price : 0,
+                MinAmount = int.TryParse(txtMinAmount.Text, out int minAmt) ? minAmt : 0,
+            };
+            await ViewModel.UpdateMaterialAsync(tmpMaterial);
+            await App.ShowSuccessAsync("Cập nhật thành công!");
+            ClearInputs();
+        }
+        catch (Exception ex)
+        {
+            await App.ShowErrorAsync("Cập nhật thất bại", ex);
+        }
     }
 
     private async void BtnDelete_Click(object sender, RoutedEventArgs e)
     {
         if (MaterialGrid.SelectedItem is not Materials selected) return;
-        await ViewModel.DeleteMaterialAsync(selected);
-        ClearInputs();
+        if (await App.ShowConfirmAsync("Xác nhận xóa", $"Bạn có chắc muốn xóa vật tư {selected.Name}?", "Xóa"))
+        {
+            try
+            {
+                await ViewModel.DeleteMaterialAsync(selected);
+                await App.ShowSuccessAsync("Xóa thành công!");
+                ClearInputs();
+            }
+            catch (Exception ex)
+            {
+                await App.ShowErrorAsync("Xóa thất bại", ex);
+            }
+        }
     }
 
     private void BtnReset_Click(object sender, RoutedEventArgs e)
     {
-        ClearInputs();
-        RefreshData();
+        ClearInputs();        
     }
 
     private void MaterialGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)

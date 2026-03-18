@@ -176,7 +176,7 @@ public partial class CreateInvoiceViewModel : ObservableRecipient, IRecipient<Pr
     {
         if (SelectedCustomer == null) return;
 
-        string rootFolderPath;
+        string? rootFolderPath;
         try
         {
             rootFolderPath = await _localSettingsService.ReadSettingAsync<string>("InvoiceStoragePath");
@@ -202,23 +202,27 @@ public partial class CreateInvoiceViewModel : ObservableRecipient, IRecipient<Pr
         string fileName = $"{GeneratedInvoiceCode}.pdf";
         string finalFilePath = Path.Combine(customerFolderPath, fileName);
 
-        await Task.Run(() =>
+        try
         {
-            _pdfService.GenerateOfficial(InvoiceItems, SelectedCustomer.Name, SelectedCustomer.Phone, GeneratedInvoiceCode, DateTime.Now, finalFilePath);
-        });
+            await _pdfService.GenerateOfficialAsync(InvoiceItems, SelectedCustomer.Name, SelectedCustomer.Phone, GeneratedInvoiceCode, DateTime.Now, finalFilePath);
 
-        if (File.Exists(finalFilePath))
-        {
-            var p = new Process();
-            p.StartInfo = new ProcessStartInfo(finalFilePath)
+            if (File.Exists(finalFilePath))
             {
-                UseShellExecute = true
-            };
-            p.Start();
+                var p = new Process();
+                p.StartInfo = new ProcessStartInfo(finalFilePath)
+                {
+                    UseShellExecute = true
+                };
+                p.Start();
+            }
+            else
+            {
+                await App.ShowErrorAsync("File không tồn tại sau khi tạo.");
+            }
         }
-        else
+        catch (Exception ex)
         {
-            await App.ShowMessageAsync("Lỗi", "File không tồn tại sau khi tạo.");
+            await App.ShowErrorAsync("Không thể tạo file PDF hóa đơn", ex);
         }
     }
 
@@ -228,21 +232,10 @@ public partial class CreateInvoiceViewModel : ObservableRecipient, IRecipient<Pr
         if (SelectedCustomer == null) return;
         try
         {
-            string documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            string fileName = "TEMP.pdf";
-            string filePath = Path.Combine(documentsPath, fileName);
+            string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            string filePath = Path.Combine(desktopPath, "TEMP.pdf");
 
-            var pdfService = new InvoicePdfService();
-
-            try
-            {
-                pdfService.GenerateTemp(InvoiceItems, filePath);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error creating PDF: {ex.Message}");
-                return;
-            }
+            await _pdfService.GenerateTempAsync(InvoiceItems, filePath);
 
             if (File.Exists(filePath))
             {
@@ -255,12 +248,12 @@ public partial class CreateInvoiceViewModel : ObservableRecipient, IRecipient<Pr
             }
             else
             {
-                await App.ShowMessageAsync("Lỗi", "File không tồn tại sau khi tạo.");
+                await App.ShowErrorAsync("File tạm không tồn tại sau khi tạo.");
             }
         }
         catch (Exception ex)
         {
-            await App.ShowMessageAsync("Lỗi", $"Không thể tạo phiếu tạm: {ex.Message}");
+            await App.ShowErrorAsync("Không thể tạo phiếu tạm", ex);
         }
     }
 
@@ -268,7 +261,7 @@ public partial class CreateInvoiceViewModel : ObservableRecipient, IRecipient<Pr
     {
         if (SelectedCustomer == null)
         {
-            await App.ShowMessageAsync("Thông báo", "Vui lòng chọn khách hàng trước");
+            await App.ShowErrorAsync("Vui lòng chọn khách hàng trước khi chọn sản phẩm.");
             return;
         }
 
@@ -303,28 +296,14 @@ public partial class CreateInvoiceViewModel : ObservableRecipient, IRecipient<Pr
         newWindow.Activate();
     }
 
-    public async Task SaveInvoice()
+    public async Task<bool> SaveInvoice()
     {
-        // Step process to save an invoice
-        // 1. Close product selection window if open
-        // 2. Validate customer selection and invoice items
-        // 3. If editing, delete original invoice and revert inventory
-        // 4. Create new invoice object
-        // 5. Create invoice details list
-        // 6. Create warehouse transactions list
-        // 7. Save invoice, details, and transactions to database
-        // 8. Generate official PDF
-        // 9. Show success message and reset invoice
-
         CloseProductSelectionWindow();
         if (SelectedCustomer == null || !InvoiceItems.Any())
         {
-            await App.ShowMessageAsync("Thông báo", "Chưa chọn khách hàng hoặc không có dữ liệu.");
-            return;
+            await App.ShowErrorAsync("Chưa chọn khách hàng hoặc danh sách sản phẩm trống.");
+            return false;
         }
-
-        // Debug previewer here
-        //await GenerateOfficialPdfAsync();
 
         try
         {
@@ -368,13 +347,13 @@ public partial class CreateInvoiceViewModel : ObservableRecipient, IRecipient<Pr
 
             App.MainWindow.Activate();
 
-            await App.ShowMessageAsync("Thông báo", "Lưu thành công.");
-            ResetInvoice();
+            await App.ShowSuccessAsync("Lưu hóa đơn thành công.");
+            return true;
         }
         catch (Exception ex)
         {
-            await App.ShowMessageAsync("Lỗi", $"Không thể lưu hoá đơn: {ex.Message}");
-            Debug.WriteLine($"Error saving invoice: {ex.Message}");
+            await App.ShowErrorAsync("Không thể lưu hoá đơn", ex);
+            return false;
         }
     }
 

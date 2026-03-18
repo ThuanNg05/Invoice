@@ -2,6 +2,8 @@
 using System.Diagnostics;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
+using Polly;
+using Polly.Retry;
 using Supabase.Postgrest;
 using Supabase.Postgrest.Interfaces;
 using Supabase.Realtime.PostgresChanges;
@@ -14,14 +16,11 @@ public class SupabaseDataService : IDataService
 {
     private readonly SupabaseClient _client;
     private readonly InMemoryCache _cache = new();
-
-
+    private readonly AsyncRetryPolicy _retryPolicy;
 
     public bool IsCacheValid(string entityName) => _cache.IsValid(entityName);
     public void InvalidateCache(string entityName) => _cache.Invalidate(entityName);
     public void InvalidateAllCaches() => _cache.Clear();
-
-
 
     public IEnumerable<Customers> CachedCustomers { get; private set; } = [];
     public IEnumerable<Materials> CachedMaterials { get; private set; } = [];
@@ -29,25 +28,58 @@ public class SupabaseDataService : IDataService
     public IEnumerable<DetailPlanks> CachedPlanks { get; private set; } = [];
     public IEnumerable<DetailPrice> CachedPrices { get; private set; } = [];
 
-    public SupabaseDataService(SupabaseClient client) => _client = client;
+    public SupabaseDataService(SupabaseClient client)
+    {
+        _client = client;
+        
+        // Cấu hình Polly
+        _retryPolicy = Policy
+            .Handle<HttpRequestException>()
+            .Or<TaskCanceledException>()
+            .Or<Exception>(ex => ex.Message.Contains("timeout", StringComparison.OrdinalIgnoreCase))
+            .WaitAndRetryAsync(3, retryAttempt => 
+                TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+                (exception, timeSpan, retryCount, context) =>
+                {
+                    Debug.WriteLine($"[POLLY RETRY {retryCount}] Lỗi: {exception.Message}. Thử lại sau {timeSpan.TotalSeconds}s...");
+                });
+
+        // Kích hoạt Realtime Cache Invalidation
+        _ = SetupRealtimeCacheInvalidation();
+    }
+
+    private async Task SetupRealtimeCacheInvalidation()
+    {
+        try
+        {
+            await EnsureConnectionAsync();
+            await _client.Realtime.ConnectAsync();
+
+            // Lắng nghe thay đổi trên từng bảng để xóa cache tương ứng
+            await _client.From<Customers>().On(PostgresChangesOptions.ListenType.All, (s, c) => _cache.Invalidate(InMemoryCache.CUSTOMERS));
+            await _client.From<Materials>().On(PostgresChangesOptions.ListenType.All, (s, c) => _cache.Invalidate(InMemoryCache.MATERIALS));
+            await _client.From<Frames>().On(PostgresChangesOptions.ListenType.All, (s, c) => _cache.Invalidate(InMemoryCache.FRAMES));
+            await _client.From<DetailPlanks>().On(PostgresChangesOptions.ListenType.All, (s, c) => _cache.Invalidate(InMemoryCache.PLANKS));
+            await _client.From<DetailPrice>().On(PostgresChangesOptions.ListenType.All, (s, c) => _cache.Invalidate(InMemoryCache.PRICES));
+            
+            Debug.WriteLine("[REALTIME] Cache Invalidation system is active.");
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[REALTIME CACHE ERROR] {ex.Message}");
+        }
+    }
 
     private async Task EnsureConnectionAsync()
     {
-        try
+        await _retryPolicy.ExecuteAsync(async () =>
         {
             if (_client.Auth.CurrentSession == null)
             {
                 await _client.InitializeAsync();
             }
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Supabase Initialization Error: {ex.Message}");
-            throw new Exception("Không thể kết nối với máy chủ Supabase. Vui lòng kiểm tra kết nối mạng.", ex);
-        }
-    }
-
-
+        });
+    }   
 
     // Customers
     public async Task<IEnumerable<Customers>> GetCustomers(bool forceRefresh = false)
@@ -341,10 +373,8 @@ public class SupabaseDataService : IDataService
         if (newPlank != null)
         {
             plank.sizeID = newPlank.sizeID;
-            var list = CachedPlanks.ToList();
-            list.Add(plank);
-            CachedPlanks = list;
         }
+        _cache.Invalidate(InMemoryCache.PLANKS);
     }
     public async Task DeletePlank(string plankId)
     {
@@ -355,25 +385,13 @@ public class SupabaseDataService : IDataService
         }
 
         await _client.From<DetailPlanks>().Where(p => p.sizeID == plankId).Delete();
-        var list = CachedPlanks.ToList();
-        var item = list.FirstOrDefault(p => p.sizeID == plankId);
-        if (item != null)
-        {
-            list.Remove(item);
-            CachedPlanks = list;
-        }
+        _cache.Invalidate(InMemoryCache.PLANKS);
     }
     public async Task UpdatePlank(DetailPlanks plank)
     {
         await EnsureConnectionAsync();
         await _client.From<DetailPlanks>().Update(plank);
-        var list = CachedPlanks.ToList();
-        var item = list.FirstOrDefault(p => p.sizeID == plank.sizeID);
-        if (item != null)
-        {
-            item.sizeID = plank.sizeID;
-            CachedPlanks = list;
-        }
+        _cache.Invalidate(InMemoryCache.PLANKS);
     }
 
 
@@ -644,10 +662,62 @@ public class SupabaseDataService : IDataService
     public async Task<Products> GetProductById(long productId)
     {
         await EnsureConnectionAsync();
-        var response = await _client.From<Products>()
+        
+        // 1. Try Products
+        var productResponse = await _client.From<Products>()
                                     .Where(p => p.ProductID == productId)
-                                    .Single();
-        return response;
+                                    .Get();
+        var product = productResponse.Models.FirstOrDefault();
+        
+        if (product != null) 
+        {
+            // If the product is linked to a size, synchronize inventory from listplanks
+            if (!string.IsNullOrEmpty(product.SizeID))
+            {
+                var plankResponse = await _client.From<DetailPlanks>()
+                                             .Where(p => p.sizeID == product.SizeID)
+                                             .Get();
+                var plank = plankResponse.Models.FirstOrDefault();
+                if (plank != null)
+                {
+                    product.Inventory = plank.inventory; // Sync from plank size source of truth
+                }
+            }
+            return product;
+        }
+
+        // 2. Try Materials
+        var materialResponse = await _client.From<Materials>()
+                                        .Where(m => m.ProductID == productId)
+                                        .Get();
+        var material = materialResponse.Models.FirstOrDefault();
+        if (material != null)
+        {
+            return new Products
+            {
+                ProductID = material.ProductID,
+                Name = material.Name,
+                BasePrice = (double)material.BasePrice,
+                Inventory = material.Inventory
+            };
+        }
+
+        // 3. Try DetailPlanks (listplanks)
+        var plankResponseDirect = await _client.From<DetailPlanks>()
+                                     .Where(p => p.sizeID == productId.ToString())
+                                     .Get();
+        var plankDirect = plankResponseDirect.Models.FirstOrDefault();
+        if (plankDirect != null)
+        {
+            return new Products
+            {
+                ProductID = productId,
+                Name = $"Ván {plankDirect.sizeID}",
+                Inventory = plankDirect.inventory
+            };
+        }
+
+        return null;
     }
     public async Task AddProduct(Products product)
     {
@@ -723,6 +793,8 @@ public class SupabaseDataService : IDataService
     public async Task UpdateProductInventory(long productId, int amountChange)
     {
         await EnsureConnectionAsync();
+        
+        // 1. Try Products
         var productResponse = await _client.From<Products>()
                                .Where(p => p.ProductID == productId)
                                .Get();
@@ -730,14 +802,14 @@ public class SupabaseDataService : IDataService
 
         if (product != null)
         {
-            product.Inventory += amountChange;                    
             await _client.From<Products>()
                          .Where(p => p.ProductID == productId)
-                         .Set(x => x.Inventory, product.Inventory) 
+                         .Set(x => x.Inventory, product.Inventory + amountChange) 
                          .Update();
             return;
         }
 
+        // 2. Try Materials
         var materialResponse = await _client.From<Materials>()
                                         .Where(m => m.ProductID == productId)
                                         .Get();
@@ -745,12 +817,25 @@ public class SupabaseDataService : IDataService
 
         if (material != null)
         {
-            material.Inventory += amountChange;
             await _client.From<Materials>()
                          .Where(m => m.ProductID == productId)
-                         .Set(x => x.Inventory, material.Inventory)
+                         .Set(x => x.Inventory, material.Inventory + amountChange)
                          .Update();
-        }        
+            return;
+        }
+
+        // 3. Try DetailPlanks (listplanks)
+        var plankResponse = await _client.From<DetailPlanks>()
+                                     .Where(p => p.sizeID == productId.ToString())
+                                     .Get();
+        var plank = plankResponse.Models.FirstOrDefault();
+        if (plank != null)
+        {
+            await _client.From<DetailPlanks>()
+                         .Where(p => p.sizeID == productId.ToString())
+                         .Set(x => x.inventory, plank.inventory + amountChange)
+                         .Update();
+        }
     }
     
     public async Task AddWarehouseTransaction(WarehouseTransaction transaction)

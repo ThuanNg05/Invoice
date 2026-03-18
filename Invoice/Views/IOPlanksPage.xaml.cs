@@ -3,6 +3,7 @@ using CommunityToolkit.WinUI.UI.Controls;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
 using Invoice.Core.Services;
+using Invoice.Helpers;
 using Invoice.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -71,30 +72,31 @@ public sealed partial class IOPlanksPage : Page
         SplitAndSet(frame.size10, size10, amount10);
     }
 
-    private void ClearInputs(DependencyObject parent)
+    private void ClearInputs()
     {
-        int count = VisualTreeHelper.GetChildrenCount(parent);
+        //int count = VisualTreeHelper.GetChildrenCount(parent);
 
-        for (int i = 0; i < count; i++)
-        {
-            var child = VisualTreeHelper.GetChild(parent, i);
+        //for (int i = 0; i < count; i++)
+        //{
+        //    var child = VisualTreeHelper.GetChild(parent, i);
 
-            if (child is TextBox textBox)
-            {
-                textBox.Text = string.Empty;
-            }
-            ClearInputs(child);
-        }
+        //    if (child is TextBox textBox)
+        //    {
+        //        textBox.Text = string.Empty;
+        //    }
+        //    ClearInputs(child);
+        //}
+        StringHelper.ClearInputs(this);
+        amount.IsEnabled = false;
+        btnSave.IsEnabled = false;
+        cbbPlankType.SelectedIndex = -1;
         PlankGrid.SelectedIndex = -1;
+        PlankGrid.SelectedItem = null;
     }
 
     private void BtnReset_Click(object sender, RoutedEventArgs e)
     {
-        ClearInputs(this);
-        PlankGrid.SelectedItem = null;
-        amount.IsEnabled = false;
-        btnSave.IsEnabled = false;
-        cbbPlankType.SelectedIndex = -1;
+        ClearInputs();
     }
 
     private async void BtnSave_Click(object sender, RoutedEventArgs e)
@@ -151,7 +153,7 @@ public sealed partial class IOPlanksPage : Page
                 }
 
                 await supabaseService.ProcessInventoryTransaction(selectedFrame, bigQty, materialID);
-                BtnReset_Click(null, null);
+                ClearInputs();
                 amount.Text = string.Empty;
                 await App.ShowMessageAsync("Thông báo", $"Đã xuất {bigQty} tấm '{materialID}' và nhập kho ván nhỏ thành công.");
             }

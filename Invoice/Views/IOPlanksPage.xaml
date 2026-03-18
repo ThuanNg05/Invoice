@@ -67,8 +67,8 @@
 			<StackPanel Orientation="Vertical">
 				<StackPanel Orientation="Vertical" Spacing="10">
 					<StackPanel Orientation="Horizontal" Spacing="10">
-						<TextBox HorizontalAlignment="Left" Header="Mã rập :" x:Name="frameNO" Width="100" IsReadOnly="true"/>
-						<TextBox HorizontalAlignment="left" Header="Số lượng tấm lớn:" x:Name="amount" Width="190" TextAlignment="Center" BeforeTextChanging="Amount_BeforeTextChanging"/>
+						<TextBox HorizontalAlignment="Left" Header="Mã rập" x:Name="frameNO" Width="100" IsReadOnly="true"/>
+						<TextBox HorizontalAlignment="left" Header="Số lượng tấm lớn" x:Name="amount" Width="190" TextAlignment="Center" BeforeTextChanging="Amount_BeforeTextChanging"/>
 						<!--<TextBlock>							
 							<Run Text="Loại giá:"/>
                         </TextBlock>-->
