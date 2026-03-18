@@ -30,20 +30,20 @@ public sealed partial class ProductSelectionPage : Page
     {
         if (ProductGrid.SelectedItem is not ProductSummary summary)
         {
-            await App.ShowMessageAsync("Lỗi", "Vui lòng chọn một sản phẩm từ danh sách.");
+            await App.ShowErrorAsync("Vui lòng chọn một sản phẩm từ danh sách.");
             return;
         }
 
         if (string.IsNullOrEmpty(txtName.Text))
         {
-            await App.ShowMessageAsync("Lỗi xác thực", "Tên hàng hoá không được bỏ trống.");
+            await App.ShowErrorAsync("Tên hàng hoá không được bỏ trống.");
             return;
         }
 
         string cleanedPriceText = txtBasePrice.Text.Replace(",", "").Replace(".", "");
         if (!int.TryParse(cleanedPriceText, out int sellPrice) || cleanedPriceText.Equals("0"))
         {
-            await App.ShowMessageAsync("Lỗi xác thực", "Đơn giá không hợp lệ.");
+            await App.ShowErrorAsync("Đơn giá không hợp lệ.");
             txtBasePrice.Focus(FocusState.Programmatic);
             txtBasePrice.SelectAll();
             return;
@@ -54,14 +54,14 @@ public sealed partial class ProductSelectionPage : Page
         {
             if (!int.TryParse(txtAmount.Text, out amount) || amount <= 0)
             {
-                await App.ShowMessageAsync("Lỗi xác thực", "Số lượng không hợp lệ.");
+                await App.ShowErrorAsync("Số lượng không hợp lệ.");
                 return;
             }
         }
 
         if (amount > _currentInventory)
         {
-            await App.ShowMessageAsync("Lỗi tồn kho", $"Số lượng nhập ({amount}) vượt quá tồn kho hiện tại ({_currentInventory}).");
+            await App.ShowErrorAsync($"Số lượng nhập ({amount}) vượt quá tồn kho hiện tại ({_currentInventory}).");
             return;
         }
 
@@ -86,17 +86,18 @@ public sealed partial class ProductSelectionPage : Page
         ClearSelection();
         txtSearch_TextChanged(txtSearch, null);
     }
-private void ClearSelection()
-{
-    StringHelper.ClearInputs(this);
-    ProductGrid.SelectedIndex = -1;
-    txtTotal.Text = "0";
-    txtName.IsReadOnly = false;
-    _currentInventory = 0;
 
-    btnAdd.IsEnabled = false;
-    txtSearch.Focus(FocusState.Programmatic);
-}
+    private void ClearSelection()
+    {
+        StringHelper.ClearInputs(this);
+        ProductGrid.SelectedIndex = -1;
+        txtTotal.Text = "0";
+        txtName.IsReadOnly = false;
+        _currentInventory = 0;
+
+        btnAdd.IsEnabled = false;
+        txtSearch.Focus(FocusState.Programmatic);
+    }
 
     private async void ProductGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {

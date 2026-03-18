@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 
 using CommunityToolkit.Mvvm.ComponentModel;
-
+using System.Diagnostics;
 using Invoice.Contracts.ViewModels;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
@@ -37,8 +37,7 @@ public partial class DetailPlanksViewModel : ObservableRecipient, INavigationAwa
         }
         catch
         {
-            System.Diagnostics.Debug.WriteLine("Failed to load Detail planks data.");
-            await App.ShowMessageAsync("Lỗi", "Không thể tải dữ liệu cỡ ván.");
+            Debug.WriteLine("Failed to load Detail planks data.");            
         }
         finally
         {
@@ -54,21 +53,18 @@ public partial class DetailPlanksViewModel : ObservableRecipient, INavigationAwa
     {
         if (Planks.Any(c => c.sizeID.Equals(planks.sizeID, StringComparison.OrdinalIgnoreCase)))
         {
-            System.Diagnostics.Debug.WriteLine("Lỗi: kích thước này đã tồn tại!");
-            await App.ShowMessageAsync("Lỗi", "Kích thước này đã tồn tại!");
+            Debug.WriteLine("Lỗi: kích thước này đã tồn tại!");            
             return;
         }
         IsLoading = true;
         try
         {
             await _dataService.AddPlank(planks);
-            Planks.Add(planks);
-            await App.ShowMessageAsync("Thông báo", "Thêm kích thước thành công.");
+            Planks.Add(planks);            
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Lỗi thêm: {ex.Message}");
-            await App.ShowMessageAsync("Lỗi", $"{ex.Message}");
+            Debug.WriteLine($"Lỗi thêm: {ex.Message}");            
         }
         finally
         {
@@ -81,13 +77,11 @@ public partial class DetailPlanksViewModel : ObservableRecipient, INavigationAwa
         try
         {
             await _dataService.DeletePlank(planks.sizeID);
-            Planks.Remove(planks);
-            await App.ShowMessageAsync("Thông báo", "Xóa kích thước thành công.");
+            Planks.Remove(planks);            
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Lỗi xóa: {ex.Message}");
-            await App.ShowMessageAsync("Lỗi", $"{ex.Message}");
+            Debug.WriteLine($"Lỗi xóa: {ex.Message}");            
             return;
         }
         finally
@@ -99,7 +93,7 @@ public partial class DetailPlanksViewModel : ObservableRecipient, INavigationAwa
     {
         if (Planks.Any(c => c.sizeID.Equals(planks.sizeID, StringComparison.OrdinalIgnoreCase)))
         {
-            System.Diagnostics.Debug.WriteLine("Lỗi: Kích thước này đã tồn tại!");
+            Debug.WriteLine("Lỗi: Kích thước này đã tồn tại!");
             await App.ShowMessageAsync("Lỗi", "Kích thước này đã tồn tại!");
             return;
         }
@@ -112,13 +106,11 @@ public partial class DetailPlanksViewModel : ObservableRecipient, INavigationAwa
             if (item != null)
             {
                 item.sizeID = planks.sizeID;
-            }
-            await App.ShowMessageAsync("Thông báo", "Cập nhật kích thước thành công.");
+            }            
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Lỗi sửa: {ex.Message}");
-            await App.ShowMessageAsync("Lỗi", $"{ex.Message}");
+            Debug.WriteLine($"Lỗi sửa: {ex.Message}");            
             return;
         }
         finally

@@ -74,13 +74,11 @@ public partial class CustomersViewModel : ObservableRecipient, INavigationAware
         {
             await _dataService.AddCustomer(customer);
             CustomersCollection.Add(customer);
-            AllCustomers.Add(customer);
-            await App.ShowMessageAsync("Thông báo", "Thêm khách hàng thành công.");
+            AllCustomers.Add(customer);            
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Lỗi thêm: {ex.Message}");
-            await App.ShowMessageAsync("Lỗi", $"{ex.Message}");
+            Debug.WriteLine($"Lỗi thêm: {ex.Message}");            
         }
         finally
         {
@@ -96,13 +94,11 @@ public partial class CustomersViewModel : ObservableRecipient, INavigationAware
             await _dataService.DeleteCustomer(customers.CustomerID);
             CustomersCollection.Remove(customers);
             var itemInAll = AllCustomers.FirstOrDefault(c => c.CustomerID == customers.CustomerID);
-            if (itemInAll != null) AllCustomers.Remove(itemInAll);
-            await App.ShowMessageAsync("Thông báo", "Xóa khách hàng thành công.");
+            if (itemInAll != null) AllCustomers.Remove(itemInAll);            
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Lỗi xóa: {ex.Message}");
-            await App.ShowMessageAsync("Lỗi", $"{ex.Message}");
+            Debug.WriteLine($"Lỗi xóa: {ex.Message}");            
             return;
         }
         finally
@@ -145,13 +141,11 @@ public partial class CustomersViewModel : ObservableRecipient, INavigationAware
                 {
                     AllCustomers[indexAll] = customer;
                 }
-            }
-            await App.ShowMessageAsync("Thông báo", "Cập nhật khách hàng thành công.");
+            }            
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Failed to update customer: {ex.Message}");
-            await App.ShowMessageAsync("Lỗi", "Không thể cập nhật thông tin khách hàng");
+            Debug.WriteLine($"Failed to update customer: {ex.Message}");            
             return;
         }
         finally

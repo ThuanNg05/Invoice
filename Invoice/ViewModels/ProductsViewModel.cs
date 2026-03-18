@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
+using System.Diagnostics;
 using Invoice.Contracts.ViewModels;
 using Invoice.Core.Contracts;
 using Invoice.Core.Contracts.Services;
@@ -90,7 +91,7 @@ public partial class ProductsViewModel : ObservableRecipient, INavigationAware
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Load Products Failed: {ex.Message}");
+            Debug.WriteLine($"Load Products Failed: {ex.Message}");
         }
         finally
         {
@@ -107,7 +108,7 @@ public partial class ProductsViewModel : ObservableRecipient, INavigationAware
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Load Detail Failed: {ex.Message}");
+            Debug.WriteLine($"Load Detail Failed: {ex.Message}");
         }
         finally
         {
@@ -207,10 +208,5 @@ public partial class ProductsViewModel : ObservableRecipient, INavigationAware
         {
             Source.Remove(itemToDelete);
         }
-    }
-
-    //public async void Receive(InventoryChangedMessage message)
-    //{
-
-    //}
+    }    
 }

@@ -211,6 +211,39 @@
     <value>Error</value>
   </data>
   <data name="Product_Add_Success" xml:space="preserve">
-    <value>Product_Add_Success</value>
+    <value>Product added successfully!</value>
+  </data>
+  <data name="Common_Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Common_Confirm" xml:space="preserve">
+    <value>Confirm</value>
+  </data>
+  <data name="Common_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Common_ErrorTitle" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="Common_SuccessTitle" xml:space="preserve">
+    <value>Success</value>
+  </data>
+  <data name="Common_ConfirmDelete" xml:space="preserve">
+    <value>Confirm Delete</value>
+  </data>
+  <data name="Common_Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Common_UpdateSuccess" xml:space="preserve">
+    <value>Update successful!</value>
+  </data>
+  <data name="Common_UpdateError" xml:space="preserve">
+    <value>Update failed</value>
+  </data>
+  <data name="Common_DeleteError" xml:space="preserve">
+    <value>Delete failed</value>
+  </data>
+  <data name="Common_ProductSelection" xml:space="preserve">
+    <value>Product Selection</value>
   </data>
 </root>

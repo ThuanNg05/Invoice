@@ -24,7 +24,7 @@ public sealed partial class IOActionsPage : Page
     {
         StringHelper.ClearInputs(this);
         cmbType.SelectedIndex = -1;
-
+        txtAmount.Text = string.Empty;
         SourceDataGrid.SelectedItem = null;
         TransactionDataGrid.SelectedItem = null;
 
@@ -32,24 +32,25 @@ public sealed partial class IOActionsPage : Page
         btnEdit.IsEnabled = false;
         btnDelete.IsEnabled = false;
         btnSave.IsEnabled = ViewModel.TransactionList.Count > 0;
+        txtSearch.Focus(FocusState.Programmatic);
     }
 
     private async void BtnAddProduct_Click(object sender, RoutedEventArgs e)
     {
         if (string.IsNullOrEmpty(txtID.Text) || string.IsNullOrEmpty(txtAmount.Text) || cmbType.SelectedIndex == -1)
-        {
-            await App.ShowMessageAsync("Thông báo", "Vui lòng nhập đủ thông tin (Số lượng, Hình thức).");
+        {            
+            await App.ShowErrorAsync("Vui lòng nhập đủ thông tin (Số lượng, Hình thức).");
             return;
         }
         if (!int.TryParse(txtAmount.Text, out int amount) || amount <= 0)
         {
-            await App.ShowMessageAsync("Thông báo", "Số lượng phải là số dương.");
+            await App.ShowErrorAsync("Số lượng phải là số dương.");
             return;
         }
 
         if (!long.TryParse(txtID.Text, out long productId))
         {
-            await App.ShowMessageAsync("Lỗi", "Mã sản phẩm không hợp lệ.");
+            await App.ShowErrorAsync("Mã sản phẩm không hợp lệ.");
             return;
         }
 
@@ -60,34 +61,25 @@ public sealed partial class IOActionsPage : Page
             .FirstOrDefault(t => t.ProductID == productId && t.ActionType == actionType);
 
         if (existingTransaction != null)
-        {
-            ContentDialog dialog = new ContentDialog
+        {            
+            if(await App.ShowConfirmAsync("Sản phẩm trùng lặp", $"Sản phẩm '{txtName.Text}' với hình thức '{actionType}' đã có trong danh sách chờ.\nBạn có muốn cộng dồn số lượng không?", "Đồng ý"))
             {
-                Title = "Sản phẩm trùng lặp",
-                Content = $"Sản phẩm '{txtName.Text}' với hình thức '{actionType}' đã có trong danh sách chờ.\nBạn có muốn cộng dồn số lượng không?",
-                PrimaryButtonText = "Cộng dồn",
-                CloseButtonText = "Hủy bỏ",
-                XamlRoot = this.XamlRoot
-            };
+                int totalAmount = existingTransaction.Amount + amount;
 
-            var result = await dialog.ShowAsync();
-            if (result != ContentDialogResult.Primary) return;
+                if (actionType == "Xuất kho" && totalAmount > currentInventory)
+                {
+                    await App.ShowErrorAsync($"Không thể cộng dồn. Tổng số lượng xuất kho ({totalAmount}) vượt quá tồn kho hiện tại ({currentInventory}).");
+                    return;
+                }
 
-            int totalAmount = existingTransaction.Amount + amount;
-
-            if (actionType == "Xuất kho" && totalAmount > currentInventory)
-            {
-                await App.ShowMessageAsync("Thông báo", $"Không thể cộng dồn. Tổng số lượng xuất kho ({totalAmount}) vượt quá tồn kho hiện tại ({currentInventory}).");
-                return;
-            }
-
-            existingTransaction.Amount = totalAmount;
+                existingTransaction.Amount = totalAmount;
+            }            
         }
         else
         {
             if (actionType == "Xuất kho" && amount > currentInventory)
-            {
-                await App.ShowMessageAsync("Thông báo", $"Không thể thêm. Số lượng xuất kho ({amount}) vượt quá tồn kho hiện tại ({currentInventory}).");
+            {                
+                await App.ShowErrorAsync($"Không thể thêm. Số lượng xuất kho ({amount}) vượt quá tồn kho hiện tại ({currentInventory}).");
                 return;
             }
 
@@ -106,11 +98,8 @@ public sealed partial class IOActionsPage : Page
 
             ViewModel.TransactionList.Add(newTransaction);
         }
-
-        btnSave.IsEnabled = true;
+        //btnSave.IsEnabled = true;
         ClearInput();
-        txtAmount.Text = string.Empty;
-        txtSearch.Focus(FocusState.Programmatic);
     }
     private async void BtnEdit_Click(object sender, RoutedEventArgs e)
     {
@@ -118,7 +107,7 @@ public sealed partial class IOActionsPage : Page
         {
             if (!int.TryParse(txtAmount.Text, out int newAmount) || newAmount <= 0)
             {
-                await App.ShowMessageAsync("Thông báo", "Số lượng không hợp lệ.");
+                await App.ShowErrorAsync("Số lượng không hợp lệ.");
                 return;
             }
 
@@ -126,7 +115,7 @@ public sealed partial class IOActionsPage : Page
             int currentInventory = ViewModel.GetCurrentInventory(selectedItem.ProductID);
             if (actionType == "Xuất kho" && newAmount > currentInventory)
             {
-                await App.ShowMessageAsync("Thông báo", $"Không thể cập nhật. Số lượng xuất kho ({newAmount}) vượt quá tồn kho hiện tại ({currentInventory}).");
+                await App.ShowErrorAsync($"Không thể cập nhật. Số lượng xuất kho ({newAmount}) vượt quá tồn kho hiện tại ({currentInventory}).");
                 return;
             }
 
@@ -135,7 +124,7 @@ public sealed partial class IOActionsPage : Page
             selectedItem.Name = txtName.Text;
 
             ClearInput();
-            await App.ShowMessageAsync("Thông báo", "Cập nhật thành công.");
+            await App.ShowSuccessAsync("Cập nhật thành công.");
         }
     }
     private async void BtnDelete_Click(object sender, RoutedEventArgs e)
@@ -157,11 +146,11 @@ public sealed partial class IOActionsPage : Page
             btnSave.IsEnabled = false;
             await ViewModel.SaveData();
             ClearInput();
-            await App.ShowMessageAsync("Thành công", "Cập nhật kho thành công.");
+            await App.ShowSuccessAsync("Cập nhật kho thành công.");
         }
         catch (Exception ex)
         {
-            await App.ShowMessageAsync("Lỗi", $"Không thể lưu dữ liệu: {ex.Message}");
+            await App.ShowErrorAsync("Không thể lưu dữ liệu", ex);
         }
         finally
         {

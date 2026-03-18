@@ -73,19 +73,7 @@ public sealed partial class IOPlanksPage : Page
     }
 
     private void ClearInputs()
-    {
-        //int count = VisualTreeHelper.GetChildrenCount(parent);
-
-        //for (int i = 0; i < count; i++)
-        //{
-        //    var child = VisualTreeHelper.GetChild(parent, i);
-
-        //    if (child is TextBox textBox)
-        //    {
-        //        textBox.Text = string.Empty;
-        //    }
-        //    ClearInputs(child);
-        //}
+    {        
         StringHelper.ClearInputs(this);
         amount.IsEnabled = false;
         btnSave.IsEnabled = false;
@@ -103,19 +91,19 @@ public sealed partial class IOPlanksPage : Page
     {
         if (PlankGrid.SelectedItem is not Frames selectedFrame)
         {
-            await App.ShowMessageAsync("Thông báo", "Vui lòng chọn mã rập để lưu kho");
+            await App.ShowErrorAsync("Vui lòng chọn mã rập để lưu kho");
             return;
         }
         if (string.IsNullOrEmpty(amount.Text) || !int.TryParse(amount.Text, out int bigQty) || bigQty <= 0)
         {
-            await App.ShowMessageAsync("Thông báo", "Vui lòng nhập số lượng nhập kho hợp lệ (>0)");
+            await App.ShowErrorAsync("Vui lòng nhập số lượng nhập kho hợp lệ (>0)");
             amount.Focus(FocusState.Programmatic);
             return;
         }
 
         if (cbbPlankType.SelectedItem is not ComboBoxItem selectedItem || selectedItem.Content == null)
         {
-            await App.ShowMessageAsync("Thông báo", "Vui lòng chọn loại ván.");
+            await App.ShowErrorAsync("Vui lòng chọn loại ván.");
             cbbPlankType.Focus(FocusState.Programmatic);
             return;
         }
@@ -132,7 +120,7 @@ public sealed partial class IOPlanksPage : Page
         }
         else
         {
-            await App.ShowMessageAsync("Thông báo", $"Loại ván {typePlank} không hợp lệ.");
+            await App.ShowErrorAsync($"Loại ván {typePlank} không hợp lệ.");
             cbbPlankType.Focus(FocusState.Programmatic);
             return;
         }
@@ -148,20 +136,20 @@ public sealed partial class IOPlanksPage : Page
                 bool isStockValid = await supabaseService.ValidateMaterialStock(materialID, bigQty);
                 if (!isStockValid)
                 {
-                    await App.ShowMessageAsync("Thông báo", $"Ván {typePlank} không đủ trong kho để nhập ván. Vui lòng kiểm tra lại.");
+                    await App.ShowErrorAsync($"Ván {typePlank} không đủ trong kho để nhập ván. Vui lòng kiểm tra lại.");
                     return;
                 }
 
                 await supabaseService.ProcessInventoryTransaction(selectedFrame, bigQty, materialID);
                 ClearInputs();
                 amount.Text = string.Empty;
-                await App.ShowMessageAsync("Thông báo", $"Đã xuất {bigQty} tấm '{materialID}' và nhập kho ván nhỏ thành công.");
+                await App.ShowSuccessAsync($"Đã xuất {bigQty} tấm '{materialID}' và nhập kho ván nhỏ thành công.");
             }
         }
         catch (Exception ex)
         {
             Debug.WriteLine($"Error processing inventory transaction: {ex.Message}");
-            await App.ShowMessageAsync("Lỗi", $"Đã có lỗi xảy ra khi lưu kho");
+            await App.ShowErrorAsync("Đã có lỗi xảy ra khi lưu kho", ex);
         }
         finally
         {

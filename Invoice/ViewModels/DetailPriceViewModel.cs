@@ -1,5 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-
+using System.Diagnostics;
 using Invoice.Contracts.ViewModels;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
@@ -31,8 +31,7 @@ public partial class DetailPriceViewModel : ObservableRecipient, INavigationAwar
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Failed to load Detail Price data. {ex.Message}");
-            await App.ShowMessageAsync("Lỗi", "Không thể tải dữ liệu giá");
+            Debug.WriteLine($"Failed to load Detail Price data. {ex.Message}");            
         }
         finally
         {
@@ -49,13 +48,11 @@ public partial class DetailPriceViewModel : ObservableRecipient, INavigationAwar
         IsLoading = true;
         try
         {
-            await _dataService.UpdatePrice(price);
-            await App.ShowMessageAsync("Thông báo", "Cập nhật giá thành công.");
+            await _dataService.UpdatePrice(price);            
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Update failed: {ex.Message}");
-            await App.ShowMessageAsync("Lỗi", $"{ex.Message}");
+            Debug.WriteLine($"Update failed: {ex.Message}");            
             return;
         }
         finally { IsLoading = false; }

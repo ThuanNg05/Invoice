@@ -49,15 +49,9 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Page Update="Styles\FontSizes.xaml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Page>
-    <Page Update="Styles\TextBlock.xaml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Page>
-    <Page Update="Styles\Thickness.xaml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Page>
+    <Page Update="Styles\FontSizes.xaml" />
+    <Page Update="Styles\TextBlock.xaml" />
+    <Page Update="Styles\Thickness.xaml" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">

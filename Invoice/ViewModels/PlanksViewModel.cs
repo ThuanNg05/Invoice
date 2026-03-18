@@ -32,8 +32,7 @@ public partial class PlanksViewModel : ObservableRecipient, INavigationAware
         try { await LoadData(); }
         catch (Exception ex)
         {
-            Debug.WriteLine(ex);
-            await App.ShowMessageAsync("Lỗi", "Không thể tải dữ liệu.");
+            Debug.WriteLine(ex);            
         }
     }
 
@@ -58,20 +57,17 @@ public partial class PlanksViewModel : ObservableRecipient, INavigationAware
     {
         if (Frames.Any(p => p.FrameNO.Equals(frame.FrameNO, StringComparison.OrdinalIgnoreCase)))
         {
-            Debug.WriteLine("Lỗi: Mã ván đã tồn tại!");
-            await App.ShowMessageAsync("Lỗi", "Mã ván đã tồn tại!");
+            Debug.WriteLine("Lỗi: Mã ván đã tồn tại!");            
             return;
         }
         try
         {
             await _dataService.AddFrame(frame);
-            Frames.Add(frame);
-            await App.ShowMessageAsync("Thông báo", "Đã thêm rập mới.");
+            Frames.Add(frame);            
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Lỗi khi thêm rập: {ex.Message}");
-            await App.ShowMessageAsync("Lỗi", "Không thể thêm rập mới.");
+            Debug.WriteLine($"Lỗi khi thêm rập: {ex.Message}");            
             return;
         }
         finally
@@ -86,13 +82,11 @@ public partial class PlanksViewModel : ObservableRecipient, INavigationAware
         try
         {
             await _dataService.DeleteFrame(frame.FrameID);
-            Frames.Remove(frame);
-            await App.ShowMessageAsync("Thông báo", "Đã xóa rập.");
+            Frames.Remove(frame);            
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Lỗi khi xóa rập: {ex.Message}");
-            await App.ShowMessageAsync("Lỗi", "Không thể xóa rập.");
+            Debug.WriteLine($"Lỗi khi xóa rập: {ex.Message}");            
             return;
         }
         finally
@@ -117,13 +111,11 @@ public partial class PlanksViewModel : ObservableRecipient, INavigationAware
                     Frames.RemoveAt(index);
                     Frames.Insert(index, frame);
                 }
-            }
-            await App.ShowMessageAsync("Thông báo", "Đã cập nhật rập.");
+            }            
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Lỗi khi cập nhật rập: {ex.Message}");
-            await App.ShowMessageAsync("Lỗi", "Không thể cập nhật rập.");
+            Debug.WriteLine($"Lỗi khi cập nhật rập: {ex.Message}");            
             return;
         }
         finally

@@ -12,12 +12,20 @@ public class InvoicePdfService
     private readonly int fontSize = 14;
     private string GetLogoPath()
     {
-        // This gets the path where the app is running (e.g., bin\Debug\net8.0-windows...)
-        string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+        string baseDir;
+        if (RuntimeHelper.IsMSIX)
+        {
+            baseDir = Windows.ApplicationModel.Package.Current.InstalledLocation.Path;
+        }
+        else
+        {
+            baseDir = AppDomain.CurrentDomain.BaseDirectory;
+        }
+
         string path = Path.Combine(baseDir, "Assets", "Logo.png");
 
         if (File.Exists(path)) return path;
-        return null; // Return null if file not found
+        return null;
     }
 
     // ==========================================

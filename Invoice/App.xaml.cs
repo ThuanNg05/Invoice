@@ -2,6 +2,7 @@ using Invoice.Activation;
 using Invoice.Contracts.Services;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Services;
+using Invoice.Helpers;
 using Invoice.Models;
 using Invoice.Services;
 using Invoice.ViewModels;
@@ -92,6 +93,7 @@ public partial class App : Application
             services.AddSingleton<IActivationService, ActivationService>();
             services.AddSingleton<IPageService, PageService>();
             services.AddSingleton<INavigationService, NavigationService>();
+            services.AddSingleton<IWindowService, WindowService>();
 
             // Core Services            
             services.AddSingleton<SupabaseDataService>();
@@ -197,7 +199,7 @@ public partial class App : Application
             {
                 Title = title,
                 Content = content,
-                CloseButtonText = "Đóng",
+                CloseButtonText = "Common_Close".GetLocalized(),
                 XamlRoot = element.XamlRoot
             };
 
@@ -213,12 +215,12 @@ public partial class App : Application
     }
 
     public static Task ShowSuccessAsync(string content) 
-        => ShowMessageAsync("Thành công", content);
+        => ShowMessageAsync("Common_Success".GetLocalized(), content);
 
     public static Task ShowErrorAsync(string content, Exception? ex = null) 
-        => ShowMessageAsync("Lỗi", ex == null ? content : $"{content}\nChi tiết: {ex.Message}");
+        => ShowMessageAsync("Common_Error".GetLocalized(), ex == null ? content : $"{content}\nChi tiết: {ex.Message}");
 
-    public static async Task<bool> ShowConfirmAsync(string title, string content, string primaryButton = "Xác nhận")
+    public static async Task<bool> ShowConfirmAsync(string title, string content, string? primaryButton = null)
     {
         if (MainWindow != null && MainWindow.Content is FrameworkElement element)
         {
@@ -226,8 +228,8 @@ public partial class App : Application
             {
                 Title = title,
                 Content = content,
-                PrimaryButtonText = primaryButton,
-                CloseButtonText = "Hủy",
+                PrimaryButtonText = primaryButton ?? "Common_Confirm".GetLocalized(),
+                CloseButtonText = "Common_Cancel".GetLocalized(),
                 DefaultButton = ContentDialogButton.Close,
                 XamlRoot = element.XamlRoot
             };

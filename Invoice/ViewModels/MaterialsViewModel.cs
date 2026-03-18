@@ -32,8 +32,7 @@ public partial class MaterialsViewModel : ObservableRecipient, INavigationAware
         try { await LoadData(); }
         catch (Exception ex)
         {
-            Debug.WriteLine(ex);
-            await App.ShowMessageAsync("Lỗi", "Không thể tải dữ liệu.");
+            Debug.WriteLine(ex);            
         }
     }
 
@@ -58,8 +57,7 @@ public partial class MaterialsViewModel : ObservableRecipient, INavigationAware
     {
         if (MaterialsCollection.Any(m => m.Name.Equals(material.Name, StringComparison.OrdinalIgnoreCase)))
         {
-            Debug.WriteLine("Lỗi: Tên vật tư đã tồn tại!");
-            await App.ShowMessageAsync("Lỗi", "Tên vật tư đã tồn tại!");
+            Debug.WriteLine("Lỗi: Tên vật tư đã tồn tại!");            
             return;
         }
         IsLoading = true;
@@ -67,13 +65,11 @@ public partial class MaterialsViewModel : ObservableRecipient, INavigationAware
         {
             await _dataService.AddMaterial(material);
             MaterialsCollection.Add(material);
-            AllMaterials.Add(material);
-            await App.ShowMessageAsync("Thông báo", "Vật tư đã được thêm thành công.");
+            AllMaterials.Add(material);            
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Failed to add material: {ex.Message}");
-            await App.ShowMessageAsync("Lỗi", "Không thể thêm vật tư.");
+            Debug.WriteLine($"Failed to add material: {ex.Message}");            
         }
         finally
         {
@@ -89,13 +85,11 @@ public partial class MaterialsViewModel : ObservableRecipient, INavigationAware
             await _dataService.DeleteMaterial(material.ProductID);
             MaterialsCollection.Remove(material);
             var itemAll = AllMaterials.FirstOrDefault(m => m.ProductID == material.ProductID);
-            if (itemAll != null) AllMaterials.Remove(itemAll);
-            await App.ShowMessageAsync("Thông báo", "Vật tư đã được xóa thành công.");
+            if (itemAll != null) AllMaterials.Remove(itemAll);            
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Failed to delete material: {ex.Message}");
-            await App.ShowMessageAsync("Lỗi", "Không thể xóa vật tư.");
+            Debug.WriteLine($"Failed to delete material: {ex.Message}");            
         }
         finally
         {
@@ -107,8 +101,7 @@ public partial class MaterialsViewModel : ObservableRecipient, INavigationAware
     {
         if (MaterialsCollection.Any(m => m.Name.Equals(material.Name, StringComparison.OrdinalIgnoreCase) && m.ProductID != material.ProductID))
         {
-            Debug.WriteLine("Lỗi: Tên vật tư đã tồn tại!");
-            await App.ShowMessageAsync("Lỗi", "Tên vật tư đã tồn tại!");
+            Debug.WriteLine("Lỗi: Tên vật tư đã tồn tại!");            
             return;
         }
         IsLoading = true;
@@ -136,13 +129,11 @@ public partial class MaterialsViewModel : ObservableRecipient, INavigationAware
                 {
                     AllMaterials[indexAll] = material;
                 }
-            }
-            await App.ShowMessageAsync("Thông báo", "Vật tư đã được cập nhật thành công.");
+            }            
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Failed to update material: {ex.Message}");
-            await App.ShowMessageAsync("Lỗi", "Không thể cập nhật vật tư.");
+            Debug.WriteLine($"Failed to update material: {ex.Message}");            
         }
         finally
         {

@@ -19,6 +19,7 @@ public partial class CreateInvoiceViewModel : ObservableRecipient, IRecipient<Pr
     private readonly IDataService _dataService;
     private readonly InvoicePdfService _pdfService;
     private readonly ILocalSettingsService _localSettingsService;
+    private readonly IWindowService _windowService;
     public ObservableCollection<TempInvoice> InvoiceItems { get; } = new ObservableCollection<TempInvoice>();
     public ObservableCollection<Customers> Customers { get; } = new ObservableCollection<Customers>();
 
@@ -35,14 +36,13 @@ public partial class CreateInvoiceViewModel : ObservableRecipient, IRecipient<Pr
     private bool _isEditing = false;
 
     private string _originalInvoiceId = string.Empty;
-    private WindowEx? _productSelectionWindow = null;
-    private WindowEx? _editInvoiceWindow = null;
 
-    public CreateInvoiceViewModel(IDataService dataService, InvoicePdfService pdfService, ILocalSettingsService localSettingsService)
+    public CreateInvoiceViewModel(IDataService dataService, InvoicePdfService pdfService, ILocalSettingsService localSettingsService, IWindowService windowService)
     {
         _dataService = dataService;
         _pdfService = pdfService;
         _localSettingsService = localSettingsService;
+        _windowService = windowService;
         WeakReferenceMessenger.Default.Register<ProductsSelectedMessage>(this);
 
         InvoiceItems.CollectionChanged += (s, e) =>
@@ -54,23 +54,9 @@ public partial class CreateInvoiceViewModel : ObservableRecipient, IRecipient<Pr
         _ = LoadDataAsync();
     }
 
-    private void CloseProductSelectionWindow()
-    {
-        if (_productSelectionWindow != null)
-        {
-            _productSelectionWindow.Close();
-            _productSelectionWindow = null;
-        }
-    }
+    private void CloseProductSelectionWindow() => _windowService.CloseProductSelectionWindow();
 
-    private void CloseEditInvoiceWindow()
-    {
-        if (_editInvoiceWindow != null)
-        {
-            _editInvoiceWindow.Close();
-            _editInvoiceWindow = null;
-        }
-    }
+    private void CloseEditInvoiceWindow() => _windowService.CloseHistoryWindow();
 
     private void AttachItemEvents(TempInvoice item) =>
     item.PropertyChanged += OnInvoiceItemChanged;
@@ -265,35 +251,7 @@ public partial class CreateInvoiceViewModel : ObservableRecipient, IRecipient<Pr
             return;
         }
 
-        if (_productSelectionWindow != null)
-        {
-            _productSelectionWindow.Activate();
-            return;
-        }
-
-        var newWindow = new WindowEx();
-        newWindow.Title = "Chọn sản phẩm";
-        newWindow.Height = 800;
-        newWindow.Width = 1200;
-        newWindow.CenterOnScreen();
-
-        _productSelectionWindow = newWindow;
-        newWindow.Closed += (sender, args) =>
-        {
-            _productSelectionWindow = null;
-        };
-
-        var frame = new Frame();
-        newWindow.Content = frame;
-
-        var navParam = new ProductSelectionNavigationParameter
-        {
-            PriceGroup = SelectedCustomer.PriceGroup
-        };
-
-        frame.Navigate(typeof(ProductSelectionPage), navParam);
-
-        newWindow.Activate();
+        _windowService.OpenProductSelectionWindow(SelectedCustomer);
     }
 
     public async Task<bool> SaveInvoice()
@@ -359,41 +317,13 @@ public partial class CreateInvoiceViewModel : ObservableRecipient, IRecipient<Pr
 
     public void OpenHistoryToEdit()
     {
-        if (_editInvoiceWindow != null)
+        _windowService.OpenHistoryWindow((invoiceId) =>
         {
-            _editInvoiceWindow.Activate();
-            return;
-        }
-
-        var newWindow = new WindowEx();
-        newWindow.Title = "Chọn hoá đơn cũ";
-        newWindow.Height = 800;
-        newWindow.Width = 1200;
-        newWindow.CenterOnScreen();
-
-        _editInvoiceWindow = newWindow;
-
-        newWindow.Closed += (sender, args) =>
-        {
-            _editInvoiceWindow = null;
-        };
-
-        var frame = new Frame();
-        newWindow.Content = frame;
-
-        var navParam = new EditingInvoiceNavigationParameter
-        {
-            OnInvoiceSelected = (invoiceId) =>
+            App.MainWindow.DispatcherQueue.TryEnqueue(async () =>
             {
-                App.MainWindow.DispatcherQueue.TryEnqueue(async () =>
-                {
-                    await LoadInvoiceForEdit(invoiceId);
-                    CloseEditInvoiceWindow();
-                });
-            }
-        };
-        frame.Navigate(typeof(EditingInvoicePage), navParam);
-        newWindow.Activate();
+                await LoadInvoiceForEdit(invoiceId);
+            });
+        });
     }
 
     public async Task LoadInvoiceForEdit(string invoiceID)

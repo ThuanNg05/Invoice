@@ -124,12 +124,12 @@ public sealed partial class ProductsPage : Page
         try
         {
             await ViewModel.UpdateProductAsync(product);
-            await App.ShowSuccessAsync("Cập nhật thành công!");
+            await App.ShowSuccessAsync("Common_UpdateSuccess".GetLocalized());
             ClearInputs();
         }
         catch (Exception ex)
         {
-            await App.ShowErrorAsync("Cập nhật thất bại", ex);
+            await App.ShowErrorAsync("Common_UpdateError".GetLocalized(), ex);
         }
     }
 
@@ -137,20 +137,20 @@ public sealed partial class ProductsPage : Page
     {
         if (ProductGrid.SelectedItem is not ProductSummary selected) return;
         
-        bool isConfirmed = await App.ShowConfirmAsync("Xác nhận xóa", 
-            $"Bạn có chắc muốn xóa sản phẩm {selected.Name} (ID: {selected.ProductID})?", "Xóa");
+        bool isConfirmed = await App.ShowConfirmAsync("Common_ConfirmDelete".GetLocalized(), 
+            $"Bạn có chắc muốn xóa sản phẩm {selected.Name} (ID: {selected.ProductID})?", "Common_Delete".GetLocalized());
 
         if (isConfirmed)
         {
             try
             {
                 await ViewModel.DeleteProductAsync(selected.ProductID);
-                await App.ShowSuccessAsync("Xóa thành công!");
+                await App.ShowSuccessAsync("Common_Success".GetLocalized());
                 ClearInputs();
             }
             catch (Exception ex)
             {
-                await App.ShowErrorAsync("Xóa thất bại", ex);
+                await App.ShowErrorAsync("Common_DeleteError".GetLocalized(), ex);
             }
         }
     }

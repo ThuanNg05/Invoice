@@ -34,8 +34,7 @@ public partial class IOPlanksViewModel : ObservableRecipient, INavigationAware
         try { await LoadData(); }
         catch (Exception ex)
         {
-            Debug.WriteLine(ex);
-            await App.ShowMessageAsync("Lỗi", "Không thể tải dữ liệu.");
+            Debug.WriteLine(ex);            
         }
     }
 

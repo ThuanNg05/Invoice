@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System.Diagnostics;
 using Invoice.Contracts.ViewModels;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
@@ -63,8 +64,7 @@ public partial class HistoryViewModel : ObservableRecipient, INavigationAware
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Load customer failed: {ex.Message}");
-            await App.ShowMessageAsync("Lỗi", "Lỗi load tên khách hàng.");
+            Debug.WriteLine($"Load customer failed: {ex.Message}");            
         }
         finally
         {
