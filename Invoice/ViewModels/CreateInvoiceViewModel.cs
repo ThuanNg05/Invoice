@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -14,7 +14,7 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace Invoice.ViewModels;
 
-public partial class CreateInvoiceViewModel : ObservableRecipient, IRecipient<ProductsSelectedMessage>
+public partial class CreateInvoiceViewModel : ViewModelBase, IRecipient<ProductsSelectedMessage>
 {
     private readonly IDataService _dataService;
     private readonly InvoicePdfService _pdfService;
@@ -37,7 +37,12 @@ public partial class CreateInvoiceViewModel : ObservableRecipient, IRecipient<Pr
 
     private string _originalInvoiceId = string.Empty;
 
-    public CreateInvoiceViewModel(IDataService dataService, InvoicePdfService pdfService, ILocalSettingsService localSettingsService, IWindowService windowService)
+    public CreateInvoiceViewModel(
+        IDataService dataService, 
+        InvoicePdfService pdfService, 
+        ILocalSettingsService localSettingsService, 
+        IWindowService windowService,
+        IDialogService dialogService) : base(dialogService)
     {
         _dataService = dataService;
         _pdfService = pdfService;
@@ -64,7 +69,7 @@ public partial class CreateInvoiceViewModel : ObservableRecipient, IRecipient<Pr
     private void DetachItemEvents(TempInvoice item) =>
         item.PropertyChanged -= OnInvoiceItemChanged;
 
-    private void OnInvoiceItemChanged(object s, PropertyChangedEventArgs e)
+    private void OnInvoiceItemChanged(object? s, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(TempInvoice.LineTotal))
             RecalculateGrandTotal();
@@ -122,7 +127,7 @@ public partial class CreateInvoiceViewModel : ObservableRecipient, IRecipient<Pr
 
     private async Task LoadDataAsync()
     {
-        try
+        await ExecuteAsync(async () =>
         {
             Customers.Clear();
             var data = await _dataService.GetCustomers();
@@ -130,19 +135,14 @@ public partial class CreateInvoiceViewModel : ObservableRecipient, IRecipient<Pr
             {
                 Customers.Add(item);
             }
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine(ex);
-        }
-
+        }, "Lỗi khi tải danh sách khách hàng");
     }
 
     partial void OnSelectedCustomerChanged(Customers? value)
     {
         if (value != null && !IsEditing)
         {
-            GenerateCodeAsync();
+            _ = GenerateCodeAsync();
         }
     }
 
@@ -162,34 +162,34 @@ public partial class CreateInvoiceViewModel : ObservableRecipient, IRecipient<Pr
     {
         if (SelectedCustomer == null) return;
 
-        string? rootFolderPath;
-        try
+        await ExecuteAsync(async () =>
         {
-            rootFolderPath = await _localSettingsService.ReadSettingAsync<string>("InvoiceStoragePath");
-        }
-        catch
-        {
-            rootFolderPath = null;
-        }
+            string? rootFolderPath;
+            try
+            {
+                rootFolderPath = await _localSettingsService.ReadSettingAsync<string>("InvoiceStoragePath");
+            }
+            catch
+            {
+                rootFolderPath = null;
+            }
 
-        if (string.IsNullOrEmpty(rootFolderPath) || !Directory.Exists(rootFolderPath))
-        {
-            rootFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-        }
+            if (string.IsNullOrEmpty(rootFolderPath) || !Directory.Exists(rootFolderPath))
+            {
+                rootFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            }
 
-        string safeCustomerName = RemoveInvalidFilePathCharacters(SelectedCustomer.Name);
-        string customerFolderPath = Path.Combine(rootFolderPath, "Khách Hàng", safeCustomerName);
+            string safeCustomerName = RemoveInvalidFilePathCharacters(SelectedCustomer.Name);
+            string customerFolderPath = Path.Combine(rootFolderPath, "Khách Hàng", safeCustomerName);
 
-        if (!Directory.Exists(customerFolderPath))
-        {
-            Directory.CreateDirectory(customerFolderPath);
-        }
+            if (!Directory.Exists(customerFolderPath))
+            {
+                Directory.CreateDirectory(customerFolderPath);
+            }
 
-        string fileName = $"{GeneratedInvoiceCode}.pdf";
-        string finalFilePath = Path.Combine(customerFolderPath, fileName);
+            string fileName = $"{GeneratedInvoiceCode}.pdf";
+            string finalFilePath = Path.Combine(customerFolderPath, fileName);
 
-        try
-        {
             await _pdfService.GenerateOfficialAsync(InvoiceItems, SelectedCustomer.Name, SelectedCustomer.Phone, GeneratedInvoiceCode, DateTime.Now, finalFilePath);
 
             if (File.Exists(finalFilePath))
@@ -203,20 +203,17 @@ public partial class CreateInvoiceViewModel : ObservableRecipient, IRecipient<Pr
             }
             else
             {
-                await App.ShowErrorAsync("File không tồn tại sau khi tạo.");
+                await DialogService.ShowErrorAsync("CreateInvoice_File_Not_Exist".GetLocalized());
             }
-        }
-        catch (Exception ex)
-        {
-            await App.ShowErrorAsync("Không thể tạo file PDF hóa đơn", ex);
-        }
+        }, "CreateInvoice_Pdf_Error".GetLocalized());
     }
 
     public async Task GenerateTempPdfAsync()
     {
         CloseProductSelectionWindow();
         if (SelectedCustomer == null) return;
-        try
+
+        await ExecuteAsync(async () =>
         {
             string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             string filePath = Path.Combine(desktopPath, "TEMP.pdf");
@@ -234,36 +231,40 @@ public partial class CreateInvoiceViewModel : ObservableRecipient, IRecipient<Pr
             }
             else
             {
-                await App.ShowErrorAsync("File tạm không tồn tại sau khi tạo.");
+                await DialogService.ShowErrorAsync("CreateInvoice_File_Not_Exist".GetLocalized());
             }
-        }
-        catch (Exception ex)
-        {
-            await App.ShowErrorAsync("Không thể tạo phiếu tạm", ex);
-        }
+        }, "CreateInvoice_Pdf_Error".GetLocalized());
     }
 
     public async Task OpenProductSelection()
     {
         if (SelectedCustomer == null)
         {
-            await App.ShowErrorAsync("Vui lòng chọn khách hàng trước khi chọn sản phẩm.");
+            await DialogService.ShowErrorAsync("CreateInvoice_Error_NoCustomer".GetLocalized());
             return;
         }
 
         _windowService.OpenProductSelectionWindow(SelectedCustomer);
+        await Task.CompletedTask;
     }
 
     public async Task<bool> SaveInvoice()
     {
         CloseProductSelectionWindow();
-        if (SelectedCustomer == null || !InvoiceItems.Any())
+        if (SelectedCustomer == null)
         {
-            await App.ShowErrorAsync("Chưa chọn khách hàng hoặc danh sách sản phẩm trống.");
+            await DialogService.ShowErrorAsync("CreateInvoice_Error_NoCustomer".GetLocalized());
             return false;
         }
 
-        try
+        if (!InvoiceItems.Any())
+        {
+            await DialogService.ShowErrorAsync("CreateInvoice_Error_EmptyList".GetLocalized());
+            return false;
+        }
+
+        bool result = false;
+        await ExecuteAsync(async () =>
         {
             if (IsEditing)
             {
@@ -305,21 +306,18 @@ public partial class CreateInvoiceViewModel : ObservableRecipient, IRecipient<Pr
 
             App.MainWindow.Activate();
 
-            await App.ShowSuccessAsync("Lưu hóa đơn thành công.");
-            return true;
-        }
-        catch (Exception ex)
-        {
-            await App.ShowErrorAsync("Không thể lưu hoá đơn", ex);
-            return false;
-        }
+            await DialogService.ShowSuccessAsync("CreateInvoice_Save_Success".GetLocalized());
+            result = true;
+        }, "Lỗi khi lưu hóa đơn");
+
+        return result;
     }
 
     public void OpenHistoryToEdit()
     {
         _windowService.OpenEditingInvoiceWindow((invoiceId) =>
         {
-            App.MainWindow.DispatcherQueue.TryEnqueue(async () =>
+            App.MainWindow?.DispatcherQueue?.TryEnqueue(async () =>
             {
                 await LoadInvoiceForEdit(invoiceId);
             });
@@ -328,43 +326,46 @@ public partial class CreateInvoiceViewModel : ObservableRecipient, IRecipient<Pr
 
     public async Task LoadInvoiceForEdit(string invoiceID)
     {
-        ResetInvoice();
-        var details = await _dataService.GetInvoiceDetails(invoiceID);
-        if (details == null || !details.Any()) return;
-
-        IsEditing = true;
-        GeneratedInvoiceCode = invoiceID;
-        _originalInvoiceId = invoiceID;
-
-        var firstDetail = details.First();
-        var customerName = firstDetail.CustomerName;
-        SelectedCustomer = Customers.FirstOrDefault(x => x.Name == customerName) ?? new Customers { Name = customerName };
-
-        foreach (var item in details)
+        await ExecuteAsync(async () =>
         {
-            var currentProductInfo = await _dataService.GetProductById(item.ProductID);
-            int currentInventoryInDB = currentProductInfo != null ? currentProductInfo.Inventory : 0;
-            int trueMaxStock = currentInventoryInDB + item.Amount;
+            ResetInvoice();
+            var details = await _dataService.GetInvoiceDetails(invoiceID);
+            if (details == null || !details.Any()) return;
 
-            var tempItem = new TempInvoice
+            IsEditing = true;
+            GeneratedInvoiceCode = invoiceID;
+            _originalInvoiceId = invoiceID;
+
+            var firstDetail = details.First();
+            var customerName = firstDetail.CustomerName;
+            SelectedCustomer = Customers.FirstOrDefault(x => x.Name == customerName) ?? new Customers { Name = customerName };
+
+            foreach (var item in details)
             {
-                ProductID = item.ProductID,
-                ProductName = item.ProductName,
-                SellPrice = item.SellPrice,
-                Note = item.Note,
-                MaxStock = trueMaxStock,
-                Amount = item.Amount
-            };
+                var currentProductInfo = await _dataService.GetProductById(item.ProductID);
+                int currentInventoryInDB = currentProductInfo != null ? currentProductInfo.Inventory : 0;
+                int trueMaxStock = currentInventoryInDB + item.Amount;
 
-            tempItem.PropertyChanged += (s, e) =>
-            {
-                if (e.PropertyName == nameof(TempInvoice.LineTotal)) RecalculateGrandTotal();
-            };
+                var tempItem = new TempInvoice
+                {
+                    ProductID = item.ProductID,
+                    ProductName = item.ProductName,
+                    SellPrice = item.SellPrice,
+                    Note = item.Note,
+                    MaxStock = trueMaxStock,
+                    Amount = item.Amount
+                };
 
-            InvoiceItems.Add(tempItem);
-        }
+                tempItem.PropertyChanged += (s, e) =>
+                {
+                    if (e.PropertyName == nameof(TempInvoice.LineTotal)) RecalculateGrandTotal();
+                };
 
-        RecalculateGrandTotal();
+                InvoiceItems.Add(tempItem);
+            }
+
+            RecalculateGrandTotal();
+        }, "Lỗi khi tải hóa đơn để chỉnh sửa");
     }
 
     public void AddInvoiceItem(TempInvoice newItem)
@@ -413,16 +414,19 @@ public partial class CreateInvoiceViewModel : ObservableRecipient, IRecipient<Pr
             return;
         }
 
-        DateTime today = DateTime.Now;
-        string datePart = today.ToString("ddMMyyyy");
+        await ExecuteAsync(async () =>
+        {
+            DateTime today = DateTime.Now;
+            string datePart = today.ToString("ddMMyyyy");
 
-        int currentCount = await _dataService.GetInvoiceCountByDate(today);
-        int nextNumber = currentCount + 1;
+            int currentCount = await _dataService.GetInvoiceCountByDate(today);
+            int nextNumber = currentCount + 1;
 
-        string numberPart = nextNumber.ToString("D4");
-        string namePart = StringHelper.GetNormalizedLastName(SelectedCustomer.Name);
+            string numberPart = nextNumber.ToString("D4");
+            string namePart = StringHelper.GetNormalizedLastName(SelectedCustomer.Name);
 
-        GeneratedInvoiceCode = $"{datePart}-{numberPart}-{namePart}";
+            GeneratedInvoiceCode = $"{datePart}-{numberPart}-{namePart}";
+        }, "Lỗi khi tạo mã hóa đơn");
     }
 
 }

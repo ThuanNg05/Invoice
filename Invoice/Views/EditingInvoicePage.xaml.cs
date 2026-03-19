@@ -33,6 +33,6 @@ public sealed partial class EditingInvoicePage : Page
         {
             ViewModel.OnInvoiceConfirmed = param.OnInvoiceSelected;
         }
-        await ViewModel.LoadInvoiceList();
+        await ViewModel.LoadInvoiceListAsync();
     }
 }

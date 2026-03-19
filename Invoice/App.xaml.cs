@@ -94,6 +94,7 @@ public partial class App : Application
             services.AddSingleton<IPageService, PageService>();
             services.AddSingleton<INavigationService, NavigationService>();
             services.AddSingleton<IWindowService, WindowService>();
+            services.AddSingleton<IDialogService, DialogService>();
 
             // Core Services            
             services.AddSingleton<SupabaseDataService>();

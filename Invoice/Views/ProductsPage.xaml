@@ -1,4 +1,4 @@
-﻿<Page
+<Page
     x:Class="Invoice.Views.ProductsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -39,37 +39,31 @@
                         <StackPanel Margin="0,0,10,10">
                             <TextBlock>
                                 <Run Text="(*) " Foreground="Red"/>
-                                <Run Text="Tên SP"/>
+                                <Run x:Uid="Products_Name"/>
                             </TextBlock>
                             <TextBox x:Name="txtName" Width="300" HorizontalAlignment="Left" Margin="0,0,0,5"/>
-                            <TextBlock Text="Cỡ Ván"/>
-                            <TextBox x:Name="txtSizeID" Width="300" HorizontalAlignment="Left" PlaceholderText="VD: 50x70..."/>
+                            <TextBlock x:Uid="Products_Frame"/>
+                            <TextBox x:Name="txtSizeID" x:Uid="Products_Frame_Placeholder" Width="300" HorizontalAlignment="Left" />
                         </StackPanel>
                         <StackPanel>
                             <TextBlock>
                                 <Run Text="(*) " Foreground="Red"/>
-                                <Run Text="Tiền công"/>
+                                <Run x:Uid="Products_Wage"/>
                             </TextBlock>
                             <TextBox x:Name="txtWage" Width="140" HorizontalAlignment="Left" BeforeTextChanging="inputDecimal" TextChanged="computeBasePrice"/>
                         </StackPanel>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,0,0,10">
                         <StackPanel>
-                            <TextBlock>                                
-                                <Run Text="Giá Gốc"/>
-                            </TextBlock>
+                            <TextBlock x:Uid="Products_BasePrice"/>
                             <TextBox x:Name="txtBasePrice" Width="140" TextAlignment="Right"/>
                         </StackPanel>
                         <StackPanel>
-                            <TextBlock>                                
-                                <Run Text="Giá Lẻ"/>
-                            </TextBlock>
+                            <TextBlock x:Uid="Products_PriceOdd"/>
                             <TextBox x:Name="txtPriceOdd" Width="150" TextAlignment="Right" />
                         </StackPanel>
                         <StackPanel>
-                            <TextBlock>                                
-                                <Run Text="Giá Sỉ"/>
-                            </TextBlock>
+                            <TextBlock x:Uid="Products_PriceEven"/>
                             <TextBox x:Name="txtPriceEven" Width="140" TextAlignment="Right" />
                         </StackPanel>
                     </StackPanel>
@@ -81,33 +75,33 @@
                     </Grid.ColumnDefinitions>
                     <StackPanel Orientation="Vertical" Margin="0,0,10,0" Grid.Column="0">
                         <CommandBar Background="Transparent" DefaultLabelPosition="Right">
-                            <AppBarButton x:Name="btnAdd" Background="#07af00" Foreground="{ThemeResource SettingsForegroundBrush}"
-                                          CornerRadius="10" Icon="Add" Label="Mới" Click="BtnNew_Click" ToolTipService.ToolTip="Press F1"
-                                          IsEnabled="{x:Bind ViewModel.IsLoading, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}">
+                            <AppBarButton x:Name="btnAdd" x:Uid="Products_Btn_New" Background="#07af00" Foreground="{ThemeResource SettingsForegroundBrush}"
+                                          CornerRadius="10" Icon="Add" Click="BtnNew_Click" ToolTipService.ToolTip="Press F1"
+                                          IsEnabled="{x:Bind ViewModel.IsBusy, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}">
                                 <AppBarButton.KeyboardAccelerators>
                                     <KeyboardAccelerator Key="F1"/>
                                 </AppBarButton.KeyboardAccelerators>
                             </AppBarButton>
                         </CommandBar>
                         <CommandBar Background="Transparent" DefaultLabelPosition="Right">
-                            <AppBarButton x:Name="btnUpdate" Background="#b48b14" Foreground="{ThemeResource SettingsForegroundBrush}"
-                                          CornerRadius="10" Icon="Edit" Label="Sửa" Click="BtnUpdate_Click" ToolTipService.ToolTip="Press F2">
+                            <AppBarButton x:Name="btnUpdate" x:Uid="Customers_Btn_Update" Background="#b48b14" Foreground="{ThemeResource SettingsForegroundBrush}"
+                                          CornerRadius="10" Icon="Edit" Click="BtnUpdate_Click" ToolTipService.ToolTip="Press F2">
                                 <AppBarButton.KeyboardAccelerators>
                                     <KeyboardAccelerator Key="F2"/>
                                 </AppBarButton.KeyboardAccelerators>
                             </AppBarButton>
                         </CommandBar>
                         <CommandBar Background="Transparent" DefaultLabelPosition="Right">
-                            <AppBarButton x:Name="btnDelete" Background="#ff3800" Foreground="{ThemeResource SettingsForegroundBrush}"
-                                          CornerRadius="10" Icon="Delete" Label="Xoá" Click="BtnDelete_Click" ToolTipService.ToolTip="Press F3">
+                            <AppBarButton x:Name="btnDelete" x:Uid="Customers_Btn_Delete" Background="#ff3800" Foreground="{ThemeResource SettingsForegroundBrush}"
+                                          CornerRadius="10" Icon="Delete" Click="BtnDelete_Click" ToolTipService.ToolTip="Press F3">
                                 <AppBarButton.KeyboardAccelerators>
                                     <KeyboardAccelerator Key="F3"/>
                                 </AppBarButton.KeyboardAccelerators>
                             </AppBarButton>
                         </CommandBar>
                         <CommandBar Background="Transparent" DefaultLabelPosition="Right">
-                            <AppBarButton x:Name="btnReset" Background="#24a6d5" Foreground="{ThemeResource SettingsForegroundBrush}"
-                                          CornerRadius="10" Icon="Refresh" Label="Reset" Click="BtnReset_Click" ToolTipService.ToolTip="Press F5">
+                            <AppBarButton x:Name="btnReset" x:Uid="CreateInvoice_Btn_Reset" Background="#24a6d5" Foreground="{ThemeResource SettingsForegroundBrush}"
+                                          CornerRadius="10" Icon="Refresh" Click="BtnReset_Click" ToolTipService.ToolTip="Press F5">
                                 <AppBarButton.KeyboardAccelerators>
                                     <KeyboardAccelerator Key="F5"/>
                                 </AppBarButton.KeyboardAccelerators>
@@ -165,10 +159,8 @@
                 Grid.Column="1"
                 Orientation="Vertical">
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                    <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">                        
-                        <Run Text="Tìm kiếm"/>
-                    </TextBlock>
-                    <TextBox x:Name="txtSearch" Width="250" TextChanged="txtSearch_TextChanged" PlaceholderText="Tìm theo Tên SP..."/>
+                    <TextBlock x:Uid="Products_Search" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <TextBox x:Name="txtSearch" x:Uid="Products_Search_Placeholder" Width="250" TextChanged="txtSearch_TextChanged" />
                 </StackPanel>
 
                 <controls:DataGrid
@@ -188,9 +180,9 @@
                         <SolidColorBrush x:Key="DataGridColumnHeaderBackgroundColor" Color="Transparent" />
                     </controls:DataGrid.Resources>
                     <controls:DataGrid.Columns>
-                        <controls:DataGridTextColumn Binding="{Binding ProductID}" Header="Mã SP" Visibility="Collapsed" />
-                        <controls:DataGridTextColumn Width="200" Binding="{Binding Name}" Header="Tên SP" />
-                        <controls:DataGridTextColumn Binding="{Binding BasePrice}" Header="Giá Gốc">
+                        <controls:DataGridTextColumn x:Uid="CreateInvoice_Grid_ProductID" Binding="{Binding ProductID}" Visibility="Collapsed" />
+                        <controls:DataGridTextColumn x:Uid="Products_Grid_Name" Width="200" Binding="{Binding Name}" />
+                        <controls:DataGridTextColumn x:Uid="Products_Grid_BasePrice" Binding="{Binding BasePrice}">
                             <controls:DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -198,7 +190,7 @@
                                 </Style>
                             </controls:DataGridTextColumn.ElementStyle>
                         </controls:DataGridTextColumn>
-                        <controls:DataGridTextColumn Binding="{Binding PriceOdd}" Header="Giá Lẻ">
+                        <controls:DataGridTextColumn x:Uid="Products_Grid_PriceOdd" Binding="{Binding PriceOdd}">
                             <controls:DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -206,7 +198,7 @@
                                 </Style>
                             </controls:DataGridTextColumn.ElementStyle>
                         </controls:DataGridTextColumn>
-                        <controls:DataGridTextColumn Binding="{Binding PriceEven}" Header="Giá Sỉ">
+                        <controls:DataGridTextColumn x:Uid="Products_Grid_PriceEven" Binding="{Binding PriceEven}">
                             <controls:DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -216,12 +208,6 @@
                         </controls:DataGridTextColumn>
                     </controls:DataGrid.Columns>
                 </controls:DataGrid>
-                <ProgressRing
-                      IsActive="{x:Bind ViewModel.IsLoading, Mode=OneWay}"
-                      Visibility="{x:Bind ViewModel.IsLoading, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                      Width="60" Height="60"
-                      HorizontalAlignment="Center"
-                      VerticalAlignment="Center" />
             </StackPanel>
         </Grid>
     </ScrollViewer>

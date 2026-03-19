@@ -7,7 +7,6 @@ using Invoice.Helpers;
 using Invoice.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
 
 namespace Invoice.Views;
 
@@ -128,7 +127,7 @@ public sealed partial class IOPlanksPage : Page
         try
         {
             btnSave.IsEnabled = false;
-            ViewModel.IsLoading = true;
+            ViewModel.IsBusy = true;
 
             var dataService = App.GetService<IDataService>();
             if (dataService is SupabaseDataService supabaseService)
@@ -153,7 +152,7 @@ public sealed partial class IOPlanksPage : Page
         }
         finally
         {
-            ViewModel.IsLoading = false;
+            ViewModel.IsBusy = false;
             btnSave.IsEnabled = true;
         }
     }

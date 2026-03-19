@@ -1,4 +1,4 @@
-﻿<Page
+<Page
     x:Class="Invoice.Views.EditingInvoicePage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -31,17 +31,17 @@
         <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="16" Margin="0,0,0,16" VerticalAlignment="Bottom">
 
             <StackPanel Spacing="4">
-                <TextBlock Text="Mã hoá đơn :" Style="{ThemeResource CaptionTextBlockStyle}" FontSize="15" FontStyle="Italic" FontWeight="Bold"/>
+                <TextBlock x:Uid="CreateInvoice_InvoiceCode" Style="{ThemeResource CaptionTextBlockStyle}" FontSize="15" FontStyle="Italic" FontWeight="Bold"/>
                 <ComboBox ItemsSource="{x:Bind ViewModel.InvoiceCodes, Mode=OneWay}" 
                           SelectedItem="{x:Bind ViewModel.SelectedInvoiceID, Mode=TwoWay}"
                           x:Name="invoiceCode"
-                          PlaceholderText="Chọn hoá đơn..."
+                          x:Uid="EditingInvoice_Placeholder"
                           Width="180"/>
             </StackPanel>
 
             <StackPanel>
                 <TextBlock Margin="0,0,0,3">                    
-                    <Run Text="Tên khách hàng :" FontSize="15" FontStyle="Italic" FontWeight="Bold"/>
+                    <Run x:Uid="CreateInvoice_CustomerName" FontSize="15" FontStyle="Italic" FontWeight="Bold"/>
                 </TextBlock>
                 <TextBox Text="{x:Bind ViewModel.CustomerName, Mode=OneWay}"
                     x:Name="customer" IsReadOnly="True" IsSpellCheckEnabled="False" Width="Auto"/>
@@ -49,7 +49,7 @@
 
             <StackPanel>
                 <TextBlock Margin="0,0,0,3">                    
-                    <Run Text="Ngày tạo :" FontSize="15" FontStyle="Italic" FontWeight="Bold" />
+                    <Run x:Uid="History_Grid_CreatedDate" FontSize="15" FontStyle="Italic" FontWeight="Bold" />
                 </TextBlock>
                 <TextBox Text="{x:Bind ViewModel.CreatedDate, Mode=OneWay}"
                     x:Name="createdDate" IsReadOnly="True" IsSpellCheckEnabled="False" Width="Auto"/>
@@ -65,7 +65,7 @@
                             <KeyboardAccelerator Key="F1"/>
                         </AppBarButton.KeyboardAccelerators>
                     </AppBarButton>
-                    <AppBarButton Background="#24a6d5" Icon="Refresh" Label="Reset" Command="{x:Bind ViewModel.ResetCommand}" ToolTipService.ToolTip="Press F2" CornerRadius="10">
+                    <AppBarButton x:Uid="CreateInvoice_Btn_Reset" Background="#24a6d5" Icon="Refresh" Command="{x:Bind ViewModel.ResetCommand}" ToolTipService.ToolTip="Press F2" CornerRadius="10">
                         <AppBarButton.KeyboardAccelerators>
                             <KeyboardAccelerator Key="F2"/>
                         </AppBarButton.KeyboardAccelerators>
@@ -93,7 +93,7 @@
             </controls:DataGrid.Resources>
 
             <controls:DataGrid.Columns>
-                <controls:DataGridTextColumn IsReadOnly="True" Header="Mã SP" Binding="{Binding ProductID}">
+                <controls:DataGridTextColumn IsReadOnly="True" x:Uid="CreateInvoice_Grid_ProductID" Binding="{Binding ProductID}">
                     <controls:DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -102,7 +102,7 @@
                     </controls:DataGridTextColumn.ElementStyle>
                 </controls:DataGridTextColumn>
 
-                <controls:DataGridTextColumn IsReadOnly="True" Header="Tên SP" Binding="{Binding ProductName}">
+                <controls:DataGridTextColumn IsReadOnly="True" x:Uid="CreateInvoice_Grid_ProductName" Binding="{Binding ProductName}">
                     <controls:DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -111,7 +111,7 @@
                     </controls:DataGridTextColumn.ElementStyle>
                 </controls:DataGridTextColumn>
 
-                <controls:DataGridTextColumn IsReadOnly="True" Header="Đơn giá" Binding="{Binding SellPrice, Converter={StaticResource FormatConverter}, ConverterParameter='N0'}">
+                <controls:DataGridTextColumn IsReadOnly="True" x:Uid="CreateInvoice_Grid_SellPrice" Binding="{Binding SellPrice, Converter={StaticResource FormatConverter}, ConverterParameter='N0'}">
                     <controls:DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -120,7 +120,7 @@
                     </controls:DataGridTextColumn.ElementStyle>
                 </controls:DataGridTextColumn>
 
-                <controls:DataGridTextColumn IsReadOnly="True" Header="SL" Binding="{Binding Amount}">
+                <controls:DataGridTextColumn IsReadOnly="True" x:Uid="History_Grid_Amount" Binding="{Binding Amount}">
                     <controls:DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -129,7 +129,7 @@
                     </controls:DataGridTextColumn.ElementStyle>
                 </controls:DataGridTextColumn>
 
-                <controls:DataGridTextColumn IsReadOnly="True" Header="Thành tiền" Binding="{Binding LineTotal, Converter={StaticResource FormatConverter}, ConverterParameter='N0'}">
+                <controls:DataGridTextColumn IsReadOnly="True" x:Uid="CreateInvoice_Grid_LineTotal" Binding="{Binding LineTotal, Converter={StaticResource FormatConverter}, ConverterParameter='N0'}">
                     <controls:DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -138,7 +138,7 @@
                     </controls:DataGridTextColumn.ElementStyle>
                 </controls:DataGridTextColumn>
 
-                <controls:DataGridTextColumn IsReadOnly="True" Header="Ghi chú" Binding="{Binding Note}">
+                <controls:DataGridTextColumn IsReadOnly="True" x:Uid="CreateInvoice_Grid_Note" Binding="{Binding Note}">
                     <controls:DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="HorizontalAlignment" Value="Stretch"/>

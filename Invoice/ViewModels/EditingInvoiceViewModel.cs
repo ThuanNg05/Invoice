@@ -1,17 +1,17 @@
-﻿using System.Collections.ObjectModel;
-using System.Diagnostics;
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Invoice;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
+using Invoice.Contracts.Services;
+using Invoice.Helpers;
 
 namespace Invoice.ViewModels;
 
-public partial class EditingInvoiceViewModel : ObservableRecipient
+public partial class EditingInvoiceViewModel : ViewModelBase
 {
     private readonly IDataService _dataService;
-    public ObservableCollection<String> InvoiceCodes { get; } = new();
+    public ObservableCollection<string> InvoiceCodes { get; } = new();
     public ObservableCollection<InvoiceDetail> InvoiceDetails { get; } = new();
 
     [ObservableProperty]
@@ -23,12 +23,9 @@ public partial class EditingInvoiceViewModel : ObservableRecipient
     [ObservableProperty]
     private string? _selectedInvoiceID;
 
-    public Action<string>? OnInvoiceConfirmed
-    {
-        get; set;
-    }
+    public Action<string>? OnInvoiceConfirmed { get; set; }
 
-    public EditingInvoiceViewModel(IDataService dataService)
+    public EditingInvoiceViewModel(IDataService dataService, IDialogService dialogService) : base(dialogService)
     {
         _dataService = dataService;
     }
@@ -37,7 +34,7 @@ public partial class EditingInvoiceViewModel : ObservableRecipient
     {
         if (!string.IsNullOrEmpty(value))
         {
-            LoadInvoiceDetails(value);
+            _ = LoadInvoiceDetailsAsync(value);
         }
         else
         {
@@ -45,9 +42,9 @@ public partial class EditingInvoiceViewModel : ObservableRecipient
         }
     }
 
-    public async Task LoadInvoiceList()
+    public async Task LoadInvoiceListAsync()
     {
-        try
+        await ExecuteAsync(async () =>
         {
             var allInvoices = await _dataService.GetAllInvoices();
             if (allInvoices == null) return;
@@ -71,17 +68,12 @@ public partial class EditingInvoiceViewModel : ObservableRecipient
             {
                 InvoiceCodes.Add(id);
             }
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Lỗi load mã hoá đơn: {ex.Message}");
-            await App.ShowErrorAsync("Không thể tải danh sách mã hoá đơn.");
-        }
+        }, "EditingInvoice_Error_LoadList".GetLocalized());
     }
 
-    private async void LoadInvoiceDetails(string id)
+    private async Task LoadInvoiceDetailsAsync(string id)
     {
-        try
+        await ExecuteAsync(async () =>
         {
             var details = await _dataService.GetInvoiceDetails(id);
             ClearData();
@@ -96,12 +88,7 @@ public partial class EditingInvoiceViewModel : ObservableRecipient
                 CustomerName = firstItem.CustomerName;
                 CreatedDate = firstItem.Invoice?.CreatedDate ?? "N/A";
             }
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Lỗi load chi tiết: {ex.Message}");
-            await App.ShowErrorAsync("Không thể tải chi tiết hoá đơn.");
-        }
+        }, "EditingInvoice_Error_LoadDetail".GetLocalized());
     }
 
     private void ClearData()
@@ -123,5 +110,4 @@ public partial class EditingInvoiceViewModel : ObservableRecipient
     {
         SelectedInvoiceID = null;
     }
-
 }

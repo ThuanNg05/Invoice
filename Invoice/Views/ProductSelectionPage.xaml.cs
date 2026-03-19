@@ -132,7 +132,7 @@ public sealed partial class ProductSelectionPage : Page
     {
         int index = e.Row.GetIndex();
         if (ViewModel == null) return;
-        if (index >= ViewModel.Source.Count - 1 && !ViewModel.IsLoading)
+        if (index >= ViewModel.Source.Count - 1 && !ViewModel.IsBusy)
         {
             _ = ViewModel.LoadMoreDataAsync();
         }

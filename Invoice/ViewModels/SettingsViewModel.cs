@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using System.Windows.Input;
+using System.Reflection;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Invoice.Contracts.Services;
@@ -10,7 +9,7 @@ using Windows.Storage.Pickers;
 
 namespace Invoice.ViewModels;
 
-public partial class SettingsViewModel : ObservableRecipient
+public partial class SettingsViewModel : ViewModelBase
 {
     private readonly IThemeSelectorService _themeSelectorService;
     private readonly ILocalSettingsService _localSettingsService;
@@ -25,12 +24,8 @@ public partial class SettingsViewModel : ObservableRecipient
     [ObservableProperty]
     private string _invoiceStoragePath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 
-    public ICommand SwitchThemeCommand
-    {
-        get;
-    }
-
-    public SettingsViewModel(IThemeSelectorService themeSelectorService, ILocalSettingsService localSettingsService)
+    public SettingsViewModel(IThemeSelectorService themeSelectorService, ILocalSettingsService localSettingsService, IDialogService dialogService) 
+        : base(dialogService)
     {
         _themeSelectorService = themeSelectorService;
         _elementTheme = _themeSelectorService.Theme;
@@ -40,17 +35,20 @@ public partial class SettingsViewModel : ObservableRecipient
 
     public async Task InitializeAsync()
     {
-        var savedPath = await _localSettingsService.ReadSettingAsync<string>(InvoiceStorageKey);
-        if (!string.IsNullOrEmpty(savedPath))
+        await ExecuteAsync(async () =>
         {
-            InvoiceStoragePath = savedPath;
-        }
+            var savedPath = await _localSettingsService.ReadSettingAsync<string>(InvoiceStorageKey);
+            if (!string.IsNullOrEmpty(savedPath))
+            {
+                InvoiceStoragePath = savedPath;
+            }
+        }, "Settings_Error_Init".GetLocalized());
     }
 
     [RelayCommand]
     private async Task SelectStorageFolder()
     {
-        try
+        await ExecuteAsync(async () =>
         {
             // Tạo FolderPicker
             var folderPicker = new FolderPicker();
@@ -69,12 +67,7 @@ public partial class SettingsViewModel : ObservableRecipient
                 InvoiceStoragePath = folder.Path;
                 await _localSettingsService.SaveSettingAsync(InvoiceStorageKey, folder.Path);
             }
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Lỗi chọn thư mục: {ex.Message}");
-            await App.ShowMessageAsync("Lỗi", "Đã xảy ra lỗi khi chọn thư mục lưu trữ.");
-        }
+        }, "Settings_Error_SelectFolder".GetLocalized());
     }
 
     async partial void OnElementThemeChanged(ElementTheme value)

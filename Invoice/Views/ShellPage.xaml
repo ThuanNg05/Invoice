@@ -126,5 +126,18 @@
                 <Frame x:Name="NavigationFrame" />
             </Grid>
         </NavigationView>
+
+        <!-- Global Loading Overlay -->
+        <Grid Background="{ThemeResource SystemControlBackgroundBaseLowBrush}"
+              Visibility="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+              Canvas.ZIndex="100">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="12">
+                <ProgressRing IsActive="True" Width="60" Height="60" />
+                <TextBlock Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}" 
+                           Style="{StaticResource BodyTextBlockStyle}" 
+                           HorizontalAlignment="Center"
+                           Visibility="{x:Bind ViewModel.StatusMessage, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            </StackPanel>
+        </Grid>
     </Grid>
 </Page>

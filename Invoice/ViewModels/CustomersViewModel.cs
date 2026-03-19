@@ -1,128 +1,95 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Invoice.Contracts.ViewModels;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
+using Invoice.Contracts.Services;
 
 namespace Invoice.ViewModels;
 
-public partial class CustomersViewModel : ObservableRecipient, INavigationAware
+public partial class CustomersViewModel : ViewModelBase, INavigationAware
 {
     private readonly IDataService _dataService;
-
-    [ObservableProperty]
-    private bool isLoading;
 
     public List<Customers> AllCustomers = new();
     public ObservableCollection<Customers> CustomersCollection { get; } = new();
 
-    public CustomersViewModel(IDataService dataService)
+    public CustomersViewModel(IDataService dataService, IDialogService dialogService) : base(dialogService)
     {
         _dataService = dataService;
     }
 
     public void OnNavigatedTo(object parameter)
     {
-        _ = LoadDataSafeAsync();
+        _ = LoadDataAsync();
     }
 
     public void OnNavigatedFrom()
     {
     }
 
-    private async Task LoadDataSafeAsync()
+    private async Task LoadDataAsync()
     {
-        try { await LoadData(); }
-        catch (Exception ex)
+        await ExecuteAsync(async () =>
         {
-            Debug.WriteLine(ex);
-            await App.ShowMessageAsync("Lỗi", "Không thể tải dữ liệu.");
-        }
-    }
-
-    private async Task LoadData()
-    {
-        IsLoading = true;
-        CustomersCollection.Clear();
-        var data = await _dataService.GetCustomers(forceRefresh: false);
-        AllCustomers = data.ToList();
-        foreach (var item in AllCustomers)
-        {
-            CustomersCollection.Add(item);
-        }
-        IsLoading = false;
+            CustomersCollection.Clear();
+            var data = await _dataService.GetCustomers(forceRefresh: false);
+            AllCustomers = data.ToList();
+            foreach (var item in AllCustomers)
+            {
+                CustomersCollection.Add(item);
+            }
+        }, "Lỗi khi tải danh sách khách hàng");
     }
 
     public async Task AddCustomerAsync(Customers customer)
     {
         if (CustomersCollection.Any(c => c.Name.Equals(customer.Name, StringComparison.OrdinalIgnoreCase)))
         {
-            Debug.WriteLine("Lỗi: Tên khách hàng đã tồn tại!");
-            await App.ShowMessageAsync("Lỗi", "Tên khách hàng đã tồn tại!");
+            await DialogService.ShowErrorAsync("Tên khách hàng đã tồn tại!");
             return;
         }
         if (!string.IsNullOrEmpty(customer.Phone) &&
-        CustomersCollection.Any(c => c.Phone == customer.Phone))
+            CustomersCollection.Any(c => c.Phone == customer.Phone))
         {
-            Debug.WriteLine("Lỗi: Số điện thoại đã tồn tại!");
-            await App.ShowMessageAsync("Lỗi", "Số điện thoại đã tồn tại!");
+            await DialogService.ShowErrorAsync("Số điện thoại đã tồn tại!");
             return;
         }
-        IsLoading = true;
-        try
+
+        await ExecuteAsync(async () =>
         {
             await _dataService.AddCustomer(customer);
             CustomersCollection.Add(customer);
-            AllCustomers.Add(customer);            
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Lỗi thêm: {ex.Message}");            
-        }
-        finally
-        {
-            IsLoading = false;
-        }
+            AllCustomers.Add(customer);
+        }, "Lỗi khi thêm khách hàng");
     }
 
     public async Task DeleteCustomerAsync(Customers customers)
     {
-        IsLoading = true;
-        try
+        await ExecuteAsync(async () =>
         {
             await _dataService.DeleteCustomer(customers.CustomerID);
             CustomersCollection.Remove(customers);
             var itemInAll = AllCustomers.FirstOrDefault(c => c.CustomerID == customers.CustomerID);
-            if (itemInAll != null) AllCustomers.Remove(itemInAll);            
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Lỗi xóa: {ex.Message}");            
-            return;
-        }
-        finally
-        {
-            IsLoading = false;
-        }
+            if (itemInAll != null) AllCustomers.Remove(itemInAll);
+        }, "Lỗi khi xóa khách hàng");
     }
 
     public async Task UpdateCustomerAsync(Customers customer)
     {
         if (!string.IsNullOrEmpty(customer.Phone) &&
-        CustomersCollection.Any(c => c.Phone == customer.Phone && c.CustomerID != customer.CustomerID))
+            CustomersCollection.Any(c => c.Phone == customer.Phone && c.CustomerID != customer.CustomerID))
         {
-            Debug.WriteLine("Lỗi: Số điện thoại đã tồn tại!");
-            await App.ShowMessageAsync("Lỗi", "Số điện thoại đã tồn tại!");
+            await DialogService.ShowErrorAsync("Số điện thoại đã tồn tại!");
             return;
         }
-        IsLoading = true;
-        try
+
+        await ExecuteAsync(async () =>
         {
             await _dataService.UpdateCustomer(customer);
 
             var itemToUpdate = CustomersCollection.FirstOrDefault(c => c.CustomerID == customer.CustomerID);
-
             if (itemToUpdate != null)
             {
                 var index = CustomersCollection.IndexOf(itemToUpdate);
@@ -141,16 +108,7 @@ public partial class CustomersViewModel : ObservableRecipient, INavigationAware
                 {
                     AllCustomers[indexAll] = customer;
                 }
-            }            
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Failed to update customer: {ex.Message}");            
-            return;
-        }
-        finally
-        {
-            IsLoading = false;
-        }
+            }
+        }, "Lỗi khi cập nhật khách hàng");
     }
 }

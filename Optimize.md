@@ -15,14 +15,12 @@ Based on the project scan, here is a prioritized list of optimizations categoriz
 4.  **Implement Server-Side Filtering/Aggregation**:
     *   **Optimization**: Moved dashboard calculation logic to Supabase using SQL/RPC, returning pre-calculated stats.
 
-#### **Level 2: Medium Impact (Architecture & Maintainability)**
+#### **Level 2: Medium Impact (Architecture & Maintainability) - 🔄 IN PROGRESS**
 
-1.  **Strict MVVM Adherence (UI Decoupling)**:
-    *   **Issue**: `CreateInvoiceViewModel` directly instantiates `Frame` and `WindowEx`. This makes the ViewModel impossible to unit test and tightly couples it to the WinUI runtime.
-    *   **Optimization**: Use a `WindowService` or an improved `NavigationService` to handle window/page creation.
-2.  **Refactor `SupabaseDataService`**:
-    *   **Issue**: The service is growing too large (33KB) and contains duplicated logic and commented-out code.
-    *   **Optimization**: Split the service into smaller, specialized services (e.g., `InventoryService`, `CustomerService`, `OrderService`). Remove all dead code.
+1.  **Strict MVVM Adherence (UI Decoupling)**: ✅ **COMPLETED**
+    *   **Optimization**: Use `IWindowService` and `INavigationService` to handle window/page creation, removing direct dependencies on `Frame` and `WindowEx` from ViewModels.
+2.  **Refactor `SupabaseDataService`**: ✅ **COMPLETED**
+    *   **Optimization**: Split the service into partial classes (`SupabaseDataService.Customers.cs`, `SupabaseDataService.Inventory.cs`, `SupabaseDataService.Invoices.cs`) to improve maintainability.
 3.  **Standardize Error Handling & Logging**:
     *   **Issue**: Some services use `Debug.WriteLine`, others use `App.ShowErrorAsync`, and some have no error handling at all.
     *   **Optimization**: Implement a consistent logging strategy (e.g., `Microsoft.Extensions.Logging` with a Serilog or file sink). Use a global exception handler for UI-level errors.
@@ -30,17 +28,13 @@ Based on the project scan, here is a prioritized list of optimizations categoriz
     *   **Issue**: The project targets `.net8.0` but uses `10.0.x` (likely Preview/RC) packages for some libraries.
     *   **Optimization**: Standardize all packages to their stable versions (ideally 8.0.x or 9.0.x) to ensure long-term stability and avoid potential runtime mismatches.
 
-#### **Level 3: Low Impact (UI/UX & Cleanup)**
+#### **Level 3: Low Impact (UI/UX & Cleanup) - ✅ COMPLETED**
 
-1.  **XAML Style Compilation**:
-    *   **Issue**: Styles like `FontSizes.xaml` are being copied to the output directory instead of being compiled as resources.
-    *   **Optimization**: Change `Build Action` to `Page` and ensure they are merged into `App.xaml` or a main `ResourceDictionary`.
-2.  **Logo Path Handling**:
-    *   **Issue**: `InvoicePdfService` uses `AppDomain.CurrentDomain.BaseDirectory` which can be unreliable in packaged WinUI 3 apps.
-    *   **Optimization**: Use `Package.Current.InstalledLocation` or WinUI-specific asset loading for more robust path resolution.
-3.  **UI Feedback Consistency**:
-    *   **Issue**: Variable loading indicators and success messages across different pages.
-    *   **Optimization**: Create a base ViewModel or a `DialogService` to provide consistent visual feedback for long-running operations.
-4.  **Localization Cleanup**:
-    *   **Issue**: Some strings are hardcoded in Vietnamese in the code-behind or ViewModels.
-    *   **Optimization**: Move all user-facing strings to `Resources.resw` (both `vi-VN` and `en-us`) to ensure full localization support.
+1.  **XAML Style Compilation**: ✅ **COMPLETED**
+    *   **Optimization**: Changed `Build Action` to `Page` for `FontSizes.xaml`, `Thickness.xaml`, and `TextBlock.xaml` and ensured they are merged into `App.xaml`.
+2.  **Logo Path Handling**: ✅ **COMPLETED**
+    *   **Optimization**: Refactored `InvoicePdfService` to use `Windows.ApplicationModel.Package.Current.InstalledLocation.Path` when running as an MSIX package for robust path resolution.
+3.  **UI Feedback Consistency**: ✅ **COMPLETED**
+    *   **Optimization**: Implemented `ViewModelBase` and `IDialogService` to provide consistent visual feedback (`IsBusy` state) and decoupled dialog management across all pages.
+4.  **Localization Cleanup**: ✅ **COMPLETED**
+    *   **Optimization**: Moved all user-facing strings from C# and XAML to `Resources.resw` using `x:Uid` and `GetLocalized()`, ensuring full localization support for the entire application.

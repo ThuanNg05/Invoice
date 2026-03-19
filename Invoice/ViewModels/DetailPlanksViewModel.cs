@@ -1,121 +1,75 @@
-﻿using System.Collections.ObjectModel;
-
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
-using System.Diagnostics;
 using Invoice.Contracts.ViewModels;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
+using Invoice.Contracts.Services;
+using Invoice.Helpers;
 
 namespace Invoice.ViewModels;
 
-public partial class DetailPlanksViewModel : ObservableRecipient, INavigationAware
+public partial class DetailPlanksViewModel : ViewModelBase, INavigationAware
 {
     private readonly IDataService _dataService;
 
-    [ObservableProperty]
-    private bool isLoading;
-
     public ObservableCollection<DetailPlanks> Planks { get; } = new ObservableCollection<DetailPlanks>();
 
-    public DetailPlanksViewModel(IDataService dataService)
+    public DetailPlanksViewModel(IDataService dataService, IDialogService dialogService) : base(dialogService)
     {
         _dataService = dataService;
     }
 
-    public async void OnNavigatedTo(object parameter)
+    public void OnNavigatedTo(object parameter)
     {
-        IsLoading = true;
-
-        Planks.Clear();
-        try
-        {
-            var data = await _dataService.GetPlanks();
-            foreach (var item in data)
-            {
-                Planks.Add(item);
-            }
-        }
-        catch
-        {
-            Debug.WriteLine("Failed to load Detail planks data.");            
-        }
-        finally
-        {
-            IsLoading = false;
-        }
+        _ = LoadDataAsync();
     }
 
     public void OnNavigatedFrom()
     {
     }
 
+    private async Task LoadDataAsync()
+    {
+        await ExecuteAsync(async () =>
+        {
+            Planks.Clear();
+            var data = await _dataService.GetPlanks();
+            foreach (var item in data)
+            {
+                Planks.Add(item);
+            }
+        }, "Planks_Error_Load".GetLocalized());
+    }
+
     public async Task AddPlankAsync(DetailPlanks planks)
     {
         if (Planks.Any(c => c.sizeID.Equals(planks.sizeID, StringComparison.OrdinalIgnoreCase)))
         {
-            Debug.WriteLine("Lỗi: kích thước này đã tồn tại!");            
+            await DialogService.ShowErrorAsync("Planks_Error_Duplicate".GetLocalized());
             return;
         }
-        IsLoading = true;
-        try
+
+        await ExecuteAsync(async () =>
         {
             await _dataService.AddPlank(planks);
-            Planks.Add(planks);            
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Lỗi thêm: {ex.Message}");            
-        }
-        finally
-        {
-            IsLoading = false;
-        }
+            Planks.Add(planks);
+        }, "Planks_Error_Add".GetLocalized());
     }
+
     public async Task DeletePlankAsync(DetailPlanks planks)
     {
-        IsLoading = true;
-        try
+        await ExecuteAsync(async () =>
         {
             await _dataService.DeletePlank(planks.sizeID);
-            Planks.Remove(planks);            
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Lỗi xóa: {ex.Message}");            
-            return;
-        }
-        finally
-        {
-            IsLoading = false;
-        }
+            Planks.Remove(planks);
+        }, "Planks_Error_Delete".GetLocalized());
     }
+
     public async Task UpdatePlankAsync(DetailPlanks planks)
     {
-        if (Planks.Any(c => c.sizeID.Equals(planks.sizeID, StringComparison.OrdinalIgnoreCase)))
-        {
-            Debug.WriteLine("Lỗi: Kích thước này đã tồn tại!");
-            await App.ShowMessageAsync("Lỗi", "Kích thước này đã tồn tại!");
-            return;
-        }
-        IsLoading = true;
-        try
+        await ExecuteAsync(async () =>
         {
             await _dataService.UpdatePlank(planks);
-
-            var item = Planks.FirstOrDefault(c => c.sizeID == planks.sizeID);
-            if (item != null)
-            {
-                item.sizeID = planks.sizeID;
-            }            
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Lỗi sửa: {ex.Message}");            
-            return;
-        }
-        finally
-        {
-            IsLoading = false;
-        }
+        }, "Planks_Error_Update".GetLocalized());
     }
 }

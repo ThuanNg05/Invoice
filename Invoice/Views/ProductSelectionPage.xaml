@@ -141,8 +141,8 @@
                     </controls:DataGrid.Columns>
                 </controls:DataGrid>
                 <ProgressRing
-                      IsActive="{x:Bind ViewModel.IsLoading, Mode=OneWay}"
-                      Visibility="{x:Bind ViewModel.IsLoading, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                      IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
+                      Visibility="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
                       Width="60" Height="60"
                       HorizontalAlignment="Center"
                       VerticalAlignment="Center" />

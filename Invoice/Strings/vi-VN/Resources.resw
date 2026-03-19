@@ -1,64 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
-  <!-- 
-    Microsoft ResX Schema 
-    
-    Version 2.0
-    
-    The primary goals of this format is to allow a simple XML format 
-    that is mostly human readable. The generation and parsing of the 
-    various data types are done through the TypeConverter classes 
-    associated with the data types.
-    
-    Example:
-    
-    ... ado.net/XML headers & schema ...
-    <resheader name="resmimetype">text/microsoft-resx</resheader>
-    <resheader name="version">2.0</resheader>
-    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
-    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
-    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-        <value>[base64 mime encoded serialized .NET Framework object]</value>
-    </data>
-    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
-        <comment>This is a comment</comment>
-    </data>
-                
-    There are any number of "resheader" rows that contain simple 
-    name/value pairs.
-    
-    Each data row contains a name, and value. The row also contains a 
-    type or mimetype. Type corresponds to a .NET class that support 
-    text/value conversion through the TypeConverter architecture. 
-    Classes that don't support this are serialized and stored with the 
-    mimetype set.
-    
-    The mimetype is used for serialized objects, and tells the 
-    ResXResourceReader how to depersist the object. This is currently not 
-    extensible. For a given mimetype the value must be set accordingly:
-    
-    Note - application/x-microsoft.net.object.binary.base64 is the format 
-    that the ResXResourceWriter will generate, however the reader can 
-    read any of the formats listed below.
-    
-    mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with 
-            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
-            : and then encoded with base64 encoding.
-    
-    mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with 
-            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-            : and then encoded with base64 encoding.
-
-    mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array 
-            : using a System.ComponentModel.TypeConverter
-            : and then encoded with base64 encoding.
-    -->
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
@@ -142,7 +83,7 @@
     <value>About this application</value>
   </data>
   <data name="Settings_AboutDescription.Text" xml:space="preserve">
-    <value>TODO: Replace with your app description.</value>
+    <value>Phần mềm quản lý hoá đơn và kho hàng.</value>
   </data>
   <data name="SettingsPage_PrivacyTermsLink.Content" xml:space="preserve">
     <value>Privacy Statement</value>
@@ -242,5 +183,449 @@
   </data>
   <data name="Common_EditingInvoice" xml:space="preserve">
     <value>Chỉnh sửa hoá đơn</value>
+  </data>
+  <data name="CreateInvoice_InvoiceCode.Text" xml:space="preserve">
+    <value>Mã hoá đơn :</value>
+  </data>
+  <data name="CreateInvoice_CustomerName.Text" xml:space="preserve">
+    <value>Tên khách hàng :</value>
+  </data>
+  <data name="CreateInvoice_CustomerName_Required.Text" xml:space="preserve">
+    <value>(*)</value>
+  </data>
+  <data name="CreateInvoice_CustomerName_Placeholder" xml:space="preserve">
+    <value>Nhập tên...</value>
+  </data>
+  <data name="CreateInvoice_PhoneNumber.Text" xml:space="preserve">
+    <value>Số điện thoại :</value>
+  </data>
+  <data name="CreateInvoice_PriceGroup.Text" xml:space="preserve">
+    <value>Loại giá :</value>
+  </data>
+  <data name="CreateInvoice_Btn_New.Label" xml:space="preserve">
+    <value>Tạo mới</value>
+  </data>
+  <data name="CreateInvoice_Btn_Save.Label" xml:space="preserve">
+    <value>Lưu HĐ</value>
+  </data>
+  <data name="CreateInvoice_Btn_Reset.Label" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="CreateInvoice_Btn_Copy.Label" xml:space="preserve">
+    <value>Copy HĐ</value>
+  </data>
+  <data name="CreateInvoice_Btn_Edit.Label" xml:space="preserve">
+    <value>Sửa HĐ</value>
+  </data>
+  <data name="CreateInvoice_Grid_ProductID.Header" xml:space="preserve">
+    <value>Mã SP</value>
+  </data>
+  <data name="CreateInvoice_Grid_ProductName.Header" xml:space="preserve">
+    <value>Tên SP</value>
+  </data>
+  <data name="CreateInvoice_Grid_SellPrice.Header" xml:space="preserve">
+    <value>Đơn giá</value>
+  </data>
+  <data name="CreateInvoice_Grid_Amount.Header" xml:space="preserve">
+    <value>Số lượng</value>
+  </data>
+  <data name="CreateInvoice_Grid_LineTotal.Header" xml:space="preserve">
+    <value>Thành tiền</value>
+  </data>
+  <data name="CreateInvoice_Grid_Note.Header" xml:space="preserve">
+    <value>Ghi chú</value>
+  </data>
+  <data name="CreateInvoice_Grid_Delete.Header" xml:space="preserve">
+    <value>Xoá</value>
+  </data>
+  <data name="CreateInvoice_Grid_Delete_ToolTip.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Xóa dòng này</value>
+  </data>
+  <data name="CreateInvoice_Error_NoCustomer" xml:space="preserve">
+    <value>Vui lòng chọn khách hàng trước khi thực hiện thao tác này.</value>
+  </data>
+  <data name="CreateInvoice_Error_EmptyList" xml:space="preserve">
+    <value>Danh sách sản phẩm trống.</value>
+  </data>
+  <data name="CreateInvoice_Save_Success" xml:space="preserve">
+    <value>Lưu hóa đơn thành công.</value>
+  </data>
+  <data name="CreateInvoice_Pdf_Error" xml:space="preserve">
+    <value>Không thể tạo file PDF hóa đơn.</value>
+  </data>
+  <data name="CreateInvoice_File_Not_Exist" xml:space="preserve">
+    <value>File không tồn tại sau khi tạo.</value>
+  </data>
+  <data name="Customers_Name.Text" xml:space="preserve">
+    <value>Tên</value>
+  </data>
+  <data name="Customers_Phone.Text" xml:space="preserve">
+    <value>Số điện thoại</value>
+  </data>
+  <data name="Customers_PriceGroup.Text" xml:space="preserve">
+    <value>Loại giá</value>
+  </data>
+  <data name="Customers_PriceGroup_Sỉ.Content" xml:space="preserve">
+    <value>Sỉ</value>
+  </data>
+  <data name="Customers_PriceGroup_Lẻ.Content" xml:space="preserve">
+    <value>Lẻ</value>
+  </data>
+  <data name="Customers_Btn_New.Label" xml:space="preserve">
+    <value>Mới</value>
+  </data>
+  <data name="Customers_Btn_Update.Label" xml:space="preserve">
+    <value>Sửa</value>
+  </data>
+  <data name="Customers_Btn_Delete.Label" xml:space="preserve">
+    <value>Xoá</value>
+  </data>
+  <data name="Customers_Search.Text" xml:space="preserve">
+    <value>Tìm kiếm :</value>
+  </data>
+  <data name="Customers_Grid_Name.Header" xml:space="preserve">
+    <value>Tên</value>
+  </data>
+  <data name="Customers_Grid_Phone.Header" xml:space="preserve">
+    <value>Số điện thoại</value>
+  </data>
+  <data name="Customers_Grid_PriceGroup.Header" xml:space="preserve">
+    <value>Loại giá</value>
+  </data>
+  <data name="Products_Name.Text" xml:space="preserve">
+    <value>Tên SP</value>
+  </data>
+  <data name="Products_Frame.Text" xml:space="preserve">
+    <value>Cỡ Ván</value>
+  </data>
+  <data name="Products_Frame_Placeholder" xml:space="preserve">
+    <value>VD: 50x70...</value>
+  </data>
+  <data name="Products_Wage.Text" xml:space="preserve">
+    <value>Tiền công</value>
+  </data>
+  <data name="Products_BasePrice.Text" xml:space="preserve">
+    <value>Giá Gốc</value>
+  </data>
+  <data name="Products_PriceOdd.Text" xml:space="preserve">
+    <value>Giá Lẻ</value>
+  </data>
+  <data name="Products_PriceEven.Text" xml:space="preserve">
+    <value>Giá Sỉ</value>
+  </data>
+  <data name="Products_Btn_New.Label" xml:space="preserve">
+    <value>Mới</value>
+  </data>
+  <data name="Products_Search.Text" xml:space="preserve">
+    <value>Tìm kiếm</value>
+  </data>
+  <data name="Products_Search_Placeholder" xml:space="preserve">
+    <value>Tìm theo Tên SP...</value>
+  </data>
+  <data name="Products_Grid_Name.Header" xml:space="preserve">
+    <value>Tên SP</value>
+  </data>
+  <data name="Products_Grid_BasePrice.Header" xml:space="preserve">
+    <value>Giá Gốc</value>
+  </data>
+  <data name="Products_Grid_PriceOdd.Header" xml:space="preserve">
+    <value>Giá Lẻ</value>
+  </data>
+  <data name="Products_Grid_PriceEven.Header" xml:space="preserve">
+    <value>Giá Sỉ</value>
+  </data>
+  <data name="Products_Error_Load" xml:space="preserve">
+    <value>Lỗi khi tải danh sách sản phẩm</value>
+  </data>
+  <data name="Products_Error_LoadMore" xml:space="preserve">
+    <value>Lỗi khi tải thêm sản phẩm</value>
+  </data>
+  <data name="Products_Error_LoadDetail" xml:space="preserve">
+    <value>Lỗi khi tải thông tin sản phẩm</value>
+  </data>
+  <data name="Products_Error_Add" xml:space="preserve">
+    <value>Lỗi khi thêm sản phẩm</value>
+  </data>
+  <data name="Products_Error_Update" xml:space="preserve">
+    <value>Lỗi khi cập nhật sản phẩm</value>
+  </data>
+  <data name="Products_Error_Delete" xml:space="preserve">
+    <value>Lỗi khi xóa sản phẩm</value>
+  </data>
+  <data name="History_From.Text" xml:space="preserve">
+    <value>Từ :</value>
+  </data>
+  <data name="History_To.Text" xml:space="preserve">
+    <value>Đến :</value>
+  </data>
+  <data name="History_Btn_Search.Label" xml:space="preserve">
+    <value>Tìm</value>
+  </data>
+  <data name="History_Grid_InvoiceID.Header" xml:space="preserve">
+    <value>HĐ Số</value>
+  </data>
+  <data name="History_Grid_CreatedDate.Header" xml:space="preserve">
+    <value>Ngày tạo</value>
+  </data>
+  <data name="History_Grid_Customer.Header" xml:space="preserve">
+    <value>Khách hàng</value>
+  </data>
+  <data name="History_Grid_Amount.Header" xml:space="preserve">
+    <value>SL</value>
+  </data>
+  <data name="History_Error_LoadCustomers" xml:space="preserve">
+    <value>Lỗi khi tải danh sách khách hàng</value>
+  </data>
+  <data name="History_Error_Search" xml:space="preserve">
+    <value>Lỗi khi tìm kiếm lịch sử hóa đơn</value>
+  </data>
+  <data name="Materials_Price.Text" xml:space="preserve">
+    <value>Giá</value>
+  </data>
+  <data name="Materials_Total.Text" xml:space="preserve">
+    <value>Tổng tiền</value>
+  </data>
+  <data name="Materials_MinInventory.Text" xml:space="preserve">
+    <value>Tồn kho tối thiểu</value>
+  </data>
+  <data name="Materials_Search_Placeholder" xml:space="preserve">
+    <value>Tìm theo Mã hoặc Tên hàng hoá...</value>
+  </data>
+  <data name="Materials_Grid_ProductID.Header" xml:space="preserve">
+    <value>Mã hàng</value>
+  </data>
+  <data name="Materials_Grid_Name.Header" xml:space="preserve">
+    <value>Tên hàng</value>
+  </data>
+  <data name="Materials_Grid_Price.Header" xml:space="preserve">
+    <value>Giá</value>
+  </data>
+  <data name="Materials_Grid_Inventory.Header" xml:space="preserve">
+    <value>Tồn kho</value>
+  </data>
+  <data name="Materials_Grid_Total.Header" xml:space="preserve">
+    <value>Tổng tiền</value>
+  </data>
+  <data name="Materials_Grid_MinInventory.Header" xml:space="preserve">
+    <value>Dự trữ tối thiểu</value>
+  </data>
+  <data name="Materials_Error_Load" xml:space="preserve">
+    <value>Lỗi khi tải danh sách vật tư</value>
+  </data>
+  <data name="Materials_Error_Duplicate" xml:space="preserve">
+    <value>Tên vật tư đã tồn tại!</value>
+  </data>
+  <data name="Materials_Error_Add" xml:space="preserve">
+    <value>Lỗi khi thêm vật tư</value>
+  </data>
+  <data name="Materials_Error_Delete" xml:space="preserve">
+    <value>Lỗi khi xóa vật tư</value>
+  </data>
+  <data name="Materials_Error_Update" xml:space="preserve">
+    <value>Lỗi khi cập nhật vật tư</value>
+  </data>
+  <data name="IOActions_ProductID.Header" xml:space="preserve">
+    <value>Mã hàng</value>
+  </data>
+  <data name="IOActions_ProductName.Header" xml:space="preserve">
+    <value>Tên hàng</value>
+  </data>
+  <data name="IOActions_Inventory.Header" xml:space="preserve">
+    <value>Tồn kho hiện tại</value>
+  </data>
+  <data name="IOActions_Amount.Header" xml:space="preserve">
+    <value>Số lượng</value>
+  </data>
+  <data name="IOActions_ActionType.Header" xml:space="preserve">
+    <value>Hình thức</value>
+  </data>
+  <data name="IOActions_Type_Import" xml:space="preserve">
+    <value>Nhập kho</value>
+  </data>
+  <data name="IOActions_Type_Export" xml:space="preserve">
+    <value>Xuất kho</value>
+  </data>
+  <data name="IOActions_Btn_Save.Label" xml:space="preserve">
+    <value>Lưu kho</value>
+  </data>
+  <data name="IOActions_Search_Placeholder" xml:space="preserve">
+    <value>Tìm theo Mã SP hoặc Tên SP...</value>
+  </data>
+  <data name="IOActions_List_Source" xml:space="preserve">
+    <value>Danh sách Sản phẩm / Vật tư</value>
+  </data>
+  <data name="IOActions_List_Pending" xml:space="preserve">
+    <value>Danh sách Nhập / Xuất (Chờ lưu)</value>
+  </data>
+  <data name="IOActions_Error_Load" xml:space="preserve">
+    <value>Lỗi khi tải dữ liệu tồn kho</value>
+  </data>
+  <data name="IOActions_Save_Success" xml:space="preserve">
+    <value>Lưu giao dịch kho thành công.</value>
+  </data>
+  <data name="IOActions_Error_Save" xml:space="preserve">
+    <value>Lỗi khi lưu giao dịch kho</value>
+  </data>
+  <data name="Planks_Size.Header" xml:space="preserve">
+    <value>Kích thước</value>
+  </data>
+  <data name="Planks_Inventory.Header" xml:space="preserve">
+    <value>Tồn kho</value>
+  </data>
+  <data name="Planks_Btn_Add.Label" xml:space="preserve">
+    <value>Thêm</value>
+  </data>
+  <data name="Planks_Btn_Reset.Label" xml:space="preserve">
+    <value>làm mới</value>
+  </data>
+  <data name="Planks_Error_Load" xml:space="preserve">
+    <value>Lỗi khi tải danh mục kích thước ván</value>
+  </data>
+  <data name="Planks_Error_Duplicate" xml:space="preserve">
+    <value>Kích thước này đã tồn tại!</value>
+  </data>
+  <data name="Planks_Error_Add" xml:space="preserve">
+    <value>Lỗi khi thêm kích thước ván</value>
+  </data>
+  <data name="Planks_Error_Delete" xml:space="preserve">
+    <value>Lỗi khi xóa kích thước ván</value>
+  </data>
+  <data name="Planks_Error_Update" xml:space="preserve">
+    <value>Lỗi khi cập nhật kích thước ván</value>
+  </data>
+  <data name="DetailPrice_Kieng.Header" xml:space="preserve">
+    <value>Kiếng</value>
+  </data>
+  <data name="DetailPrice_NhuaLon.Header" xml:space="preserve">
+    <value>Nhựa lớn</value>
+  </data>
+  <data name="DetailPrice_NhuaNho.Header" xml:space="preserve">
+    <value>Nhựa nhỏ</value>
+  </data>
+  <data name="DetailPrice_GoLon.Header" xml:space="preserve">
+    <value>Gỗ lớn</value>
+  </data>
+  <data name="DetailPrice_GoNho.Header" xml:space="preserve">
+    <value>Gỗ nhỏ</value>
+  </data>
+  <data name="DetailPrice_DenLon.Header" xml:space="preserve">
+    <value>Đen lớn</value>
+  </data>
+  <data name="DetailPrice_Hau.Header" xml:space="preserve">
+    <value>Hậu</value>
+  </data>
+  <data name="DetailPrice_Lua.Header" xml:space="preserve">
+    <value>Lụa</value>
+  </data>
+  <data name="DetailPrice_KimTuyen.Header" xml:space="preserve">
+    <value>Kim tuyến</value>
+  </data>
+  <data name="DetailPrice_Oc.Header" xml:space="preserve">
+    <value>Ốc</value>
+  </data>
+  <data name="DetailPrice_Nhom.Header" xml:space="preserve">
+    <value>Nhôm</value>
+  </data>
+  <data name="DetailPrice_Go7F.Header" xml:space="preserve">
+    <value>Gỗ 7F</value>
+  </data>
+  <data name="DetailPrice_2D.Header" xml:space="preserve">
+    <value>2D</value>
+  </data>
+  <data name="DetailPrice_Decal.Header" xml:space="preserve">
+    <value>Decal</value>
+  </data>
+  <data name="DetailPrice_Btn_Save.Label" xml:space="preserve">
+    <value>Lưu</value>
+  </data>
+  <data name="DetailPrice_Error_Load" xml:space="preserve">
+    <value>Lỗi khi tải bảng giá chi tiết</value>
+  </data>
+  <data name="DetailPrice_Error_Update" xml:space="preserve">
+    <value>Lỗi khi cập nhật bảng giá chi tiết</value>
+  </data>
+  <data name="IOPlanks_FrameNO.Header" xml:space="preserve">
+    <value>Mã rập</value>
+  </data>
+  <data name="IOPlanks_Amount.Header" xml:space="preserve">
+    <value>Số lượng tấm lớn</value>
+  </data>
+  <data name="IOPlanks_PlankType.Header" xml:space="preserve">
+    <value>Loại ván</value>
+  </data>
+  <data name="IOPlanks_Description.Header" xml:space="preserve">
+    <value>Mô tả</value>
+  </data>
+  <data name="IOPlanks_Btn_Save.Label" xml:space="preserve">
+    <value>Lưu kho</value>
+  </data>
+  <data name="IOPlanks_Grid_FrameNO.Header" xml:space="preserve">
+    <value>Mã Rập</value>
+  </data>
+  <data name="IOPlanks_Grid_Description.Header" xml:space="preserve">
+    <value>Mô tả</value>
+  </data>
+  <data name="IOPlanks_Error_Load" xml:space="preserve">
+    <value>Lỗi khi tải danh sách ván</value>
+  </data>
+  <data name="Reporting_Btn_Export.Content" xml:space="preserve">
+    <value>Gửi Báo Cáo Email</value>
+  </data>
+  <data name="Reporting_Revenue.Text" xml:space="preserve">
+    <value>Doanh Thu Năm</value>
+  </data>
+  <data name="Reporting_Profit.Text" xml:space="preserve">
+    <value>Lợi Nhuận (Ước tính)</value>
+  </data>
+  <data name="Reporting_Chart_Title.Text" xml:space="preserve">
+    <value>Biểu đồ đơn hàng theo tháng</value>
+  </data>
+  <data name="Reporting_TopProducts.Text" xml:space="preserve">
+    <value>Top 10 Sản Phẩm</value>
+  </data>
+  <data name="Reporting_Locked_Title.Text" xml:space="preserve">
+    <value>Khu vực hạn chế</value>
+  </data>
+  <data name="Reporting_Locked_Password.Header" xml:space="preserve">
+    <value>Nhập mật khẩu</value>
+  </data>
+  <data name="Reporting_Locked_Btn_Unlock.Content" xml:space="preserve">
+    <value>Mở khóa</value>
+  </data>
+  <data name="Reporting_Error_Load" xml:space="preserve">
+    <value>Lỗi khi tải dữ liệu báo cáo</value>
+  </data>
+  <data name="Reporting_Error_Export" xml:space="preserve">
+    <value>Lỗi khi xuất và gửi báo cáo</value>
+  </data>
+  <data name="Settings_Storage_Title.Text" xml:space="preserve">
+    <value>Lưu trữ</value>
+  </data>
+  <data name="Settings_Storage_Folder_Label.Text" xml:space="preserve">
+    <value>Thư mục lưu hoá đơn (PDF)</value>
+  </data>
+  <data name="Settings_Storage_Btn_Select.Content" xml:space="preserve">
+    <value>Chọn thư mục</value>
+  </data>
+  <data name="Settings_Storage_Description.Text" xml:space="preserve">
+    <value>Các hoá đơn xuất ra sẽ được lưu tại đây. Nếu chưa chọn, mặc định sẽ lưu tại thư mục Documents.</value>
+  </data>
+  <data name="Settings_Error_Init" xml:space="preserve">
+    <value>Lỗi khi khởi tạo cài đặt</value>
+  </data>
+  <data name="Settings_Error_SelectFolder" xml:space="preserve">
+    <value>Lỗi khi chọn thư mục lưu trữ</value>
+  </data>
+  <data name="EditingInvoice_Title.Text" xml:space="preserve">
+    <value>Chỉnh sửa hoá đơn</value>
+  </data>
+  <data name="EditingInvoice_Placeholder" xml:space="preserve">
+    <value>Chọn hoá đơn...</value>
+  </data>
+  <data name="EditingInvoice_Error_LoadList" xml:space="preserve">
+    <value>Lỗi khi tải danh sách hóa đơn gần đây</value>
+  </data>
+  <data name="EditingInvoice_Error_LoadDetail" xml:space="preserve">
+    <value>Lỗi khi tải chi tiết hóa đơn</value>
   </data>
 </root>

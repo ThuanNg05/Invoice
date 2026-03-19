@@ -1,99 +1,96 @@
-﻿using System.Collections.ObjectModel;
-using System.Diagnostics;
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Invoice.Contracts.ViewModels;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
+using Invoice.Contracts.Services;
+using Invoice.Helpers;
 
 namespace Invoice.ViewModels;
 
-public partial class IOActionsViewModel : ObservableRecipient, INavigationAware
+public partial class IOActionsViewModel : ViewModelBase, INavigationAware
 {
     private readonly IDataService _dataService;
 
-    [ObservableProperty]
-    private bool isLoading;
-
     private List<InventoryItem> _allItems = new();
-    public ObservableCollection<InventoryItem> SourceList { get; } = new();
-    public ObservableCollection<WarehouseTransaction> TransactionList { get; } = new();
+    public ObservableCollection<InventoryItem> SourceList { get; } = new ObservableCollection<InventoryItem>();
+    public ObservableCollection<WarehouseTransaction> TransactionList { get; } = new ObservableCollection<WarehouseTransaction>();
 
-    public IOActionsViewModel(IDataService dataService)
+    public IOActionsViewModel(IDataService dataService, IDialogService dialogService) : base(dialogService)
     {
         _dataService = dataService;
     }
 
-    public async void OnNavigatedTo(object parameter)
+    public void OnNavigatedTo(object parameter)
     {
-        _ = LoadDataSafeAsync();
+        _ = LoadDataAsync();
     }
 
     public void OnNavigatedFrom()
     {
     }
 
-    private async Task LoadDataSafeAsync()
+    private async Task LoadDataAsync()
     {
-        try { await LoadData(); }
-        catch (Exception ex)
+        await ExecuteAsync(async () =>
         {
-            Debug.WriteLine(ex);            
-        }
-    }
-
-    private async Task LoadData()
-    {
-        SourceList.Clear();
-        _allItems.Clear();
-        var products = await _dataService.GetAllProducts();
-        foreach (var p in products)
-        {
-            _allItems.Add(new InventoryItem
+            SourceList.Clear();
+            _allItems.Clear();
+            
+            var products = await _dataService.GetAllProducts();
+            foreach (var p in products)
             {
-                ProductID = p.ProductID,
-                Name = p.Name,
-                Inventory = p.Inventory,
-                Source = "PRODUCTS"
-            });
-        }
+                _allItems.Add(new InventoryItem
+                {
+                    ProductID = p.ProductID,
+                    Name = p.Name,
+                    Inventory = p.Inventory,
+                    Source = "PRODUCTS"
+                });
+            }
 
-        var materials = await _dataService.GetMaterials();
-        foreach (var m in materials)
-        {
-            _allItems.Add(new InventoryItem
+            var materials = await _dataService.GetMaterials();
+            foreach (var m in materials)
             {
-                ProductID = m.ProductID,
-                Name = m.Name,
-                Inventory = m.Inventory,
-                Source = "MATERIALS"
-            });
-        }
+                _allItems.Add(new InventoryItem
+                {
+                    ProductID = m.ProductID,
+                    Name = m.Name,
+                    Inventory = m.Inventory,
+                    Source = "MATERIALS"
+                });
+            }
 
-        foreach (var item in _allItems) SourceList.Add(item);
+            foreach (var item in _allItems) SourceList.Add(item);
+        }, "IOActions_Error_Load".GetLocalized());
     }
 
     public async Task SaveData()
     {
-        var transactions = TransactionList.ToList();
-
-        foreach (var trans in transactions)
+        await ExecuteAsync(async () =>
         {
-            trans.CreatedDate = DateTime.Now;
-            if (string.IsNullOrEmpty(trans.InvoiceID))
+            var transactions = TransactionList.ToList();
+
+            foreach (var trans in transactions)
             {
-                trans.InvoiceID = null;
+                trans.CreatedDate = DateTime.Now;
+                if (string.IsNullOrEmpty(trans.InvoiceID))
+                {
+                    trans.InvoiceID = null;
+                }
+
+                await _dataService.AddWarehouseTransaction(trans);
+
+                var localItem = _allItems.FirstOrDefault(x => x.ProductID == trans.ProductID);
+                if (localItem != null)
+                {
+                    localItem.Inventory += trans.FinalChange;
+                }
             }
 
-            await _dataService.AddWarehouseTransaction(trans);
-
-            var localItem = _allItems.FirstOrDefault(x => x.ProductID == trans.ProductID);
-            if (localItem != null)
-            {
-                localItem.Inventory += trans.FinalChange;
-            }
-        }
-
-        TransactionList.Clear();
+            TransactionList.Clear();
+            await DialogService.ShowSuccessAsync("IOActions_Save_Success".GetLocalized());
+        }, "IOActions_Error_Save".GetLocalized());
     }
 
     public void Search(string keyword)
@@ -120,6 +117,4 @@ public partial class IOActionsViewModel : ObservableRecipient, INavigationAware
         var item = _allItems.FirstOrDefault(x => x.ProductID == productId);
         return item != null ? item.Inventory : 0;
     }
-
-
 }

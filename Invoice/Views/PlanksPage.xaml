@@ -75,28 +75,28 @@
 					<CommandBar Background="Transparent" DefaultLabelPosition="Right">
                         <AppBarButton x:Name="btnAdd" Background="#07af00" Foreground="{ThemeResource SettingsForegroundBrush}"
                                       Icon="Add" Label="Thêm" Click="BtnAdd_Click" ToolTipService.ToolTip="Press F1" CornerRadius="10"
-                                      IsEnabled="{x:Bind ViewModel.IsLoading, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}">
+                                      IsEnabled="{x:Bind ViewModel.IsBusy, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}">
 							<AppBarButton.KeyboardAccelerators>
 								<KeyboardAccelerator Key="F1"/>
 							</AppBarButton.KeyboardAccelerators>
 						</AppBarButton>
                         <AppBarButton x:Name="btnDelete" Background="#ff3800" Foreground="{ThemeResource SettingsForegroundBrush}"
                                       Icon="Delete" Label="Xoá" Click="BtnDelete_Click" ToolTipService.ToolTip="Press F2" CornerRadius="10"
-                                      IsEnabled="{x:Bind ViewModel.IsLoading, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}">
+                                      IsEnabled="{x:Bind ViewModel.IsBusy, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}">
 							<AppBarButton.KeyboardAccelerators>
 								<KeyboardAccelerator Key="F2"/>
 							</AppBarButton.KeyboardAccelerators>
 						</AppBarButton>
                         <AppBarButton x:Name="btnUpdate" Background="#b48b14" Foreground="{ThemeResource SettingsForegroundBrush}"
                                       Icon="Edit" Label="Cập nhật" Click="BtnUpdate_Click" ToolTipService.ToolTip="Press F3" CornerRadius="10"
-                                      IsEnabled="{x:Bind ViewModel.IsLoading, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}">
+                                      IsEnabled="{x:Bind ViewModel.IsBusy, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}">
 							<AppBarButton.KeyboardAccelerators>
 								<KeyboardAccelerator Key="F3"/>
 							</AppBarButton.KeyboardAccelerators>
 						</AppBarButton>
                         <AppBarButton Background="#24a6d5" Icon="Refresh" Foreground="{ThemeResource SettingsForegroundBrush}"
                                       Label="làm mới" Click="BtnReset_Click" ToolTipService.ToolTip="Press F2" CornerRadius="10"
-                                      IsEnabled="{x:Bind ViewModel.IsLoading, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}">
+                                      IsEnabled="{x:Bind ViewModel.IsBusy, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}">
 							<AppBarButton.KeyboardAccelerators>
 								<KeyboardAccelerator Key="F2"/>
 							</AppBarButton.KeyboardAccelerators>
@@ -153,8 +153,8 @@
 
 			<StackPanel>
 				<ProgressRing Grid.Column="1"
-                      IsActive="{x:Bind ViewModel.IsLoading, Mode=OneWay}"
-                      Visibility="{x:Bind ViewModel.IsLoading, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                      IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
+                      Visibility="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
                       Width="60" Height="60"
                       HorizontalAlignment="Center"
                       VerticalAlignment="Center" />

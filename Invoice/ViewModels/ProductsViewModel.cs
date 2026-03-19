@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using System.Diagnostics;
@@ -6,10 +6,12 @@ using Invoice.Contracts.ViewModels;
 using Invoice.Core.Contracts;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
+using Invoice.Contracts.Services;
+using Invoice.Helpers;
 
 namespace Invoice.ViewModels;
 
-public partial class ProductsViewModel : ObservableRecipient, INavigationAware
+public partial class ProductsViewModel : ViewModelBase, INavigationAware
 {
     private readonly IDataService _dataService;
     private const int PageSize = 20;
@@ -20,100 +22,68 @@ public partial class ProductsViewModel : ObservableRecipient, INavigationAware
     public ObservableCollection<ProductSummary> Source { get; } = new ObservableCollection<ProductSummary>();
 
     [ObservableProperty]
-    private Products _selectedProductFull;
+    private Products? _selectedProductFull;
 
-    [ObservableProperty]
-    private bool isLoading;
-
-    public ProductsViewModel(IDataService dataService)
+    public ProductsViewModel(IDataService dataService, IDialogService dialogService) : base(dialogService)
     {
         _dataService = dataService;
         WeakReferenceMessenger.Default.Register<ProductsChangedMessage>(this, (r, m) => HandleDataChange(m));
         WeakReferenceMessenger.Default.Register<InventoryChangedMessage>(this, (r, m) =>
         {
-            if (App.MainWindow != null && App.MainWindow.DispatcherQueue != null)
+            if (App.MainWindow?.DispatcherQueue != null)
             {
-                try
+                App.MainWindow.DispatcherQueue.TryEnqueue(async () =>
                 {
-                    App.MainWindow.DispatcherQueue.TryEnqueue(async () =>
-                    {
-                        try
-                        {
-                            await ReloadFirstPage();
-                        }
-                        catch { }
-                    });
-                }
-                catch
-                {
-                }
+                    await ReloadFirstPage();
+                });
             }
         });
     }
 
     public async Task ReloadFirstPage()
     {
-        if (IsLoading) return;
-        IsLoading = true;
-        try
+        await ExecuteAsync(async () =>
         {
             _currentSkip = 0;
             _hasMoreItems = true;
             Source.Clear();
-            await LoadMoreDataAsync(forceLoad: true);
-        }
-        finally
-        {
-            IsLoading = false;
-        }
+            await InternalLoadMoreDataAsync();
+        }, "Products_Error_Load".GetLocalized());
     }
 
-    public async Task LoadMoreDataAsync(bool forceLoad = false)
+    public async Task LoadMoreDataAsync()
     {
-        if (!_hasMoreItems || (IsLoading && !forceLoad)) return;
+        if (!_hasMoreItems || IsBusy) return;
 
-        IsLoading = true;
-        try
+        await ExecuteAsync(async () =>
         {
-            var items = await _dataService.GetProducts(_currentSkip, PageSize, _currentQuery);
-            var list = items.ToList();
+            await InternalLoadMoreDataAsync();
+        }, "Products_Error_LoadMore".GetLocalized());
+    }
 
-            if (list.Count < PageSize)
-            {
-                _hasMoreItems = false;
-            }
+    private async Task InternalLoadMoreDataAsync()
+    {
+        var items = await _dataService.GetProducts(_currentSkip, PageSize, _currentQuery);
+        var list = items.ToList();
 
-            foreach (var item in list)
-            {
-                Source.Add(item);
-            }
-            _currentSkip += list.Count;
-        }
-        catch (Exception ex)
+        if (list.Count < PageSize)
         {
-            Debug.WriteLine($"Load Products Failed: {ex.Message}");
+            _hasMoreItems = false;
         }
-        finally
+
+        foreach (var item in list)
         {
-            IsLoading = false;
+            Source.Add(item);
         }
+        _currentSkip += list.Count;
     }
 
     public async Task LoadProductForEditingAsync(long productId)
     {
-        IsLoading = true;
-        try
+        await ExecuteAsync(async () =>
         {
             SelectedProductFull = await _dataService.GetProductById(productId);
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Load Detail Failed: {ex.Message}");
-        }
-        finally
-        {
-            IsLoading = false;
-        }
+        }, "Products_Error_LoadDetail".GetLocalized());
     }
 
     public async void OnNavigatedTo(object parameter)
@@ -133,22 +103,33 @@ public partial class ProductsViewModel : ObservableRecipient, INavigationAware
 
     public async Task AddProductAsync(Products p)
     {
-        await _dataService.AddProduct(p);
+        await ExecuteAsync(async () =>
+        {
+            await _dataService.AddProduct(p);
+        }, "Products_Error_Add".GetLocalized());
     }
+
     public async Task UpdateProductAsync(Products p)
     {
-        await _dataService.UpdateProduct(p);
-        WeakReferenceMessenger.Default.Send(new ProductsChangedMessage(DataAction.Update, p));
+        await ExecuteAsync(async () =>
+        {
+            await _dataService.UpdateProduct(p);
+            WeakReferenceMessenger.Default.Send(new ProductsChangedMessage(DataAction.Update, p));
+        }, "Products_Error_Update".GetLocalized());
     }
+
     public async Task DeleteProductAsync(long id)
     {
-        await _dataService.DeleteProduct(id);
-        WeakReferenceMessenger.Default.Send(new ProductsChangedMessage(DataAction.Delete, id));
+        await ExecuteAsync(async () =>
+        {
+            await _dataService.DeleteProduct(id);
+            WeakReferenceMessenger.Default.Send(new ProductsChangedMessage(DataAction.Delete, id));
+        }, "Products_Error_Delete".GetLocalized());
     }
 
     private void HandleDataChange(ProductsChangedMessage message)
-    {        
-        App.MainWindow.DispatcherQueue.TryEnqueue(() =>
+    {
+        App.MainWindow?.DispatcherQueue?.TryEnqueue(() =>
         {
             switch (message.Action)
             {
@@ -161,7 +142,8 @@ public partial class ProductsViewModel : ObservableRecipient, INavigationAware
             }
         });
     }
-    private void AddToSource(Products product)
+
+    private void AddToSource(Products? product)
     {
         if (product == null) return;
 
@@ -177,7 +159,8 @@ public partial class ProductsViewModel : ObservableRecipient, INavigationAware
 
         Source.Insert(0, summary);
     }
-    private void UpdateInSource(Products product)
+
+    private void UpdateInSource(Products? product)
     {
         if (product == null) return;
 
@@ -187,7 +170,7 @@ public partial class ProductsViewModel : ObservableRecipient, INavigationAware
         {
             int index = Source.IndexOf(itemToUpdate);
             if (index != -1)
-            {         
+            {
                 Source.RemoveAt(index);
                 Source.Insert(index, new ProductSummary
                 {
@@ -201,6 +184,7 @@ public partial class ProductsViewModel : ObservableRecipient, INavigationAware
             }
         }
     }
+
     private void RemoveFromSource(long productId)
     {
         var itemToDelete = Source.FirstOrDefault(x => x.ProductID == productId);
@@ -208,5 +192,5 @@ public partial class ProductsViewModel : ObservableRecipient, INavigationAware
         {
             Source.Remove(itemToDelete);
         }
-    }    
+    }
 }

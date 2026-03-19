@@ -1,4 +1,4 @@
-﻿<Page
+<Page
     x:Class="Invoice.Views.MaterialsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -36,38 +36,27 @@
             <StackPanel Grid.Column="0" Margin="0,0,10,0">
                 <StackPanel Orientation="Vertical" Margin="0,0,0,10">
                     <StackPanel Orientation="Vertical" Spacing="10">
-                        <!--<StackPanel>
-                            <TextBlock>
-                                <Run Text="(*) " Foreground="Red"/>
-                                <Run Text="Mã SP:"/>
-                            </TextBlock>
-                            <TextBox x:Name="txtProductID" Width="140" HorizontalAlignment="Left"/>
-                        </StackPanel>-->
                         <StackPanel>
                             <TextBlock>
-                                <Run Text="(*) " Foreground="Red"/>
-                                <Run Text="Tên SP"/>
+                                <Run x:Uid="CreateInvoice_CustomerName_Required" Foreground="Red"/>
+                                <Run x:Uid="Products_Name"/>
                             </TextBlock>
                             <TextBox x:Name="txtName" Width="300" HorizontalAlignment="Left"/>
                         </StackPanel>
                         <StackPanel HorizontalAlignment="Left">
                             <TextBlock>                                
-                                <Run Text="(*) " Foreground="Red"/>
-                                <Run Text="Giá"/>
+                                <Run x:Uid="CreateInvoice_CustomerName_Required" Foreground="Red"/>
+                                <Run x:Uid="Materials_Price"/>
                             </TextBlock>
                             <TextBox x:Name="txtBasePrice" Width="140" TextAlignment="Right"
                                      BeforeTextChanging="Number_BeforeTextChanging"/>
                         </StackPanel>
                         <StackPanel HorizontalAlignment="Left">
-                            <TextBlock>                                
-                                <Run Text="Tổng tiền"/>
-                            </TextBlock>
+                            <TextBlock x:Uid="Materials_Total"/>
                             <TextBox x:Name="txtTotal" Width="140" TextAlignment="Right"/>
                         </StackPanel>
                         <StackPanel HorizontalAlignment="Left">
-                            <TextBlock>                                
-                                <Run Text="Tồn kho tối thiểu"/>
-                            </TextBlock>
+                            <TextBlock x:Uid="Materials_MinInventory"/>
                             <TextBox x:Name="txtMinAmount"
                                      BeforeTextChanging="Number_BeforeTextChanging"
                                      Width="140" TextAlignment="Right"/>
@@ -77,14 +66,14 @@
                 <Grid>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                         <CommandBar Background="Transparent" DefaultLabelPosition="Right" >
-                            <AppBarButton x:Name="btnAdd"    Background="#07af00" Foreground="{ThemeResource SettingsForegroundBrush}"
-                                          CornerRadius="10" Icon="Add" Label="Mới" Click="BtnNew_Click"/>
-                            <AppBarButton x:Name="btnDelete" Background="#ff3800" Foreground="{ThemeResource SettingsForegroundBrush}"
-                                          CornerRadius="10" Icon="Delete" Label="Xoá" Click="BtnDelete_Click"/>
-                            <AppBarButton x:Name="btnUpdate" Background="#b48b14" Foreground="{ThemeResource SettingsForegroundBrush}"
-                                          CornerRadius="10" Icon="Edit" Label="Cập nhật" Click="BtnUpdate_Click"/>
-                            <AppBarButton x:Name="btnReset"  Background="#24a6d5" Foreground="{ThemeResource SettingsForegroundBrush}"
-                                          CornerRadius="10" Icon="Refresh" Label="Reset" Click="BtnReset_Click"/>
+                            <AppBarButton x:Name="btnAdd" x:Uid="Customers_Btn_New" Background="#07af00" Foreground="{ThemeResource SettingsForegroundBrush}"
+                                          CornerRadius="10" Icon="Add" Click="BtnNew_Click"/>
+                            <AppBarButton x:Name="btnDelete" x:Uid="Customers_Btn_Delete" Background="#ff3800" Foreground="{ThemeResource SettingsForegroundBrush}"
+                                          CornerRadius="10" Icon="Delete" Click="BtnDelete_Click"/>
+                            <AppBarButton x:Name="btnUpdate" x:Uid="Customers_Btn_Update" Background="#b48b14" Foreground="{ThemeResource SettingsForegroundBrush}"
+                                          CornerRadius="10" Icon="Edit" Click="BtnUpdate_Click"/>
+                            <AppBarButton x:Name="btnReset" x:Uid="CreateInvoice_Btn_Reset" Background="#24a6d5" Foreground="{ThemeResource SettingsForegroundBrush}"
+                                          CornerRadius="10" Icon="Refresh" Click="BtnReset_Click"/>
                         </CommandBar>
                     </StackPanel>
                 </Grid>
@@ -93,10 +82,8 @@
                 Grid.Column="1"
                 Orientation="Vertical">
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                    <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">                        
-                        <Run Text="Tìm kiếm :"/>
-                    </TextBlock>
-                    <TextBox x:Name="txtSearch" Width="250" TextChanged="txtSearch_TextChanged" PlaceholderText="Tìm theo Mã hoặc Tên hàng hoá..."/>
+                    <TextBlock x:Uid="Customers_Search" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <TextBox x:Name="txtSearch" x:Uid="Materials_Search_Placeholder" Width="250" TextChanged="txtSearch_TextChanged" />
                 </StackPanel>
 
                 <controls:DataGrid
@@ -122,9 +109,9 @@
                         <SolidColorBrush x:Key="DataGridColumnHeaderBackgroundColor" Color="Transparent" />
                     </controls:DataGrid.Resources>
                     <controls:DataGrid.Columns>
-                        <controls:DataGridTextColumn Binding="{Binding ProductID}" Header="Mã hàng" Visibility="Collapsed"/>
-                        <controls:DataGridTextColumn Width="200" Binding="{Binding Name}" Header="Tên hàng" />
-                        <controls:DataGridTextColumn Binding="{Binding BasePrice}" Header="Giá">
+                        <controls:DataGridTextColumn Binding="{Binding ProductID}" x:Uid="Materials_Grid_ProductID" Visibility="Collapsed"/>
+                        <controls:DataGridTextColumn Width="200" Binding="{Binding Name}" x:Uid="Materials_Grid_Name" />
+                        <controls:DataGridTextColumn Binding="{Binding BasePrice}" x:Uid="Materials_Grid_Price">
                             <controls:DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -132,7 +119,7 @@
                                 </Style>
                             </controls:DataGridTextColumn.ElementStyle>
                         </controls:DataGridTextColumn>
-                        <controls:DataGridTextColumn Binding="{Binding Inventory}" Header="Tồn kho">
+                        <controls:DataGridTextColumn Binding="{Binding Inventory}" x:Uid="Materials_Grid_Inventory">
                             <controls:DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -140,7 +127,7 @@
                                 </Style>
                             </controls:DataGridTextColumn.ElementStyle>
                         </controls:DataGridTextColumn>
-                        <controls:DataGridTextColumn Binding="{Binding TotalLine}" Header="Tổng tiền">
+                        <controls:DataGridTextColumn Binding="{Binding TotalLine}" x:Uid="Materials_Grid_Total">
                             <controls:DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -148,7 +135,7 @@
                                 </Style>
                             </controls:DataGridTextColumn.ElementStyle>
                         </controls:DataGridTextColumn>
-                        <controls:DataGridTextColumn Binding="{Binding MinAmount}" Header="Dự trữ tối thiểu">
+                        <controls:DataGridTextColumn Binding="{Binding MinAmount}" x:Uid="Materials_Grid_MinInventory">
                             <controls:DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -161,8 +148,8 @@
             </StackPanel>
 
             <ProgressRing Grid.Column="1"
-                  IsActive="{x:Bind ViewModel.IsLoading, Mode=OneWay}"
-                  Visibility="{x:Bind ViewModel.IsLoading, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                  IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
+                  Visibility="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
                   Width="60" Height="60"
                   HorizontalAlignment="Center"
                   VerticalAlignment="Center" />
