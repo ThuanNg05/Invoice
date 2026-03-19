@@ -9,7 +9,7 @@ namespace Invoice.Services;
 public class WindowService : IWindowService
 {
     private WindowEx? _productSelectionWindow;
-    private WindowEx? _historyWindow;
+    private WindowEx? _editingWindow;
 
     public void OpenProductSelectionWindow(Customers selectedCustomer)
     {
@@ -19,10 +19,12 @@ public class WindowService : IWindowService
             return;
         }
 
-        var newWindow = new WindowEx();
-        newWindow.Title = "Common_ProductSelection".GetLocalized();
-        newWindow.Height = 800;
-        newWindow.Width = 1200;
+        var newWindow = new WindowEx
+        {
+            Title = "Common_ProductSelection".GetLocalized(),
+            Height = 800,
+            Width = 1200
+        };
         newWindow.CenterOnScreen();
 
         _productSelectionWindow = newWindow;
@@ -43,24 +45,26 @@ public class WindowService : IWindowService
         newWindow.Activate();
     }
 
-    public void OpenHistoryWindow(Action<string> onInvoiceSelected)
+    public void OpenEditingInvoiceWindow(Action<string> onInvoiceSelected)
     {
-        if (_historyWindow != null)
+        if (_editingWindow != null)
         {
-            _historyWindow.Activate();
+            _editingWindow.Activate();
             return;
         }
 
-        var newWindow = new WindowEx();
-        newWindow.Title = "Shell_History".GetLocalized();
-        newWindow.Height = 800;
-        newWindow.Width = 1200;
+        var newWindow = new WindowEx
+        {
+            Title = "Common_EditingInvoice".GetLocalized(),
+            Height = 800,
+            Width = 1200
+        };
         newWindow.CenterOnScreen();
 
-        _historyWindow = newWindow;
+        _editingWindow = newWindow;
         newWindow.Closed += (sender, args) =>
         {
-            _historyWindow = null;
+            _editingWindow = null;
         };
 
         var frame = new Frame();
@@ -71,7 +75,7 @@ public class WindowService : IWindowService
             OnInvoiceSelected = (invoiceId) =>
             {
                 onInvoiceSelected?.Invoke(invoiceId);
-                CloseHistoryWindow();
+                CloseEditingWindow();
             }
         };
         
@@ -85,9 +89,9 @@ public class WindowService : IWindowService
         _productSelectionWindow = null;
     }
 
-    public void CloseHistoryWindow()
+    public void CloseEditingWindow()
     {
-        _historyWindow?.Close();
-        _historyWindow = null;
+        _editingWindow?.Close();
+        _editingWindow = null;
     }
 }

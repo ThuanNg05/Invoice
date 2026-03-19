@@ -123,9 +123,6 @@
   <data name="AppDescription" xml:space="preserve">
     <value>Invoice</value>
   </data>
-  <data name="Shell_DataGrid.Content" xml:space="preserve">
-    <value>DataGrid</value>
-  </data>
   <data name="Settings_Personalization.Text" xml:space="preserve">
     <value>Personalization</value>
   </data>
@@ -164,9 +161,6 @@
   </data>
   <data name="Shell_DetailPrice.Content" xml:space="preserve">
     <value>DetailPrice</value>
-  </data>
-  <data name="Shell_EditingInvoice.Content" xml:space="preserve">
-    <value>EditingInvoice</value>
   </data>
   <data name="Shell_History.Content" xml:space="preserve">
     <value>History</value>
@@ -245,5 +239,8 @@
   </data>
   <data name="Common_ProductSelection" xml:space="preserve">
     <value>Product Selection</value>
+  </data>
+  <data name="Common_EditingInvoice" xml:space="preserve">
+    <value>EditingInvoice</value>
   </data>
 </root>

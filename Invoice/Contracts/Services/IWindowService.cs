@@ -5,7 +5,7 @@ namespace Invoice.Contracts.Services;
 public interface IWindowService
 {
     void OpenProductSelectionWindow(Customers selectedCustomer);
-    void OpenHistoryWindow(Action<string> onInvoiceSelected);
+    void OpenEditingInvoiceWindow(Action<string> onInvoiceSelected);
     void CloseProductSelectionWindow();
-    void CloseHistoryWindow();
+    void CloseEditingWindow();
 }

@@ -47,6 +47,7 @@ public interface IInvoiceService
     Task<int> GetInvoiceCountByDate(DateTime date);
     Task AddInvoice(Invoices invoice, IEnumerable<InvoiceDetail> details, IEnumerable<WarehouseTransaction> transactions);
     Task DeleteInvoiceAndRevertInventory(string invoiceId);
+    Task<string> GetDashboardData(int year);
 }
 
 public interface IInventoryService

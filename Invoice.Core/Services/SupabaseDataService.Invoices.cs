@@ -107,4 +107,11 @@ public partial class SupabaseDataService
             throw new Exception($"Lỗi khi xoá hoá đơn: {ex.Message}");
         }
     }
+
+    public async Task<string> GetDashboardData(int year)
+    {
+        await EnsureConnectionAsync();
+        var response = await _client.Rpc("get_dashboard_data", new { target_year = year });
+        return response.Content;
+    }
 }

@@ -75,7 +75,7 @@ public partial class EditingInvoiceViewModel : ObservableRecipient
         catch (Exception ex)
         {
             Debug.WriteLine($"Lỗi load mã hoá đơn: {ex.Message}");
-            await App.ShowMessageAsync("Lỗi", "Không thể tải danh sách mã hoá đơn.");
+            await App.ShowErrorAsync("Không thể tải danh sách mã hoá đơn.");
         }
     }
 
@@ -100,7 +100,7 @@ public partial class EditingInvoiceViewModel : ObservableRecipient
         catch (Exception ex)
         {
             Debug.WriteLine($"Lỗi load chi tiết: {ex.Message}");
-            await App.ShowMessageAsync("Lỗi", "Không thể tải chi tiết hoá đơn.");
+            await App.ShowErrorAsync("Không thể tải chi tiết hoá đơn.");
         }
     }
 

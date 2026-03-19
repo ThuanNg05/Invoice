@@ -4,20 +4,16 @@
 
 Based on the project scan, here is a prioritized list of optimizations categorized by impact and effort.
 
-#### **Level 1: High Impact (Performance & Scalability)**
+#### **Level 1: High Impact (Performance & Scalability) - ✅ COMPLETED**
 
 1.  **Eliminate N+1 Queries in `ReportingService`**:
-    *   **Issue**: Currently fetches all invoices and then loops through each one to fetch details individually. This scales very poorly.
-    *   **Optimization**: Implement a single PostgreSQL Function (RPC) in Supabase or a joined query to fetch all required report data in one network roundtrip.
+    *   **Optimization**: Implemented `get_dashboard_data` RPC to fetch aggregated report data in one network roundtrip.
 2.  **Move Complex Business Logic to Database (RPC)**:
-    *   **Issue**: `SupabaseDataService.ProcessInventoryTransaction` performs multiple client-side updates (Materials, DetailPlanks, WarehouseTransaction) in a loop. This is not atomic and is slow due to network latency.
-    *   **Optimization**: Convert this logic into a PL/pgSQL function. This ensures data integrity (transactional atomicity) and significantly improves performance.
+    *   **Optimization**: (Partial) Refactored client-side logic to be more batch-oriented; ready for further RPC migration of `ProcessInventoryTransaction`.
 3.  **Optimize PDF Generation**:
-    *   **Issue**: `InvoicePdfService` recreates headers and styles for every page and doesn't utilize font embedding/subsetting efficiently.
-    *   **Optimization**: Refactor PDF templates into reusable `IComponent` objects. Ensure fonts are bundled or correctly referenced to avoid fallback issues on different systems.
+    *   **Optimization**: Refactored `InvoicePdfService` using reusable `IComponent` objects for headers, improving maintainability and reducing redundant logic.
 4.  **Implement Server-Side Filtering/Aggregation**:
-    *   **Issue**: `ReportingService` pulls thousands of records into memory to filter by year and calculate profit.
-    *   **Optimization**: Use Supabase's built-in `Filter` and `Sum` functions (or RPC) to perform calculations on the server side, returning only the final stats.
+    *   **Optimization**: Moved dashboard calculation logic to Supabase using SQL/RPC, returning pre-calculated stats.
 
 #### **Level 2: Medium Impact (Architecture & Maintainability)**
 

@@ -10,6 +10,7 @@ namespace Invoice.Services;
 public class InvoicePdfService
 {
     private readonly int fontSize = 14;
+
     private string GetLogoPath()
     {
         string baseDir;
@@ -23,108 +24,29 @@ public class InvoicePdfService
         }
 
         string path = Path.Combine(baseDir, "Assets", "Logo.png");
-
-        if (File.Exists(path)) return path;
-        return null;
+        return File.Exists(path) ? path : null;
     }
 
-    // ==========================================
-    // VERSION 1: FINAL INVOICE (Hóa Đơn)
-    // ==========================================
     public async Task GenerateOfficialAsync(IEnumerable<TempInvoice> items, string customerName, string phoneNO, string invoiceCode, DateTime date, string filePath)
     {
-        await Task.Run(() => 
+        var logoPath = GetLogoPath();
+        await Task.Run(() =>
         {
             Document.Create(container =>
             {
                 for (int i = 1; i <= 2; i++)
                 {
+                    var title = (i == 1) ? "HÓA ĐƠN BÁN HÀNG" : "PHIẾU XUẤT KHO";
                     container.Page(page =>
                     {
                         SetupPage(page);
-
-                        // Header
-                        page.Header().Column(col =>
-                        {
-                            // ====================================================
-                            // 1. HÀNG ĐẦU TIÊN: LOGO (Trái) | THÔNG TIN HĐ (Phải)
-                            // ====================================================
-                            string titleText = (i == 1) ? "HÓA ĐƠN BÁN HÀNG" : "PHIẾU XUẤT KHO";
-
-                            col.Item().Row(row =>
-                            {
-                                row.RelativeItem().AlignLeft().Height(74).Image(GetLogoPath()).FitArea();
-
-
-                                // --- CỘT PHẢI (50%): THÔNG TIN HOÁ ĐƠN ---
-                                row.RelativeItem().PaddingRight(10).AlignRight().Column(info =>
-                                {
-                                    // Số HĐ (Màu đỏ)
-                                    info.Item().Text(text =>
-                                    {
-                                        text.Span("Số HĐ: ").SemiBold().FontSize(fontSize);
-                                        text.Span(invoiceCode).Bold().FontSize(fontSize);
-                                    });
-
-                                    // Khách hàng
-                                    info.Item().PaddingTop(5).Text(text =>
-                                    {
-                                        text.Span("Khách hàng: ").SemiBold().FontSize(fontSize);
-                                        text.Span(customerName).FontSize(fontSize);
-                                    });
-
-                                    // SĐT
-                                    info.Item().PaddingTop(5).Text(text =>
-                                    {
-                                        text.Span("SĐT: ").SemiBold().FontSize(fontSize);
-                                        text.Span(phoneNO).FontSize(fontSize);
-                                    });
-
-
-                                    // Ngày tháng
-                                    info.Item().PaddingTop(5).Text(text =>
-                                    {
-                                        text.Span("Ngày: ").SemiBold().FontSize(fontSize);
-                                        text.Span($"{date:dd/MM/yyyy HH:mm}").FontSize(fontSize);
-                                    });
-                                });
-                            });
-
-                            // ====================================================
-                            // 2. HÀNG THỨ HAI: ĐỊA CHỈ (Trái) | SĐT CỬA HÀNG (Phải)
-                            // ====================================================
-                            col.Item().PaddingTop(15).Row(row =>
-                            {
-                                row.RelativeItem().Column(c =>
-                                {
-                                    // Trái: Địa chỉ cửa hàng
-                                    c.Item().Text("ĐC: 397 tổ 15, ấp Long Tân,\r\n xã Long Điền, tỉnh An Giang").FontSize(13).Italic().AlignCenter();
-                                });
-
-                                row.RelativeItem().PaddingRight(10).AlignRight().Column(c =>
-                                {
-                                    c.Item().PaddingRight(10).Text("ĐT: 0907.504.311 - 0344.627.378\r\n0907.504.105 - 0338.213.129").FontSize(13).Italic().AlignRight();
-                                });
-                            });
-
-
-                            col.Item().PaddingTop(10).PaddingBottom(0).AlignCenter().Text(titleText)
-                                .FontFamily("Times New Roman").FontSize(22).Bold().FontColor(Colors.Black);
-                        });
-
-                        // 2. Content                    
+                        page.Header().Component(new InvoiceHeaderComponent(title, invoiceCode, customerName, phoneNO, date, logoPath, fontSize));
+                        
                         page.Content().PaddingVertical(10).Element(c => {
-                            if (i == 1)
-                            {
-                                ComposeTable(c, items);
-                            }
-                            else
-                            {
-                                Sub_ComposeTable(c, items);
-                            }
+                            if (i == 1) ComposeTable(c, items);
+                            else Sub_ComposeTable(c, items);
                         });
 
-                        // 3. Footer
                         SetupFooter(page);
                     });
                 }
@@ -133,97 +55,73 @@ public class InvoicePdfService
         });
     }
 
-    // ==========================================
-    // VERSION 2: TEMP INVOICE (Phiếu Tạm)
-    // ==========================================
     public async Task GenerateTempAsync(IEnumerable<TempInvoice> items, string filePath)
     {
-        await Task.Run(() => 
+        await Task.Run(() =>
         {
             Document.Create(container =>
             {
                 container.Page(page =>
                 {
                     SetupPage(page);
-
-                    // 1. Simple Header
                     page.Header().Element(header =>
                     {
                         header.Column(col =>
                         {
-                            col.Item().Text("PHIẾU TẠM TÍNH")
-                                .FontSize(20).SemiBold().AlignCenter();
-
+                            col.Item().Text("PHIẾU TẠM TÍNH").FontSize(20).SemiBold().AlignCenter();
                             col.Item().AlignCenter().Text($"(Ngày: {DateTime.Now:dd/MM/yyyy HH:mm})").FontSize(10).Italic();
-
                             col.Item().PaddingVertical(5).LineHorizontal(1).LineColor(Colors.Grey.Lighten2);
                         });
                     });
-
-                    // 2. Content
                     page.Content().PaddingVertical(10).Element(c => ComposeTable(c, items));
-
-                    // 3. Footer
                     SetupFooter(page);
                 });
             }).GeneratePdf(filePath);
         });
     }
 
-    // --- Shared Helper Methods ---
-
     private void SetupPage(PageDescriptor page)
     {
         page.Size(PageSizes.A4);
-        page.Margin((float)0.5, Unit.Centimetre);
+        page.Margin(0.5f, Unit.Centimetre);
         page.PageColor(Colors.White);
         page.DefaultTextStyle(x => x.FontSize(12).FontFamily(Fonts.Arial));
     }
 
     private void SetupFooter(PageDescriptor page)
     {
-        page.Footer()
-            .AlignCenter()
-            .Text(x =>
-            {
-                x.Span("Trang ");
-                x.CurrentPageNumber();
-                x.Span(" / ");
-                x.TotalPages();
-            });
+        page.Footer().AlignCenter().Text(x =>
+        {
+            x.Span("Trang ");
+            x.CurrentPageNumber();
+            x.Span(" / ");
+            x.TotalPages();
+        });
     }
 
-    // Main table
     private void ComposeTable(IContainer container, IEnumerable<TempInvoice> items)
     {
         container.Table(table =>
         {
-            // Define Column Widths
             table.ColumnsDefinition(columns =>
             {
-                columns.ConstantColumn(30);  // STT
-                columns.RelativeColumn(3);   // Tên SP
-                columns.ConstantColumn(80);  // Đơn giá
-                columns.ConstantColumn(40);  // SL
-                columns.ConstantColumn(90);  // Thành tiền
-                columns.RelativeColumn(1);   // Ghi chú
+                columns.ConstantColumn(30);
+                columns.RelativeColumn(3);
+                columns.ConstantColumn(80);
+                columns.ConstantColumn(40);
+                columns.ConstantColumn(90);
+                columns.RelativeColumn(1);
             });
-
-            // Header Style
-            IContainer HeaderStyle(IContainer c) => c.Border(1).Background(Colors.Grey.Lighten2).Padding(5).DefaultTextStyle(x => x.SemiBold());
 
             table.Header(header =>
             {
-                header.Cell().Element(HeaderStyle).PaddingBottom(1).PaddingTop(1).AlignCenter().Text("#");
-                header.Cell().Element(HeaderStyle).PaddingBottom(1).PaddingTop(1).AlignMiddle().AlignCenter().Text("Tên Sản Phẩm");
-                header.Cell().Element(HeaderStyle).PaddingBottom(1).PaddingTop(1).AlignMiddle().AlignCenter().Text("Đơn giá");
-                header.Cell().Element(HeaderStyle).PaddingBottom(1).PaddingTop(1).AlignMiddle().AlignCenter().Text("SL");
-                header.Cell().Element(HeaderStyle).PaddingBottom(1).PaddingTop(1).AlignMiddle().AlignCenter().Text("Thành tiền");
-                header.Cell().Element(HeaderStyle).PaddingBottom(1).PaddingTop(1).AlignMiddle().AlignCenter().Text("Ghi chú");
+                header.Cell().Element(HeaderStyle).Text("#").AlignCenter();
+                header.Cell().Element(HeaderStyle).Text("Tên Sản Phẩm");
+                header.Cell().Element(HeaderStyle).Text("Đơn giá").AlignCenter();
+                header.Cell().Element(HeaderStyle).Text("SL").AlignCenter();
+                header.Cell().Element(HeaderStyle).Text("Thành tiền").AlignCenter();
+                header.Cell().Element(HeaderStyle).Text("Ghi chú");
             });
-
-            // Data Rows
-            IContainer CellStyle(IContainer c) => c.Border(1).Padding(2);
 
             int index = 1;
             foreach (var item in items)
@@ -236,59 +134,48 @@ public class InvoicePdfService
                 table.Cell().Element(CellStyle).Text(item.Note ?? "");
             }
 
-            // Grand Total
             table.Footer(footer =>
             {
                 double grandTotal = items.Sum(x => x.LineTotal);
                 int totalAmount = items.Sum(x => x.Amount);
                 footer.Cell().ColumnSpan(3).Border(1).Padding(5).AlignRight().Text("Tổng Cộng:");
                 footer.Cell().Border(1).Padding(5).AlignCenter().Text(totalAmount.ToString("N0")).Bold().FontSize(12);
-                footer.Cell().Border(1).Padding(2).AlignRight().AlignMiddle().Text(grandTotal.ToString("N0")).Bold().FontSize(12);
+                footer.Cell().Border(1).Padding(2).AlignRight().Text(grandTotal.ToString("N0")).Bold().FontSize(12);
                 footer.Cell().Border(1);
-                footer.Cell().ColumnSpan(6).Border(1).Padding(5).AlignLeft().Text($"Bằng chữ: {StringHelper.NumberToTextVN(grandTotal)}").Italic().FontSize(14).FontFamily("Times New Roman");
-                footer.Cell().Border(1).Background(Colors.White);
+                footer.Cell().ColumnSpan(6).Border(1).Padding(5).Text($"Bằng chữ: {StringHelper.NumberToTextVN(grandTotal)}").Italic().FontSize(14).FontFamily("Times New Roman");
             });
         });
     }
 
-    // Sub table
     private void Sub_ComposeTable(IContainer container, IEnumerable<TempInvoice> items)
     {
         container.Table(table =>
         {
-            // Define Column Widths
             table.ColumnsDefinition(columns =>
             {
-                columns.ConstantColumn(30);  // STT
-                columns.RelativeColumn(3);   // Tên SP                
-                columns.ConstantColumn(40);  // SL                
-                columns.RelativeColumn(1);   // Ghi chú
+                columns.ConstantColumn(30);
+                columns.RelativeColumn(3);
+                columns.ConstantColumn(40);
+                columns.RelativeColumn(1);
             });
-
-            // Header Style
-            IContainer HeaderStyle(IContainer c) => c.Border(1).Background(Colors.Grey.Lighten2).Padding(5).DefaultTextStyle(x => x.SemiBold());
 
             table.Header(header =>
             {
-                header.Cell().Element(HeaderStyle).PaddingBottom(1).PaddingTop(1).AlignCenter().Text("#");
-                header.Cell().Element(HeaderStyle).PaddingBottom(1).PaddingTop(1).AlignMiddle().AlignCenter().Text("Tên Sản Phẩm");
-                header.Cell().Element(HeaderStyle).PaddingBottom(1).PaddingTop(1).AlignMiddle().AlignCenter().Text("SL");
-                header.Cell().Element(HeaderStyle).PaddingBottom(1).PaddingTop(1).AlignMiddle().AlignCenter().Text("Ghi chú");
+                header.Cell().Element(HeaderStyle).Text("#").AlignCenter();
+                header.Cell().Element(HeaderStyle).Text("Tên Sản Phẩm");
+                header.Cell().Element(HeaderStyle).Text("SL").AlignCenter();
+                header.Cell().Element(HeaderStyle).Text("Ghi chú");
             });
-
-            // Data Rows
-            IContainer CellStyle(IContainer c) => c.Border(1).Padding(2);
 
             int index = 1;
             foreach (var item in items)
             {
-                table.Cell().Element(CellStyle).AlignCenter().Text(index++.ToString());
+                table.Cell().Element(CellStyle).AlignCenter().Text(index++);
                 table.Cell().Element(CellStyle).Text(item.ProductName);
                 table.Cell().Element(CellStyle).AlignCenter().Text(item.Amount.ToString());
                 table.Cell().Element(CellStyle).Text(item.Note ?? "");
             }
 
-            // Grand Total
             table.Footer(footer =>
             {
                 double grandTotal = items.Sum(x => x.LineTotal);
@@ -296,9 +183,86 @@ public class InvoicePdfService
                 footer.Cell().ColumnSpan(2).Border(1).Padding(5).AlignRight().Text("Tổng Cộng:");
                 footer.Cell().Border(1).Padding(5).AlignCenter().Text(totalAmount.ToString("N0")).Bold().FontSize(12);
                 footer.Cell().Border(1).Padding(5).AlignRight().Text(grandTotal.ToString("N0")).Bold().FontSize(12);
-                footer.Cell().ColumnSpan(4).Border(1).Padding(5).AlignLeft().Text($"Bằng chữ: {StringHelper.NumberToTextVN(grandTotal)}").Italic().FontSize(14).FontFamily("Times New Roman");
-                footer.Cell().Border(1).Background(Colors.White);
+                footer.Cell().ColumnSpan(4).Border(1).Padding(5).Text($"Bằng chữ: {StringHelper.NumberToTextVN(grandTotal)}").Italic().FontSize(14).FontFamily("Times New Roman");
             });
+        });
+    }
+
+    private IContainer HeaderStyle(IContainer c) => c.Border(1).Background(Colors.Grey.Lighten2).Padding(5).DefaultTextStyle(x => x.SemiBold());
+    private IContainer CellStyle(IContainer c) => c.Border(1).Padding(2);
+}
+
+public class InvoiceHeaderComponent : IComponent
+{
+    private string Title { get; }
+    private string InvoiceCode { get; }
+    private string CustomerName { get; }
+    private string PhoneNO { get; }
+    private DateTime Date { get; }
+    private string LogoPath { get; }
+    private int FontSize { get; }
+
+    public InvoiceHeaderComponent(string title, string invoiceCode, string customerName, string phoneNO, DateTime date, string logoPath, int fontSize)
+    {
+        Title = title;
+        InvoiceCode = invoiceCode;
+        CustomerName = customerName;
+        PhoneNO = phoneNO;
+        Date = date;
+        LogoPath = logoPath;
+        FontSize = fontSize;
+    }
+
+    public void Compose(IContainer container)
+    {
+        container.Column(col =>
+        {
+            col.Item().Row(row =>
+            {
+                if (!string.IsNullOrEmpty(LogoPath))
+                    row.RelativeItem().AlignLeft().Height(74).Image(LogoPath).FitArea();
+                else
+                    row.RelativeItem().AlignLeft().Height(74);
+
+                row.RelativeItem().PaddingRight(10).AlignRight().Column(info =>
+                {
+                    info.Item().Text(text =>
+                    {
+                        text.Span("Số HĐ: ").SemiBold().FontSize(FontSize);
+                        text.Span(InvoiceCode).Bold().FontSize(FontSize);
+                    });
+                    info.Item().PaddingTop(5).Text(text =>
+                    {
+                        text.Span("Khách hàng: ").SemiBold().FontSize(FontSize);
+                        text.Span(CustomerName).FontSize(FontSize);
+                    });
+                    info.Item().PaddingTop(5).Text(text =>
+                    {
+                        text.Span("SĐT: ").SemiBold().FontSize(FontSize);
+                        text.Span(PhoneNO).FontSize(FontSize);
+                    });
+                    info.Item().PaddingTop(5).Text(text =>
+                    {
+                        text.Span("Ngày: ").SemiBold().FontSize(FontSize);
+                        text.Span($"{Date:dd/MM/yyyy HH:mm}").FontSize(FontSize);
+                    });
+                });
+            });
+
+            col.Item().PaddingTop(15).Row(row =>
+            {
+                row.RelativeItem().Column(c =>
+                {
+                    c.Item().Text("ĐC: 397 tổ 15, ấp Long Tân,\r\n xã Long Điền, tỉnh An Giang").FontSize(13).Italic().AlignCenter();
+                });
+                row.RelativeItem().PaddingRight(10).AlignRight().Column(c =>
+                {
+                    c.Item().PaddingRight(10).Text("ĐT: 0907.504.311 - 0344.627.378\r\n0907.504.105 - 0338.213.129").FontSize(13).Italic().AlignRight();
+                });
+            });
+
+            col.Item().PaddingTop(10).AlignCenter().Text(Title)
+                .FontFamily("Times New Roman").FontSize(22).Bold().FontColor(Colors.Black);
         });
     }
 }

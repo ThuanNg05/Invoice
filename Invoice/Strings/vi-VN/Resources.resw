@@ -123,23 +123,20 @@
   <data name="AppDescription" xml:space="preserve">
     <value>Invoice</value>
   </data>
-  <data name="Shell_DataGrid.Content" xml:space="preserve">
-    <value>DataGrid</value>
-  </data>
   <data name="Settings_Personalization.Text" xml:space="preserve">
     <value>Personalization</value>
   </data>
   <data name="Settings_Theme.Text" xml:space="preserve">
-    <value>Theme</value>
+    <value>Màu nền</value>
   </data>
   <data name="Settings_Theme_Light.Content" xml:space="preserve">
-    <value>Light</value>
+    <value>Sáng</value>
   </data>
   <data name="Settings_Theme_Dark.Content" xml:space="preserve">
-    <value>Dark</value>
+    <value>Tối</value>
   </data>
   <data name="Settings_Theme_Default.Content" xml:space="preserve">
-    <value>Default</value>
+    <value>Mặc định</value>
   </data>
   <data name="Settings_About.Text" xml:space="preserve">
     <value>About this application</value>
@@ -154,7 +151,7 @@
     <value>https://YourPrivacyUrlGoesHere/</value>
   </data>
   <data name="Shell_CreateInvoice.Content" xml:space="preserve">
-    <value>CreateInvoice</value>
+    <value>Hoá đơn</value>
   </data>
   <data name="Shell_Customers.Content" xml:space="preserve">
     <value>Khách hàng</value>
@@ -164,9 +161,6 @@
   </data>
   <data name="Shell_DetailPrice.Content" xml:space="preserve">
     <value>Giá thành phần</value>
-  </data>
-  <data name="Shell_EditingInvoice.Content" xml:space="preserve">
-    <value>Chỉnh sửa hoá đơn</value>
   </data>
   <data name="Shell_History.Content" xml:space="preserve">
     <value>Lịch sử</value>
@@ -245,5 +239,8 @@
   </data>
   <data name="Common_ProductSelection" xml:space="preserve">
     <value>Chọn sản phẩm</value>
+  </data>
+  <data name="Common_EditingInvoice" xml:space="preserve">
+    <value>Chỉnh sửa hoá đơn</value>
   </data>
 </root>

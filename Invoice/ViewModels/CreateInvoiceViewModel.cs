@@ -56,7 +56,7 @@ public partial class CreateInvoiceViewModel : ObservableRecipient, IRecipient<Pr
 
     private void CloseProductSelectionWindow() => _windowService.CloseProductSelectionWindow();
 
-    private void CloseEditInvoiceWindow() => _windowService.CloseHistoryWindow();
+    private void CloseEditInvoiceWindow() => _windowService.CloseEditingWindow();
 
     private void AttachItemEvents(TempInvoice item) =>
     item.PropertyChanged += OnInvoiceItemChanged;
@@ -317,7 +317,7 @@ public partial class CreateInvoiceViewModel : ObservableRecipient, IRecipient<Pr
 
     public void OpenHistoryToEdit()
     {
-        _windowService.OpenHistoryWindow((invoiceId) =>
+        _windowService.OpenEditingInvoiceWindow((invoiceId) =>
         {
             App.MainWindow.DispatcherQueue.TryEnqueue(async () =>
             {
