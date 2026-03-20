@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using CommunityToolkit.Mvvm.ComponentModel;
 using Invoice.Contracts.ViewModels;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
@@ -38,14 +37,14 @@ public partial class DetailPlanksViewModel : ViewModelBase, INavigationAware
             {
                 Planks.Add(item);
             }
-        }, "Planks_Error_Load".GetLocalized());
+        }, "LOAD_FAILED".GetLocalized());
     }
 
     public async Task AddPlankAsync(DetailPlanks planks)
     {
         if (Planks.Any(c => c.sizeID.Equals(planks.sizeID, StringComparison.OrdinalIgnoreCase)))
         {
-            await DialogService.ShowErrorAsync("Planks_Error_Duplicate".GetLocalized());
+            await DialogService.ShowErrorAsync("Trùng kích thước");
             return;
         }
 
@@ -53,7 +52,7 @@ public partial class DetailPlanksViewModel : ViewModelBase, INavigationAware
         {
             await _dataService.AddPlank(planks);
             Planks.Add(planks);
-        }, "Planks_Error_Add".GetLocalized());
+        }, "Lỗi thêm cỡ ván");
     }
 
     public async Task DeletePlankAsync(DetailPlanks planks)
@@ -62,7 +61,7 @@ public partial class DetailPlanksViewModel : ViewModelBase, INavigationAware
         {
             await _dataService.DeletePlank(planks.sizeID);
             Planks.Remove(planks);
-        }, "Planks_Error_Delete".GetLocalized());
+        }, "Lỗi xoá ván");
     }
 
     public async Task UpdatePlankAsync(DetailPlanks planks)
@@ -70,6 +69,6 @@ public partial class DetailPlanksViewModel : ViewModelBase, INavigationAware
         await ExecuteAsync(async () =>
         {
             await _dataService.UpdatePlank(planks);
-        }, "Planks_Error_Update".GetLocalized());
+        }, "Lỗi cập nhật ván");
     }
 }

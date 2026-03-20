@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.WinUI.UI.Controls;
+using Invoice.Contracts.Services;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
 using Invoice.Helpers;
@@ -10,6 +11,7 @@ namespace Invoice.Views;
 
 public sealed partial class ProductsPage : Page
 {
+    private readonly IDialogService _dialogService;
     private DetailPrice? _currentPriceConfig;
     private DispatcherTimer _searchDebounceTimer;
     public ProductsViewModel ViewModel
@@ -20,6 +22,7 @@ public sealed partial class ProductsPage : Page
     public ProductsPage()
     {
         ViewModel = App.GetService<ProductsViewModel>();
+        _dialogService = App.GetService<IDialogService>();
         InitializeComponent();
         InitDebounce();
         Loaded += ProductsPage_Loaded;
@@ -65,7 +68,7 @@ public sealed partial class ProductsPage : Page
         var product = CreateProductFromInputs();
 
         await ViewModel.AddProductAsync(product);
-        await App.ShowSuccessAsync("SUCCESS_ADD".GetLocalized());
+        await _dialogService.ShowSuccessAsync("SUCCESS_ADD".GetLocalized());
         ClearInputs();        
     }
 
@@ -74,7 +77,7 @@ public sealed partial class ProductsPage : Page
         string sizeIdInput = txtSizeID.Text.Trim();
         var product = new Products
         {
-            Name = StringHelper.CleanStringSimple(txtName.Text.Trim()),
+            Name = StringHelper.RemoveRedundantWhitespace(txtName.Text),
             SizeID = string.IsNullOrEmpty(sizeIdInput) ? null : sizeIdInput,
             BasePrice = StringHelper.ParseDouble(txtBasePrice.Text),
             PriceOdd = (int)StringHelper.ParseDouble(txtPriceOdd.Text),
@@ -115,7 +118,7 @@ public sealed partial class ProductsPage : Page
         product.ProductID = selectedSummary.ProductID;
 
         await ViewModel.UpdateProductAsync(product);
-        await App.ShowSuccessAsync("SUCCESS_UPDATE".GetLocalized());
+        await _dialogService.ShowSuccessAsync("SUCCESS_UPDATE".GetLocalized());
         ClearInputs();        
     }
 
@@ -123,13 +126,13 @@ public sealed partial class ProductsPage : Page
     {
         if (ProductGrid.SelectedItem is not ProductSummary selected) return;
         
-        bool isConfirmed = await App.ShowConfirmAsync("CONFIRM_DELETE".GetLocalized(), 
-            $"Bạn có chắc muốn xóa sản phẩm {selected.Name} (ID: {selected.ProductID})?", "CONFIRM".GetLocalized());
+        bool isConfirmed = await _dialogService.ShowConfirmAsync("Thông báo", 
+            $"Bạn có chắc muốn xóa sản phẩm {selected.Name} (ID: {selected.ProductID})?", "Xác nhận");
 
         if (isConfirmed)
         {            
             await ViewModel.DeleteProductAsync(selected.ProductID);
-            await App.ShowSuccessAsync("SUCCESS_DELETE".GetLocalized());
+            await _dialogService.ShowSuccessAsync("SUCCESS_DELETE".GetLocalized());
             ClearInputs();            
         }
     }
@@ -195,7 +198,7 @@ public sealed partial class ProductsPage : Page
     {
         if (string.IsNullOrWhiteSpace(txtName.Text))
         {
-            await App.ShowMessageAsync("Common_Error".GetLocalized(), "Product_Validation_NameEmpty".GetLocalized());
+            await _dialogService.ShowMessageAsync("Common_Error".GetLocalized(), "Product_Validation_NameEmpty".GetLocalized());
             txtName.Focus(FocusState.Programmatic);
             return false;
         }
@@ -208,7 +211,7 @@ public sealed partial class ProductsPage : Page
             if (!planks.Any(p => p.sizeID == sizeId))
             {
                 string errorMsg = string.Format("Product_Validation_SizeNotFound".GetLocalized(), sizeId);
-                await App.ShowMessageAsync("Common_Error".GetLocalized(), errorMsg);
+                await _dialogService.ShowMessageAsync("Common_Error".GetLocalized(), errorMsg);
                 txtSizeID.Focus(FocusState.Programmatic);
                 return false;
             }
@@ -216,14 +219,14 @@ public sealed partial class ProductsPage : Page
 
         if (!double.TryParse(txtWage.Text, out double wage) || wage <= 0)
         {
-            await App.ShowMessageAsync("Common_Error".GetLocalized(), "Product_Validation_WageInvalid".GetLocalized());
+            await _dialogService.ShowMessageAsync("Common_Error".GetLocalized(), "Product_Validation_WageInvalid".GetLocalized());
             txtWage.Focus(FocusState.Programmatic);
             return false;
         }
 
         if (string.IsNullOrWhiteSpace(txtBasePrice.Text) || string.IsNullOrWhiteSpace(txtPriceOdd.Text) || string.IsNullOrWhiteSpace(txtPriceEven.Text))
         {
-            await App.ShowMessageAsync("Common_Error".GetLocalized(), "Product_Validation_PricesEmpty".GetLocalized());
+            await _dialogService.ShowMessageAsync("Common_Error".GetLocalized(), "Product_Validation_PricesEmpty".GetLocalized());
             txtBasePrice.Focus(FocusState.Programmatic);
             return false;
         }        
@@ -281,6 +284,33 @@ public sealed partial class ProductsPage : Page
 
     private void computeBasePrice(object sender, RoutedEventArgs args)
     {
-        CalculateBasePrice();
+        //CalculateBasePrice();
+        if (_currentPriceConfig == null) return;
+
+        try
+        {
+            double wage = StringHelper.ParseDouble(txtWage.Text);
+
+            double total = wage +
+                (StringHelper.ParseDouble(txtKieng.Text) * _currentPriceConfig.PrKieng) +
+                (StringHelper.ParseDouble(txtNhL.Text) * _currentPriceConfig.PrNhL) +
+                (StringHelper.ParseDouble(txtNhN.Text) * _currentPriceConfig.PrNhN) +
+                (StringHelper.ParseDouble(txtG_l.Text) * _currentPriceConfig.PrG_l) +
+                (StringHelper.ParseDouble(txtG_n.Text) * _currentPriceConfig.PrG_n) +
+                (StringHelper.ParseDouble(txtDl.Text) * _currentPriceConfig.PrDl) +
+                (StringHelper.ParseDouble(txtHau.Text) * _currentPriceConfig.PrHau) +
+                (StringHelper.ParseDouble(txtLua.Text) * _currentPriceConfig.PrLua) +
+                (StringHelper.ParseDouble(txtKt.Text) * _currentPriceConfig.PrKt) +
+                (StringHelper.ParseDouble(txtOc.Text) * _currentPriceConfig.PrOc) +
+                (StringHelper.ParseDouble(txtNhom.Text) * _currentPriceConfig.PrNhom) +
+                (StringHelper.ParseDouble(txt7f.Text) * _currentPriceConfig.Pr7f) +
+                (StringHelper.ParseDouble(txt2D.Text) * _currentPriceConfig.Pr2D) +
+                (StringHelper.ParseDouble(txtDecal.Text) * _currentPriceConfig.PrDecal);
+
+            txtBasePrice.Text = total.ToString("N0");
+        }
+        catch
+        {
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
 using CommunityToolkit.WinUI.UI.Controls;
+using Invoice.Contracts.Services;
 using Invoice.Core.Contracts;
 using Invoice.Core.Models;
 using Invoice.Helpers;
@@ -12,6 +13,7 @@ namespace Invoice.Views;
 
 public sealed partial class ProductSelectionPage : Page
 {
+    private readonly IDialogService _dialogService;
     public ProductSelectionViewModel ViewModel
     {
         get;
@@ -22,6 +24,7 @@ public sealed partial class ProductSelectionPage : Page
     public ProductSelectionPage()
     {
         ViewModel = App.GetService<ProductSelectionViewModel>();
+        _dialogService = App.GetService<IDialogService>();
         this.InitializeComponent();
         ClearSelection();
     }
@@ -30,20 +33,20 @@ public sealed partial class ProductSelectionPage : Page
     {
         if (ProductGrid.SelectedItem is not ProductSummary summary)
         {
-            await App.ShowErrorAsync("Vui lòng chọn một sản phẩm từ danh sách.");
+            await _dialogService.ShowErrorAsync("Vui lòng chọn một sản phẩm từ danh sách.");
             return;
         }
 
         if (string.IsNullOrEmpty(txtName.Text))
         {
-            await App.ShowErrorAsync("Tên hàng hoá không được bỏ trống.");
+            await _dialogService.ShowErrorAsync("Tên hàng hoá không được bỏ trống.");
             return;
         }
 
         string cleanedPriceText = txtBasePrice.Text.Replace(",", "").Replace(".", "");
         if (!int.TryParse(cleanedPriceText, out int sellPrice) || cleanedPriceText.Equals("0"))
         {
-            await App.ShowErrorAsync("Đơn giá không hợp lệ.");
+            await _dialogService.ShowErrorAsync("Đơn giá không hợp lệ.");
             txtBasePrice.Focus(FocusState.Programmatic);
             txtBasePrice.SelectAll();
             return;
@@ -54,14 +57,14 @@ public sealed partial class ProductSelectionPage : Page
         {
             if (!int.TryParse(txtAmount.Text, out amount) || amount <= 0)
             {
-                await App.ShowErrorAsync("Số lượng không hợp lệ.");
+                await _dialogService.ShowErrorAsync("Số lượng không hợp lệ.");
                 return;
             }
         }
 
         if (amount > _currentInventory)
         {
-            await App.ShowErrorAsync($"Số lượng nhập ({amount}) vượt quá tồn kho hiện tại ({_currentInventory}).");
+            await _dialogService.ShowErrorAsync($"Số lượng nhập ({amount}) vượt quá tồn kho hiện tại ({_currentInventory}).");
             return;
         }
 

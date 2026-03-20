@@ -37,7 +37,7 @@
 
 			<StackPanel Orientation="Vertical" Spacing="10">
 				<StackPanel Orientation="Horizontal" Spacing="10">
-					<TextBox x:Name="size1" x:Uid="Planks_Size" TextAlignment="Left" IsReadOnly="true"/>
+					<TextBox x:Name="size1" Header="Cỡ ván" TextAlignment="Left" IsReadOnly="true"/>
 					<TextBox x:Name="size2" Header=" " TextAlignment="Left" IsReadOnly="true"/>
 					<TextBox x:Name="size3" Header=" " TextAlignment="Left" IsReadOnly="true"/>
 					<TextBox x:Name="size4" Header=" " TextAlignment="Left" IsReadOnly="true"/>
@@ -50,7 +50,7 @@
 				</StackPanel>
 
 				<StackPanel Orientation="Horizontal" Spacing="10">
-					<TextBox x:Name="amount1" x:Uid="IOActions_Amount" TextAlignment="Right" IsReadOnly="true"/>
+					<TextBox x:Name="amount1" Header="Số lượng" TextAlignment="Right" IsReadOnly="true"/>
 					<TextBox x:Name="amount2" Header=" " TextAlignment="Right" IsReadOnly="true"/>
 					<TextBox x:Name="amount3" Header=" " TextAlignment="Right" IsReadOnly="true"/>
 					<TextBox x:Name="amount4" Header=" " TextAlignment="Right" IsReadOnly="true"/>
@@ -67,14 +67,14 @@
 			<StackPanel Orientation="Vertical">
 				<StackPanel Orientation="Vertical" Spacing="10">
 					<StackPanel Orientation="Horizontal" Spacing="10">
-						<TextBox HorizontalAlignment="Left" x:Uid="IOPlanks_FrameNO" x:Name="frameNO" Width="100" IsReadOnly="true"/>
-						<TextBox HorizontalAlignment="left" x:Uid="IOPlanks_Amount" x:Name="amount" Width="190" TextAlignment="Center" BeforeTextChanging="Amount_BeforeTextChanging"/>
-						<ComboBox x:Uid="IOPlanks_PlankType" x:Name="cbbPlankType" Width="100" HorizontalAlignment="Left">
+                        <TextBox HorizontalAlignment="Left" Header="Mã rập" x:Name="frameNO" Width="100" IsReadOnly="true"/>
+                        <TextBox HorizontalAlignment="left" Header="Số lượng tấm lớn" x:Name="amount" Width="190" TextAlignment="Center" BeforeTextChanging="Amount_BeforeTextChanging"/>
+						<ComboBox Header="Loại ván" x:Name="cbbPlankType" Width="100" HorizontalAlignment="Left">
 							<ComboBoxItem Content="HP"/>
 							<ComboBoxItem Content="MDF"/>
 						</ComboBox>
 					</StackPanel>
-					<TextBox x:Name="txtDescribe" x:Uid="IOPlanks_Description" HorizontalAlignment="Left"
+                    <TextBox x:Name="txtDescribe" Header="Mô tả" HorizontalAlignment="Left"
                             TextWrapping="Wrap" AcceptsReturn="True" IsSpellCheckEnabled="False" Width="300" IsReadOnly="true"/>
 				</StackPanel>
 
@@ -87,7 +87,7 @@
 								<KeyboardAccelerator Key="F1"/>
 							</AppBarButton.KeyboardAccelerators>
 						</AppBarButton>
-                        <AppBarButton x:Uid="Btn_Reset" Background="#24a6d5" Icon="Refresh" Foreground="{ThemeResource SettingsForegroundBrush}"
+                        <AppBarButton x:Name="btnReset" x:Uid="Btn_Reset" Background="#24a6d5" Icon="Refresh" Foreground="{ThemeResource SettingsForegroundBrush}"
                                       Click="BtnReset_Click" ToolTipService.ToolTip="Press F2" CornerRadius="10"
                                       IsEnabled="{x:Bind ViewModel.IsBusy, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}">
 							<AppBarButton.KeyboardAccelerators>
@@ -125,7 +125,7 @@
 				</controls:DataGrid.Resources>
 
 				<controls:DataGrid.Columns>
-					<controls:DataGridTextColumn IsReadOnly="True" x:Uid="IOPlanks_Grid_FrameNO" Binding="{Binding FrameNO}" Width="Auto">
+					<controls:DataGridTextColumn Header="Mã rập" Binding="{Binding FrameNO}" Width="Auto">
 						<controls:DataGridTextColumn.ElementStyle>
 							<Style TargetType="TextBlock">
 								<Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -134,7 +134,7 @@
 						</controls:DataGridTextColumn.ElementStyle>
 					</controls:DataGridTextColumn>
 
-					<controls:DataGridTextColumn IsReadOnly="True" x:Uid="IOPlanks_Grid_Description" Binding="{Binding Description}" Width="Auto">
+					<controls:DataGridTextColumn Header="Mô tả" Binding="{Binding Description}" Width="Auto">
 						<controls:DataGridTextColumn.ElementStyle>
 							<Style TargetType="TextBlock">
 								<Setter Property="HorizontalAlignment" Value="Stretch"/>

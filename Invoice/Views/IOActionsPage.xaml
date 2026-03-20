@@ -36,13 +36,12 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Border Grid.Row="0" Margin="0,0,400,0"
+        <Border Grid.Row="0" Margin="0,0,695,0"
                 BorderBrush="{ThemeResource SurfaceStrokeColorDefaultBrush}" BorderThickness="1" Padding="15" CornerRadius="8" Background="{ThemeResource LayerFillColorDefaultBrush}">
             <Grid ColumnSpacing="20" RowSpacing="15">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="300"/>
+                    <ColumnDefinition Width="200"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -50,28 +49,23 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <TextBox x:Uid="IOActions_ProductID" 
-                         x:Name="txtID"
+                <TextBox Header="Tên SP"
+                         x:Name="txtName"
                          IsEnabled="{x:Bind ViewModel.IsBusy, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}"
                          IsReadOnly="True" Grid.Row="0" Grid.Column="0"/>
 
-                <TextBox x:Uid="IOActions_ProductName" 
-                         x:Name="txtName"
-                         IsEnabled="{x:Bind ViewModel.IsBusy, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}"
-                         IsReadOnly="True" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"/>
-
-                <TextBox x:Uid="IOActions_Inventory" 
+                <TextBox Header="Tồn kho" 
                          x:Name="txtInventory"
                          IsEnabled="{x:Bind ViewModel.IsBusy, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}"
                          IsReadOnly="True" Grid.Row="1" Grid.Column="0"/>
 
-                <TextBox x:Uid="IOActions_Amount" 
+                <TextBox Header="Số lượng" 
                          x:Name="txtAmount"
                          IsEnabled="{x:Bind ViewModel.IsBusy, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}"
                          BeforeTextChanging="txtAmount_BeforeTextChanging"
-                         Grid.Row="1" Grid.Column="1"/>
+                         Grid.Row="0" Grid.Column="1"/>
 
-                <ComboBox x:Name="cmbType" x:Uid="IOActions_ActionType" HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="2">
+                <ComboBox Header="Hình thức" x:Name="cmbType" HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="1">
                     <x:String>Nhập kho</x:String>
                     <x:String>Xuất kho</x:String>
                 </ComboBox>
@@ -120,7 +114,7 @@
 
         <Grid Grid.Row="2" ColumnSpacing="10">
             <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                <TextBlock x:Uid="Customers_Search" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <TextBlock Text="Tìm kiếm : " VerticalAlignment="Center" Margin="0,0,10,0"/>
                 <TextBox x:Name="txtSearch"
                          IsEnabled="{x:Bind ViewModel.IsBusy, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}"
                          Width="250" TextChanged="txtSearch_TextChanged" />
@@ -145,7 +139,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <TextBlock x:Uid="IOActions_List_Source" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,0,0,5"/>
+                <TextBlock Text="Danh sách hàng hoá" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,0,0,5"/>
 
                 <controls:DataGrid Grid.Row="1"
                     x:Name="SourceDataGrid"
@@ -168,9 +162,8 @@
                     </controls:DataGrid.Resources>
 
                     <controls:DataGrid.Columns>
-                        <controls:DataGridTextColumn Header="ID" Binding="{Binding ProductID}" Visibility="Collapsed"/>
-                        <controls:DataGridTextColumn x:Uid="Materials_Grid_Name" Binding="{Binding Name}" Width="*"/>
-                        <controls:DataGridTextColumn x:Uid="Materials_Grid_Inventory" Binding="{Binding Inventory}"/>
+                        <controls:DataGridTextColumn Header="Tên SP" Binding="{Binding Name}" Width="*"/>
+                        <controls:DataGridTextColumn Header="Tồn kho" Binding="{Binding Inventory}"/>
                     </controls:DataGrid.Columns>
                 </controls:DataGrid>
             </Grid>
@@ -180,7 +173,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <TextBlock x:Uid="IOActions_List_Pending" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,0,0,5"/>
+                <TextBlock Text="Danh sách chờ lưu kho" Style="{StaticResource SubtitleTextBlockStyle}" Margin="0,0,0,5"/>
 
                 <controls:DataGrid Grid.Row="1"
                     x:Name="TransactionDataGrid"
@@ -203,10 +196,9 @@
                     </controls:DataGrid.Resources>
 
                     <controls:DataGrid.Columns>
-                        <controls:DataGridTextColumn Header="ID" Binding="{Binding ProductID}"/>
-                        <controls:DataGridTextColumn x:Uid="Customers_Grid_Name" Binding="{Binding Name}" Width="*"/>
-                        <controls:DataGridTextColumn x:Uid="History_Grid_Amount" Binding="{Binding Amount}"/>
-                        <controls:DataGridTextColumn x:Uid="IOActions_ActionType" Binding="{Binding ActionType}"/>
+                        <controls:DataGridTextColumn Header="Tên SP" Binding="{Binding Name}" Width="*"/>
+                        <controls:DataGridTextColumn Header="Số lượng" Binding="{Binding Amount}"/>
+                        <controls:DataGridTextColumn Header="Hình thức" Binding="{Binding ActionType}"/>
                     </controls:DataGrid.Columns>
                 </controls:DataGrid>
             </Grid>

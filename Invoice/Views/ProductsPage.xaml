@@ -39,31 +39,31 @@
                         <StackPanel Margin="0,0,10,10">
                             <TextBlock>
                                 <Run x:Uid="Required_Field" Foreground="Red"/>
-                                <Run x:Uid="Products_Name"/>
+                                <Run Text="Tên sản phẩm"/>
                             </TextBlock>
                             <TextBox x:Name="txtName" Width="300" HorizontalAlignment="Left" Margin="0,0,0,5"/>
-                            <TextBlock x:Uid="Products_Frame"/>
+                            <TextBlock Text="Cỡ ván"/>
                             <TextBox x:Name="txtSizeID" x:Uid="Products_Frame_Placeholder" Width="300" HorizontalAlignment="Left" />
                         </StackPanel>
                         <StackPanel>
                             <TextBlock>
                                 <Run x:Uid="Required_Field" Foreground="Red"/>
-                                <Run x:Uid="Products_Wage"/>
+                                <Run Text="Tiền công"/>
                             </TextBlock>
                             <TextBox x:Name="txtWage" Width="140" HorizontalAlignment="Left" BeforeTextChanging="inputDecimal" TextChanged="computeBasePrice"/>
                         </StackPanel>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,0,0,10">
                         <StackPanel>
-                            <TextBlock x:Uid="Products_BasePrice"/>
+                            <TextBlock Text="Giá gốc"/>
                             <TextBox x:Name="txtBasePrice" Width="140" TextAlignment="Right"/>
                         </StackPanel>
                         <StackPanel>
-                            <TextBlock x:Uid="Products_PriceOdd"/>
+                            <TextBlock Text="Giá lẻ"/>
                             <TextBox x:Name="txtPriceOdd" Width="150" TextAlignment="Right" />
                         </StackPanel>
                         <StackPanel>
-                            <TextBlock x:Uid="Products_PriceEven"/>
+                            <TextBlock Text="Giá sỉ"/>
                             <TextBox x:Name="txtPriceEven" Width="140" TextAlignment="Right" />
                         </StackPanel>
                     </StackPanel>
@@ -180,9 +180,9 @@
                         <SolidColorBrush x:Key="DataGridColumnHeaderBackgroundColor" Color="Transparent" />
                     </controls:DataGrid.Resources>
                     <controls:DataGrid.Columns>
-                        <controls:DataGridTextColumn x:Uid="ProductID" Binding="{Binding ProductID}" Visibility="Collapsed" />
-                        <controls:DataGridTextColumn x:Uid="Products_Grid_Name" Width="200" Binding="{Binding Name}" />
-                        <controls:DataGridTextColumn x:Uid="Products_Grid_BasePrice" Binding="{Binding BasePrice}">
+                        <!--<controls:DataGridTextColumn Header="Mã SP" Binding="{Binding ProductID}" Visibility="Collapsed" />-->
+                        <controls:DataGridTextColumn Header="Tên SP" Width="200" Binding="{Binding Name}" />
+                        <controls:DataGridTextColumn Header="Giá gốc" Binding="{Binding BasePrice}">
                             <controls:DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -190,7 +190,7 @@
                                 </Style>
                             </controls:DataGridTextColumn.ElementStyle>
                         </controls:DataGridTextColumn>
-                        <controls:DataGridTextColumn x:Uid="Products_Grid_PriceOdd" Binding="{Binding PriceOdd}">
+                        <controls:DataGridTextColumn Header="Giá lẻ" Binding="{Binding PriceOdd}">
                             <controls:DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -198,7 +198,7 @@
                                 </Style>
                             </controls:DataGridTextColumn.ElementStyle>
                         </controls:DataGridTextColumn>
-                        <controls:DataGridTextColumn x:Uid="Products_Grid_PriceEven" Binding="{Binding PriceEven}">
+                        <controls:DataGridTextColumn Header="Giá sỉ" Binding="{Binding PriceEven}">
                             <controls:DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="HorizontalAlignment" Value="Stretch"/>

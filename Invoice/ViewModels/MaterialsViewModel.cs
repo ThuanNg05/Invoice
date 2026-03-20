@@ -1,6 +1,4 @@
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using CommunityToolkit.Mvvm.ComponentModel;
 using Invoice.Contracts.ViewModels;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
@@ -13,8 +11,8 @@ public partial class MaterialsViewModel : ViewModelBase, INavigationAware
 {
     private readonly IDataService _dataService;
 
-    public List<Materials> AllMaterials = new();
-    public ObservableCollection<Materials> MaterialsCollection { get; } = new();
+    public List<Materials> AllMaterials = [];
+    public ObservableCollection<Materials> MaterialsCollection { get; } = [];
 
     public MaterialsViewModel(IDataService dataService, IDialogService dialogService) : base(dialogService)
     {
@@ -41,14 +39,14 @@ public partial class MaterialsViewModel : ViewModelBase, INavigationAware
             {
                 MaterialsCollection.Add(item);
             }
-        }, "Materials_Error_Load".GetLocalized());
+        }, "LOAD_FAILED".GetLocalized());
     }
 
     public async Task AddMaterialAsync(Materials material)
     {
         if (MaterialsCollection.Any(m => m.Name.Equals(material.Name, StringComparison.OrdinalIgnoreCase)))
         {
-            await DialogService.ShowErrorAsync("Materials_Error_Duplicate".GetLocalized());
+            await DialogService.ShowErrorAsync("Tên vật tư này đã tồn tại. Vui lòng nhập tên khác");
             return;
         }
 
@@ -57,7 +55,7 @@ public partial class MaterialsViewModel : ViewModelBase, INavigationAware
             await _dataService.AddMaterial(material);
             MaterialsCollection.Add(material);
             AllMaterials.Add(material);
-        }, "Materials_Error_Add".GetLocalized());
+        }, "Lỗi thêm vật tư");
     }
 
     public async Task DeleteMaterialAsync(Materials material)
@@ -68,14 +66,14 @@ public partial class MaterialsViewModel : ViewModelBase, INavigationAware
             MaterialsCollection.Remove(material);
             var itemAll = AllMaterials.FirstOrDefault(m => m.ProductID == material.ProductID);
             if (itemAll != null) AllMaterials.Remove(itemAll);
-        }, "Materials_Error_Delete".GetLocalized());
+        }, "Lỗi xoá vật tư");
     }
 
     public async Task UpdateMaterialAsync(Materials material)
     {
         if (MaterialsCollection.Any(m => m.Name.Equals(material.Name, StringComparison.OrdinalIgnoreCase) && m.ProductID != material.ProductID))
         {
-            await DialogService.ShowErrorAsync("Materials_Error_Duplicate".GetLocalized());
+            await DialogService.ShowErrorAsync("Tên vật tư này đã tồn tại. Vui lòng nhập tên khác");
             return;
         }
 
@@ -103,6 +101,6 @@ public partial class MaterialsViewModel : ViewModelBase, INavigationAware
                     AllMaterials[indexAll] = material;
                 }
             }
-        }, "Materials_Error_Update".GetLocalized());
+        }, "Lỗi cập nhật vật tư");
     }
 }

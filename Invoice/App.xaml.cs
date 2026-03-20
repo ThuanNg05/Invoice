@@ -163,7 +163,7 @@ public partial class App : Application
 
         try
         {
-            await ShowMessageAsync("Lỗi hệ thống", $"Đã xảy ra lỗi không mong muốn: {e.Message}");
+            await GetService<IDialogService>().ShowMessageAsync("Lỗi hệ thống", $"Đã xảy ra lỗi không mong muốn: {e.Message}");
         }
         catch
         {
@@ -188,56 +188,7 @@ public partial class App : Application
             var error = $"LAUNCH ERROR: {ex.Message}\nSTACKTRACE: {ex.StackTrace}";
             System.Diagnostics.Debug.WriteLine(error);
             System.Diagnostics.Trace.WriteLine(error);
-            await ShowMessageAsync("Lỗi khởi động", $"Có lỗi xảy ra khi khởi động ứng dụng: {ex.Message}");
+            await GetService<IDialogService>().ShowMessageAsync("Lỗi khởi động", $"Có lỗi xảy ra khi khởi động ứng dụng: {ex.Message}");
         }
-    }
-
-    public static async Task ShowMessageAsync(string title, string content)
-    {       
-        if (MainWindow != null && MainWindow.Content is FrameworkElement element)
-        {
-            var dialog = new ContentDialog
-            {
-                Title = title,
-                Content = content,
-                CloseButtonText = "Common_Close".GetLocalized(),
-                XamlRoot = element.XamlRoot
-            };
-
-            try
-            {
-                await dialog.ShowAsync();
-            }
-            catch (Exception e)
-            {
-                System.Diagnostics.Debug.WriteLine(e.Message);
-            }
-        }
-    }
-
-    public static Task ShowSuccessAsync(string content) 
-        => ShowMessageAsync("Common_Success".GetLocalized(), content);
-
-    public static Task ShowErrorAsync(string content, Exception? ex = null) 
-        => ShowMessageAsync("Common_Error".GetLocalized(), ex == null ? content : $"{content}\nChi tiết: {ex.Message}");
-
-    public static async Task<bool> ShowConfirmAsync(string title, string content, string? primaryButton = null)
-    {
-        if (MainWindow != null && MainWindow.Content is FrameworkElement element)
-        {
-            var dialog = new ContentDialog
-            {
-                Title = title,
-                Content = content,
-                PrimaryButtonText = primaryButton ?? "CONFIRM".GetLocalized(),
-                CloseButtonText = "Common_Cancel".GetLocalized(),
-                DefaultButton = ContentDialogButton.Close,
-                XamlRoot = element.XamlRoot
-            };
-
-            var result = await dialog.ShowAsync();
-            return result == ContentDialogResult.Primary;
-        }
-        return false;
     }
 }

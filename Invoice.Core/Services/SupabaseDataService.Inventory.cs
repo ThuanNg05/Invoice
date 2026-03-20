@@ -10,45 +10,12 @@ public partial class SupabaseDataService
     {
         await EnsureConnectionAsync();
         
-        var productResponse = await _client.From<Products>()
-                               .Where(p => p.ProductID == productId)
-                               .Get();
-        var product = productResponse.Models.FirstOrDefault();
-
-        if (product != null)
+        // Use an atomic increment RPC to avoid race conditions
+        await _client.Rpc("increment_inventory", new
         {
-            await _client.From<Products>()
-                         .Where(p => p.ProductID == productId)
-                         .Set(x => x.Inventory, product.Inventory + amountChange) 
-                         .Update();
-            return;
-        }
-
-        var materialResponse = await _client.From<Materials>()
-                                        .Where(m => m.ProductID == productId)
-                                        .Get();
-        var material = materialResponse.Models.FirstOrDefault();
-
-        if (material != null)
-        {
-            await _client.From<Materials>()
-                         .Where(m => m.ProductID == productId)
-                         .Set(x => x.Inventory, material.Inventory + amountChange)
-                         .Update();
-            return;
-        }
-
-        var plankResponse = await _client.From<DetailPlanks>()
-                                     .Where(p => p.sizeID == productId.ToString())
-                                     .Get();
-        var plank = plankResponse.Models.FirstOrDefault();
-        if (plank != null)
-        {
-            await _client.From<DetailPlanks>()
-                         .Where(p => p.sizeID == productId.ToString())
-                         .Set(x => x.inventory, plank.inventory + amountChange)
-                         .Update();
-        }
+            p_id = productId.ToString(),
+            p_change = amountChange
+        });
     }
     
     public async Task AddWarehouseTransaction(WarehouseTransaction transaction)
@@ -83,15 +50,10 @@ public partial class SupabaseDataService
                 if (int.TryParse(amountStr, out int amountPerFrame))
                 {
                     int totalSmallPlanks = amountPerFrame * amount;
-
                     if (smallPlanksMap.ContainsKey(sizeId))
-                    {
                         smallPlanksMap[sizeId] += totalSmallPlanks;
-                    }
                     else
-                    {
                         smallPlanksMap[sizeId] = totalSmallPlanks;
-                    }
                 }
             }
         }
@@ -107,85 +69,21 @@ public partial class SupabaseDataService
         ParseAndAccumulate(frame.size9);
         ParseAndAccumulate(frame.size10);
 
-        if (sourcePlankId.HasValue)
+        if (smallPlanksMap.Count > 0)
         {
-            var materialResponse = await _client.From<Materials>()
-                                        .Where(m => m.ProductID == sourcePlankId.Value)
-                                        .Single();
-
-            if (materialResponse != null)
-            {                
-                await _client.From<Materials>()
-                             .Where(m => m.ProductID == sourcePlankId.Value)
-                             .Set(x => x.Inventory, materialResponse.Inventory - amount)
-                             .Update();
-
-                var transOut = new WarehouseTransaction
-                {
-                    ProductID = sourcePlankId.Value,
-                    Amount = -amount,
-                    ActionType = "Xuất kho",
-                    Note = $"Cắt rập: {frame.FrameNO}",
-                    CreatedDate = DateTime.Now
-                };
-                await _client.From<WarehouseTransaction>().Insert(transOut);
-            }
-        }
-
-        if(smallPlanksMap.Count > 0)
-        {
-            var sizeIds = smallPlanksMap.Keys.ToList();
-
-            var existingPlanksResponse = await _client.From<DetailPlanks>()
-                                             .Filter("size_id", Operator.In, sizeIds)
-                                             .Get();
-
-            var existingPlanks = existingPlanksResponse.Models;
-            var planksToUpsert = new List<DetailPlanks>();
-            var transactionsToInsert = new List<WarehouseTransaction>();
-
-            foreach (var item in smallPlanksMap)
+            // Prepare data for the atomic RPC
+            // This ensures material consumption, plank production, and logging happen in ONE transaction
+            await _client.Rpc("process_frame_to_planks", new
             {
-                string sizeId = item.Key;
-                int quantityToAdd = item.Value;
-                int finalInventory = quantityToAdd;
-                
-                var existingItem = existingPlanks.FirstOrDefault(p => p.sizeID == sizeId);
-
-                if (existingItem != null)
-                {
-                    finalInventory = existingItem.inventory + quantityToAdd;
-                }
-                
-                planksToUpsert.Add(new DetailPlanks
-                {
-                    sizeID = sizeId,
-                    inventory = finalInventory
-                });
-
-                if (long.TryParse(sizeId, out long sizeIdLong))
-                {
-                    transactionsToInsert.Add(new WarehouseTransaction
-                    {
-                        ProductID = sizeIdLong,
-                        Amount = quantityToAdd,
-                        ActionType = "Nhập kho",
-                        Note = $"Cắt rập từ {amount} tấm lớn ({frame.FrameNO})",
-                        CreatedDate = DateTime.Now
-                    });
-                }
-            }
-
-            if (planksToUpsert.Count > 0)
-            {
-                await _client.From<DetailPlanks>().Upsert(planksToUpsert);
-            }
+                p_frame_no = frame.FrameNO,
+                p_amount = amount,
+                p_material_id = sourcePlankId,
+                p_small_planks = smallPlanksMap
+            });
             
-            if (transactionsToInsert.Count > 0)
-            {
-                await _client.From<WarehouseTransaction>().Insert(transactionsToInsert);
-            }
-        }        
+            _cache.Invalidate(InMemoryCache.MATERIALS);
+            _cache.Invalidate(InMemoryCache.PLANKS);
+        }
     }        
 
     public async Task<bool> ValidateMaterialStock(long productId, int requiredAmount)

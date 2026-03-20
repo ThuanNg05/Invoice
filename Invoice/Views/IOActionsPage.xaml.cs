@@ -1,4 +1,5 @@
-﻿using Invoice.Core.Models;
+﻿using Invoice.Contracts.Services;
+using Invoice.Core.Models;
 using Invoice.Helpers;
 using Invoice.ViewModels;
 using Microsoft.UI.Xaml;
@@ -8,6 +9,7 @@ namespace Invoice.Views;
 
 public sealed partial class IOActionsPage : Page
 {
+    private readonly IDialogService _dialogService;
     public IOActionsViewModel ViewModel
     {
         get;
@@ -17,7 +19,12 @@ public sealed partial class IOActionsPage : Page
     {
         InitializeComponent();
         ViewModel = App.GetService<IOActionsViewModel>();
-        ClearInput();
+        _dialogService = App.GetService<IDialogService>();
+        //ClearInput();
+        btnAdd.IsEnabled = false;
+        btnEdit.IsEnabled = false;
+        btnDelete.IsEnabled = false;
+        btnSave.IsEnabled = ViewModel.TransactionList.Count > 0;
     }
 
     private void ClearInput()
@@ -37,38 +44,32 @@ public sealed partial class IOActionsPage : Page
 
     private async void BtnAddProduct_Click(object sender, RoutedEventArgs e)
     {
-        if (string.IsNullOrEmpty(txtID.Text) || string.IsNullOrEmpty(txtAmount.Text) || cmbType.SelectedIndex == -1)
+        if (string.IsNullOrEmpty(txtAmount.Text) || cmbType.SelectedIndex == -1)
         {            
-            await App.ShowErrorAsync("Vui lòng nhập đủ thông tin (Số lượng, Hình thức).");
+            await _dialogService.ShowErrorAsync("Vui lòng nhập đủ thông tin (Số lượng, Hình thức).");
             return;
         }
         if (!int.TryParse(txtAmount.Text, out int amount) || amount <= 0)
         {
-            await App.ShowErrorAsync("Số lượng phải là số dương.");
+            await _dialogService.ShowErrorAsync("Số lượng phải là số dương.");
             return;
-        }
-
-        if (!long.TryParse(txtID.Text, out long productId))
-        {
-            await App.ShowErrorAsync("Mã sản phẩm không hợp lệ.");
-            return;
-        }
+        }      
 
         string actionType = cmbType.SelectedValue.ToString();
         int currentInventory = int.Parse(txtInventory.Text);
 
         var existingTransaction = ViewModel.TransactionList
-            .FirstOrDefault(t => t.ProductID == productId && t.ActionType == actionType);
+            .FirstOrDefault(t => t.ActionType == actionType);
 
         if (existingTransaction != null)
         {            
-            if(await App.ShowConfirmAsync("Sản phẩm trùng lặp", $"Sản phẩm '{txtName.Text}' với hình thức '{actionType}' đã có trong danh sách chờ.\nBạn có muốn cộng dồn số lượng không?", "Đồng ý"))
+            if(await _dialogService.ShowConfirmAsync("Sản phẩm trùng lặp", $"Sản phẩm '{txtName.Text}' với hình thức '{actionType}' đã có trong danh sách chờ.\nBạn có muốn cộng dồn số lượng không?", "Đồng ý"))
             {
                 int totalAmount = existingTransaction.Amount + amount;
 
                 if (actionType == "Xuất kho" && totalAmount > currentInventory)
                 {
-                    await App.ShowErrorAsync($"Không thể cộng dồn. Tổng số lượng xuất kho ({totalAmount}) vượt quá tồn kho hiện tại ({currentInventory}).");
+                    await _dialogService.ShowErrorAsync($"Không thể cộng dồn. Tổng số lượng xuất kho ({totalAmount}) vượt quá tồn kho hiện tại ({currentInventory}).");
                     return;
                 }
 
@@ -79,7 +80,7 @@ public sealed partial class IOActionsPage : Page
         {
             if (actionType == "Xuất kho" && amount > currentInventory)
             {                
-                await App.ShowErrorAsync($"Không thể thêm. Số lượng xuất kho ({amount}) vượt quá tồn kho hiện tại ({currentInventory}).");
+                await _dialogService.ShowErrorAsync($"Không thể thêm. Số lượng xuất kho ({amount}) vượt quá tồn kho hiện tại ({currentInventory}).");
                 return;
             }
 
@@ -89,7 +90,6 @@ public sealed partial class IOActionsPage : Page
             var newTransaction = new WarehouseTransaction
             {
                 InvoiceID = null,
-                ProductID = productId,
                 Name = txtName.Text,
                 Amount = amount,
                 ActionType = actionType,
@@ -107,7 +107,7 @@ public sealed partial class IOActionsPage : Page
         {
             if (!int.TryParse(txtAmount.Text, out int newAmount) || newAmount <= 0)
             {
-                await App.ShowErrorAsync("Số lượng không hợp lệ.");
+                await _dialogService.ShowErrorAsync("Số lượng không hợp lệ.");
                 return;
             }
 
@@ -115,7 +115,7 @@ public sealed partial class IOActionsPage : Page
             int currentInventory = ViewModel.GetCurrentInventory(selectedItem.ProductID);
             if (actionType == "Xuất kho" && newAmount > currentInventory)
             {
-                await App.ShowErrorAsync($"Không thể cập nhật. Số lượng xuất kho ({newAmount}) vượt quá tồn kho hiện tại ({currentInventory}).");
+                await _dialogService.ShowErrorAsync($"Không thể cập nhật. Số lượng xuất kho ({newAmount}) vượt quá tồn kho hiện tại ({currentInventory}).");
                 return;
             }
 
@@ -124,7 +124,7 @@ public sealed partial class IOActionsPage : Page
             selectedItem.Name = txtName.Text;
 
             ClearInput();
-            await App.ShowSuccessAsync("Cập nhật thành công.");
+            await _dialogService.ShowSuccessAsync("SUCCESS_UPDATE".GetLocalized());
         }
     }
     private async void BtnDelete_Click(object sender, RoutedEventArgs e)
@@ -145,12 +145,12 @@ public sealed partial class IOActionsPage : Page
         {
             btnSave.IsEnabled = false;
             await ViewModel.SaveData();
+            await _dialogService.ShowSuccessAsync("SUCCESS_UPDATE".GetLocalized());
             ClearInput();
-            await App.ShowSuccessAsync("Cập nhật kho thành công.");
         }
         catch (Exception ex)
         {
-            await App.ShowErrorAsync("Không thể lưu dữ liệu", ex);
+            await _dialogService.ShowErrorAsync("Không thể lưu dữ liệu", ex);
         }
         finally
         {
@@ -161,8 +161,7 @@ public sealed partial class IOActionsPage : Page
     private void SourceGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (SourceDataGrid.SelectedItem is InventoryItem selected)
-        {
-            txtID.Text = selected.ProductID.ToString();
+        {            
             txtName.Text = selected.Name;
             txtInventory.Text = selected.Inventory.ToString();
             txtAmount.Text = string.Empty;
@@ -178,8 +177,7 @@ public sealed partial class IOActionsPage : Page
     private void TransactionGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (TransactionDataGrid.SelectedItem is WarehouseTransaction selected)
-        {
-            txtID.Text = selected.ProductID.ToString();
+        {            
             txtName.Text = selected.Name ?? "";
             txtAmount.Text = selected.Amount.ToString();
             cmbType.SelectedItem = selected.ActionType;

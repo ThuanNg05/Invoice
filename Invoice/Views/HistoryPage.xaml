@@ -40,7 +40,7 @@
         <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="16" Margin="0,0,0,16" VerticalAlignment="Bottom">
 
             <StackPanel Spacing="4">
-                <TextBlock x:Uid="History_From" Style="{ThemeResource CaptionTextBlockStyle}" FontSize="15" FontStyle="Italic" FontWeight="Bold"/>
+                <TextBlock Text="Từ" Style="{ThemeResource CaptionTextBlockStyle}" FontSize="15" FontStyle="Italic" FontWeight="Bold"/>
                 <DatePicker SelectedDate="{x:Bind ViewModel.StartDate, Mode=TwoWay}"
                             Language="vi-VN" 
                             Width="Auto"
@@ -49,7 +49,7 @@
             </StackPanel>
 
             <StackPanel Spacing="4">
-                <TextBlock x:Uid="History_To" Style="{ThemeResource CaptionTextBlockStyle}" FontSize="15" FontStyle="Italic" FontWeight="Bold"/>
+                <TextBlock Text="Đến" Style="{ThemeResource CaptionTextBlockStyle}" FontSize="15" FontStyle="Italic" FontWeight="Bold"/>
                 <DatePicker SelectedDate="{x:Bind ViewModel.EndDate, Mode=TwoWay}" 
                             Language="vi-VN"                             
                             Width="Auto"                            
@@ -73,7 +73,7 @@
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Spacing="10" Margin="0,10,0,0">
                 <CommandBar Background="Transparent" DefaultLabelPosition="Right" >
-                    <AppBarButton x:Uid="History_Btn_Search" Background="#b48b14" Foreground="{ThemeResource SettingsForegroundBrush}"
+                    <AppBarButton Label="Tìm kiếm" Background="#b48b14" Foreground="{ThemeResource SettingsForegroundBrush}"
                                   Click="BtnQuery_Click" ToolTipService.ToolTip="Press F1" CornerRadius="10">
                         <AppBarButton.Icon>
                             <FontIcon Glyph="&#xE721;"/>
@@ -115,7 +115,7 @@
             </controls:DataGrid.Resources>
 
             <controls:DataGrid.Columns>
-                <controls:DataGridTextColumn IsReadOnly="True" Header="Mã HĐ" Binding="{Binding InvoiceID}">
+                <controls:DataGridTextColumn Header="Mã HĐ" Binding="{Binding InvoiceID}">
                     <controls:DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -124,7 +124,7 @@
                     </controls:DataGridTextColumn.ElementStyle>
                 </controls:DataGridTextColumn>
 
-                <controls:DataGridTextColumn IsReadOnly="True" Header="Ngày tạo" Binding="{Binding CreatedDate, Converter={StaticResource DateFormat}, ConverterParameter='dd/MM/yyyy'}">
+                <controls:DataGridTextColumn Header="Ngày tạo" Binding="{Binding CreatedDate, Converter={StaticResource DateFormat}, ConverterParameter='dd/MM/yyyy'}">
                     <controls:DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -133,7 +133,7 @@
                     </controls:DataGridTextColumn.ElementStyle>
                 </controls:DataGridTextColumn>
 
-                <controls:DataGridTextColumn IsReadOnly="True" Header="Khách hàng" Binding="{Binding CustomerName}">
+                <controls:DataGridTextColumn Header="Khách hàng" Binding="{Binding CustomerName}">
                     <controls:DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -142,7 +142,16 @@
                     </controls:DataGridTextColumn.ElementStyle>
                 </controls:DataGridTextColumn>
 
-                <controls:DataGridTextColumn IsReadOnly="True" Header="Mã SP" Binding="{Binding ProductID}" Visibility="Collapsed">
+                <!--<controls:DataGridTextColumn Header="Mã SP" Binding="{Binding ProductID}" Visibility="Collapsed">
+                    <controls:DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                            <Setter Property="TextAlignment" Value="Left"/>
+                        </Style>
+                    </controls:DataGridTextColumn.ElementStyle>
+                </controls:DataGridTextColumn>-->
+
+                <controls:DataGridTextColumn Header="Tên SP" Binding="{Binding ProductName}">
                     <controls:DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -151,16 +160,7 @@
                     </controls:DataGridTextColumn.ElementStyle>
                 </controls:DataGridTextColumn>
 
-                <controls:DataGridTextColumn IsReadOnly="True" Header="Tên SP" Binding="{Binding ProductName}">
-                    <controls:DataGridTextColumn.ElementStyle>
-                        <Style TargetType="TextBlock">
-                            <Setter Property="HorizontalAlignment" Value="Stretch"/>
-                            <Setter Property="TextAlignment" Value="Left"/>
-                        </Style>
-                    </controls:DataGridTextColumn.ElementStyle>
-                </controls:DataGridTextColumn>
-
-                <controls:DataGridTextColumn IsReadOnly="True" Header="Đơn giá" Binding="{Binding SellPrice, Converter={StaticResource FormatConverter}, ConverterParameter='N0'}">
+                <controls:DataGridTextColumn Header="Đơn giá" Binding="{Binding SellPrice, Converter={StaticResource FormatConverter}, ConverterParameter='N0'}">
                     <controls:DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -169,7 +169,7 @@
                     </controls:DataGridTextColumn.ElementStyle>
                 </controls:DataGridTextColumn>
 
-                <controls:DataGridTextColumn IsReadOnly="True" Header="Số lượng" Binding="{Binding Amount}">
+                <controls:DataGridTextColumn Header="Số lượng" Binding="{Binding Amount}">
                     <controls:DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -178,7 +178,7 @@
                     </controls:DataGridTextColumn.ElementStyle>
                 </controls:DataGridTextColumn>
 
-                <controls:DataGridTextColumn IsReadOnly="True" Header="Thành tiền" Binding="{Binding LineTotal, Converter={StaticResource FormatConverter}, ConverterParameter='N0'}">
+                <controls:DataGridTextColumn Header="Thành tiền" Binding="{Binding LineTotal, Converter={StaticResource FormatConverter}, ConverterParameter='N0'}">
                     <controls:DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -187,7 +187,7 @@
                     </controls:DataGridTextColumn.ElementStyle>
                 </controls:DataGridTextColumn>
 
-                <controls:DataGridTextColumn IsReadOnly="True" Header="Ghi chú" Binding="{Binding Note}" Width="*">
+                <controls:DataGridTextColumn Header="Ghi chú" Binding="{Binding Note}" Width="*">
                     <controls:DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="HorizontalAlignment" Value="Stretch"/>

@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using CommunityToolkit.WinUI.UI.Controls;
+using Invoice.Contracts.Services;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
 using Invoice.Core.Services;
@@ -12,6 +13,7 @@ namespace Invoice.Views;
 
 public sealed partial class IOPlanksPage : Page
 {
+    private readonly IDialogService _dialogService;
     public IOPlanksViewModel ViewModel
     {
         get;
@@ -20,6 +22,7 @@ public sealed partial class IOPlanksPage : Page
     public IOPlanksPage()
     {
         ViewModel = App.GetService<IOPlanksViewModel>();
+        _dialogService = App.GetService<IDialogService>();
         InitializeComponent();
     }
 
@@ -90,65 +93,54 @@ public sealed partial class IOPlanksPage : Page
     {
         if (PlankGrid.SelectedItem is not Frames selectedFrame)
         {
-            await App.ShowErrorAsync("Vui lòng chọn mã rập để lưu kho");
+            await _dialogService.ShowErrorAsync("Vui lòng chọn mã rập để lưu kho");
             return;
         }
         if (string.IsNullOrEmpty(amount.Text) || !int.TryParse(amount.Text, out int bigQty) || bigQty <= 0)
         {
-            await App.ShowErrorAsync("Vui lòng nhập số lượng nhập kho hợp lệ (>0)");
+            await _dialogService.ShowErrorAsync("Vui lòng nhập số lượng nhập kho hợp lệ (>0)");
             amount.Focus(FocusState.Programmatic);
             return;
         }
 
         if (cbbPlankType.SelectedItem is not ComboBoxItem selectedItem || selectedItem.Content == null)
         {
-            await App.ShowErrorAsync("Vui lòng chọn loại ván.");
+            await _dialogService.ShowErrorAsync("Vui lòng chọn loại ván.");
             cbbPlankType.Focus(FocusState.Programmatic);
             return;
         }
 
         string typePlank = selectedItem.Content.ToString();
-        long materialID;
-        if (typePlank == "HP")
+        var dataService = App.GetService<IDataService>();
+        var materials = await dataService.GetMaterials();
+        var targetMaterial = materials.FirstOrDefault(m => m.Name.Equals(typePlank, StringComparison.OrdinalIgnoreCase));
+
+        if (targetMaterial == null)
         {
-            materialID = 10012;
-        }
-        else if (typePlank == "MDF")
-        {
-            materialID = 10013;
-        }
-        else
-        {
-            await App.ShowErrorAsync($"Loại ván {typePlank} không hợp lệ.");
-            cbbPlankType.Focus(FocusState.Programmatic);
+            await _dialogService.ShowErrorAsync($"Không tìm thấy vật tư loại '{typePlank}' trong hệ thống.");
             return;
         }
+
+        long materialID = targetMaterial.ProductID;
 
         try
         {
             btnSave.IsEnabled = false;
             ViewModel.IsBusy = true;
 
-            var dataService = App.GetService<IDataService>();
             if (dataService is SupabaseDataService supabaseService)
             {
-                bool isStockValid = await supabaseService.ValidateMaterialStock(materialID, bigQty);
-                if (!isStockValid)
-                {
-                    await App.ShowErrorAsync($"Ván {typePlank} không đủ trong kho để nhập ván. Vui lòng kiểm tra lại.");
-                    return;
-                }
-
+                // Note: Server-side validation is also performed in the RPC for data integrity.
                 await supabaseService.ProcessInventoryTransaction(selectedFrame, bigQty, materialID);
                 ClearInputs();
                 amount.Text = string.Empty;
-                await App.ShowSuccessAsync($"Đã xuất {bigQty} tấm '{materialID}' và nhập kho ván nhỏ thành công.");
+                await _dialogService.ShowSuccessAsync($"Đã xuất {bigQty} tấm '{targetMaterial.Name}' và nhập kho ván nhỏ thành công.");
             }
         }
         catch (Exception ex)
         {
             Debug.WriteLine($"Error processing inventory transaction: {ex.Message}");
-            await App.ShowErrorAsync("Đã có lỗi xảy ra khi lưu kho", ex);
+            await _dialogService.ShowErrorAsync("Đã có lỗi xảy ra khi lưu kho", ex);
         }
         finally
         {

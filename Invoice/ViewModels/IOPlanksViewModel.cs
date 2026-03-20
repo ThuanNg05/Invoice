@@ -41,7 +41,7 @@ public partial class IOPlanksViewModel : ViewModelBase, INavigationAware
             {
                 FramesSource.Add(item);
             }
-        }, "IOPlanks_Error_Load".GetLocalized());
+        }, "LOAD_FAILED".GetLocalized());
     }
 
     public async Task SaveTransaction(Frames frames, int amount)

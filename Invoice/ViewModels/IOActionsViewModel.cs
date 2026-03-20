@@ -89,7 +89,7 @@ public partial class IOActionsViewModel : ViewModelBase, INavigationAware
             }
 
             TransactionList.Clear();            
-        }, "IOActions_Error_Save".GetLocalized());
+        }, "Lỗi lưu kho");
     }
 
     public void Search(string keyword)

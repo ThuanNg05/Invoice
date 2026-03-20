@@ -38,7 +38,7 @@
             <StackPanel Orientation="Horizontal" Spacing="20">
                 <!--Code-->
                 <StackPanel Spacing="5">
-                    <TextBlock x:Uid="CreateInvoice_InvoiceCode"/>                    
+                    <TextBlock Text="Mã HĐ"/>                    
                     <TextBox x:Name="txtCode" Width="200" HorizontalAlignment="Left" IsReadOnly="True"
                              Text="{x:Bind ViewModel.GeneratedInvoiceCode, Mode=OneWay}"/>
                 </StackPanel>
@@ -46,10 +46,10 @@
                 <StackPanel Spacing="5">
                     <TextBlock>
                         <Run x:Uid="Required_Field" Foreground="Red"/>
-                        <Run x:Uid="CreateInvoice_CustomerName"/>
+                        <Run Text="Tên khách hàng"/>
                     </TextBlock>
                     <AutoSuggestBox x:Name="asbCustomer"
-                        x:Uid="CreateInvoice_CustomerName_Placeholder"
+                        PlaceholderText="Nhập tên"                                    
                         Width="200" 
                         HorizontalAlignment="Left"
                         Text="{x:Bind ViewModel.SelectedCustomer.Name, Mode=OneWay}"
@@ -60,12 +60,12 @@
                 </StackPanel>
                 <!--Phone No-->
                 <StackPanel Spacing="5">
-                    <TextBlock x:Uid="CreateInvoice_PhoneNumber"/>
+                    <TextBlock Text="SĐT"/>
                     <TextBox x:Name="txtPhoneNo" Text="{x:Bind ViewModel.SelectedCustomer.Phone, Mode=OneWay}" Width="200" HorizontalAlignment="Left" IsReadOnly="True"/>
                 </StackPanel>
                 <!--Price Group-->
                 <StackPanel Spacing="5">
-                    <TextBlock x:Uid="CreateInvoice_PriceGroup"/>
+                    <TextBlock Text="Loại giá"/>
                     <TextBox x:Name="txtTypePrice" Text="{x:Bind ViewModel.SelectedCustomer.PriceGroup, Mode=OneWay}" Width="80" TextAlignment="Center" IsReadOnly="True"/>
                 </StackPanel>
             </StackPanel>
@@ -88,13 +88,13 @@
                         <KeyboardAccelerator Key="F5"/>
                     </AppBarButton.KeyboardAccelerators>
                 </AppBarButton>
-                <AppBarButton x:Uid="CreateInvoice_Btn_Copy" Background="#b48b14" Foreground="{ThemeResource SettingsForegroundBrush}"
+                <AppBarButton Label="Copy HĐ" Background="#b48b14" Foreground="{ThemeResource SettingsForegroundBrush}"
                               CornerRadius="10" Icon="copy" Click="CopyInvoice_Click" ToolTipService.ToolTip="Press F3">
                     <AppBarButton.KeyboardAccelerators>
                         <KeyboardAccelerator Key="F3"/>
                     </AppBarButton.KeyboardAccelerators>
                 </AppBarButton>
-                <AppBarButton x:Uid="CreateInvoice_Btn_Edit" Background="#516dcf" Foreground="{ThemeResource SettingsForegroundBrush}"
+                <AppBarButton Label="Sửa HĐ" Background="#516dcf" Foreground="{ThemeResource SettingsForegroundBrush}"
                               CornerRadius="10" Icon="Edit" Click="EditInvoice_Click" ToolTipService.ToolTip="Ctrl + P">
                     <AppBarButton.KeyboardAccelerators>
                         <KeyboardAccelerator Key="P"/>
@@ -128,13 +128,13 @@
                 
                 <controls:DataGrid.Columns>
                     <!--ReadOnly-->
-                    <controls:DataGridTextColumn x:Uid="ProductID" Width="Auto" Binding="{Binding ProductID}" IsReadOnly="True" Visibility="Collapsed"/>
+                    <controls:DataGridTextColumn Header="Mã SP" Width="Auto" Binding="{Binding ProductID}" IsReadOnly="True" Visibility="Collapsed"/>
 
                     <!--Editable-->
-                    <controls:DataGridTextColumn x:Uid="CreateInvoice_Grid_ProductName" Width="Auto" Binding="{Binding ProductName, Mode=TwoWay}" />
+                    <controls:DataGridTextColumn Header="Tên SP" Width="Auto" Binding="{Binding ProductName, Mode=TwoWay}" />
 
                     <!--Editable-->                    
-                    <controls:DataGridTemplateColumn x:Uid="CreateInvoice_Grid_SellPrice">
+                    <controls:DataGridTemplateColumn Header="Đơn giá">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding SellPrice, Converter={StaticResource FormatConverter}, ConverterParameter='N0'}" 
@@ -152,7 +152,7 @@
                     </controls:DataGridTemplateColumn>
 
                     <!--Editable-->                    
-                    <controls:DataGridTemplateColumn x:Uid="CreateInvoice_Grid_Amount">
+                    <controls:DataGridTemplateColumn Header="Số lượng">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Amount}" 
@@ -173,7 +173,7 @@
                     </controls:DataGridTemplateColumn>
 
                     <!--ReadOnly-->
-                    <controls:DataGridTextColumn x:Uid="CreateInvoice_Grid_LineTotal" Binding="{Binding LineTotal, Converter={StaticResource FormatConverter}, ConverterParameter='N0'}" IsReadOnly="True" Width="Auto">
+                    <controls:DataGridTextColumn Header="Thành tiền" Binding="{Binding LineTotal, Converter={StaticResource FormatConverter}, ConverterParameter='N0'}" IsReadOnly="True" Width="Auto">
                         <controls:DataGridTextColumn.ElementStyle>
                             <Style TargetType="TextBlock">
                                 <Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -183,10 +183,10 @@
                     </controls:DataGridTextColumn>
 
                     <!--Editable-->
-                    <controls:DataGridTextColumn x:Uid="CreateInvoice_Grid_Note" Binding="{Binding Note, Mode=TwoWay}" Width="Auto"/>
+                    <controls:DataGridTextColumn Header="Ghi chú" Binding="{Binding Note, Mode=TwoWay}" Width="Auto"/>
                     
                     <!--Button delete data-->
-                    <controls:DataGridTemplateColumn x:Uid="CreateInvoice_Grid_Delete" Width="Auto">
+                    <controls:DataGridTemplateColumn Header="Xoá" Width="Auto">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Button Click="BtnRemoveItem_Click" Background="Transparent" BorderThickness="0" HorizontalAlignment="Center">

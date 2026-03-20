@@ -75,7 +75,7 @@ public partial class CreateInvoiceViewModel : ViewModelBase, IRecipient<Products
 
     public void Receive(ProductsSelectedMessage message)
     {
-        Debug.WriteLine($"[DEBUG] Sản phẩm: {message.Product.Name} | Tồn kho (Inventory): {message.Product.Inventory} | Số lượng chọn: {message.Amount}");
+        //Debug.WriteLine($"[DEBUG] Sản phẩm: {message.Product.Name} | Tồn kho (Inventory): {message.Product.Inventory} | Số lượng chọn: {message.Amount}");
 
         int inputAmount = message.Amount <= 0 ? 1 : message.Amount;
         int currentStock = message.Product.Inventory;

@@ -1,5 +1,6 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Invoice.Contracts.Services;
 using Invoice.Core.Models;
 using Invoice.ViewModels;
 using Invoice.Helpers;
@@ -8,6 +9,7 @@ namespace Invoice.Views;
 
 public sealed partial class MaterialsPage : Page
 {
+    private readonly IDialogService _dialogService;
     public MaterialsViewModel ViewModel
     {
         get;
@@ -16,8 +18,12 @@ public sealed partial class MaterialsPage : Page
     public MaterialsPage()
     {
         ViewModel = App.GetService<MaterialsViewModel>();
+        _dialogService = App.GetService<IDialogService>();
         InitializeComponent();
-        ClearInputs();
+        btnAdd.IsEnabled = true;
+        btnDelete.IsEnabled = false;
+        btnUpdate.IsEnabled = false;
+        txtTotal.IsReadOnly = true;
     }
 
     private void ClearInputs()
@@ -34,13 +40,13 @@ public sealed partial class MaterialsPage : Page
     {
         if (string.IsNullOrWhiteSpace(txtName.Text))
         {
-            await App.ShowErrorAsync("Tên SP không được rỗng.");
+            await _dialogService.ShowErrorAsync("Tên SP không được rỗng.");
             txtName.Focus(FocusState.Programmatic);
             return;
         }
         if (string.IsNullOrWhiteSpace(txtBasePrice.Text))
         {
-            await App.ShowErrorAsync("Đơn giá không được rỗng.");
+            await _dialogService.ShowErrorAsync("Đơn giá không được rỗng.");
             txtBasePrice.Focus(FocusState.Programmatic);
             return;
         }
@@ -56,12 +62,12 @@ public sealed partial class MaterialsPage : Page
             };
 
             await ViewModel.AddMaterialAsync(material);
-            await App.ShowSuccessAsync("Thêm thành công!");
+            await _dialogService.ShowSuccessAsync("SUCCESS_ADD".GetLocalized());
             ClearInputs();
         }
         catch (Exception ex)
         {
-            await App.ShowErrorAsync("Thêm thất bại", ex);
+            await _dialogService.ShowErrorAsync("FAILED_ADD".GetLocalized(), ex);
         }
     }
 
@@ -70,13 +76,13 @@ public sealed partial class MaterialsPage : Page
         if (MaterialGrid.SelectedItem is not Materials selected) return;        
         if (string.IsNullOrWhiteSpace(txtName.Text))
         {
-            await App.ShowErrorAsync("Tên SP không được rỗng.");
+            await _dialogService.ShowErrorAsync("Tên SP không được rỗng.");
             txtName.Focus(FocusState.Programmatic);
             return;
         }
         if (string.IsNullOrWhiteSpace(txtBasePrice.Text))
         {
-            await App.ShowErrorAsync("Đơn giá không được rỗng.");
+            await _dialogService.ShowErrorAsync("Đơn giá không được rỗng.");
             txtBasePrice.Focus(FocusState.Programmatic);
             return;
         }
@@ -91,29 +97,29 @@ public sealed partial class MaterialsPage : Page
                 MinAmount = int.TryParse(txtMinAmount.Text, out int minAmt) ? minAmt : 0,
             };
             await ViewModel.UpdateMaterialAsync(tmpMaterial);
-            await App.ShowSuccessAsync("Cập nhật thành công!");
+            await _dialogService.ShowSuccessAsync("SUCCESS_UPDATE".GetLocalized());
             ClearInputs();
         }
         catch (Exception ex)
         {
-            await App.ShowErrorAsync("Cập nhật thất bại", ex);
+            await _dialogService.ShowErrorAsync("FAILED_UPDATE".GetLocalized(), ex);
         }
     }
 
     private async void BtnDelete_Click(object sender, RoutedEventArgs e)
     {
         if (MaterialGrid.SelectedItem is not Materials selected) return;
-        if (await App.ShowConfirmAsync("Xác nhận xóa", $"Bạn có chắc muốn xóa vật tư {selected.Name}?", "Xóa"))
+        if (await _dialogService.ShowConfirmAsync("Xác nhận xóa", $"Bạn có chắc muốn xóa vật tư {selected.Name}?", "Xóa"))
         {
             try
             {
                 await ViewModel.DeleteMaterialAsync(selected);
-                await App.ShowSuccessAsync("Xóa thành công!");
+                await _dialogService.ShowSuccessAsync("SUCCESS_DELETE".GetLocalized());
                 ClearInputs();
             }
             catch (Exception ex)
             {
-                await App.ShowErrorAsync("Xóa thất bại", ex);
+                await _dialogService.ShowErrorAsync("FAILED_DELETE".GetLocalized(), ex);
             }
         }
     }

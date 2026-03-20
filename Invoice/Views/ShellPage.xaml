@@ -95,7 +95,7 @@
                 </NavigationViewItem>
                 <NavigationViewItem Content="Báo cáo" helpers:NavigationHelper.NavigateTo="Invoice.ViewModels.ReportingViewModel">
                     <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe7c3;"/>
+                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE9F9;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
             </NavigationView.MenuItems>

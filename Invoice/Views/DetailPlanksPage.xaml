@@ -36,7 +36,7 @@
         <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="16" Margin="0,0,0,16" VerticalAlignment="Bottom">
 
             <StackPanel Orientation="Vertical">
-                <TextBox x:Uid="Planks_Size" x:Name="size" TextAlignment="Left" Width="150"/>
+                <TextBox Header="Cỡ ván" x:Name="size" TextAlignment="Left" Width="150"/>
             </StackPanel>
 
 
@@ -92,7 +92,7 @@
                 </controls:DataGrid.Resources>
 
                 <controls:DataGrid.Columns>
-                    <controls:DataGridTextColumn IsReadOnly="True" x:Uid="Planks_Size" Binding="{Binding sizeID}" Width="Auto">
+                    <controls:DataGridTextColumn Header="Cỡ ván" Binding="{Binding sizeID}" Width="Auto">
                         <controls:DataGridTextColumn.ElementStyle>
                             <Style TargetType="TextBlock">
                                 <Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -101,7 +101,7 @@
                         </controls:DataGridTextColumn.ElementStyle>
                     </controls:DataGridTextColumn>
 
-                    <controls:DataGridTextColumn IsReadOnly="True" x:Uid="Planks_Inventory" Binding="{Binding inventory}" Width="Auto">
+                    <controls:DataGridTextColumn Header="Tồn kho" Binding="{Binding inventory}" Width="Auto">
                         <controls:DataGridTextColumn.ElementStyle>
                             <Style TargetType="TextBlock">
                                 <Setter Property="HorizontalAlignment" Value="Stretch"/>

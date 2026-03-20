@@ -35,28 +35,27 @@
 		<StackPanel Grid.Column="0" Spacing="10" Margin="0,0,30,0">
 			<TextBlock>
 				<Run x:Uid="Required_Field" Foreground="Red"/>
-				<Run x:Uid="Customers_Name"/>
+				<Run Text="Tên khách hàng"/>
 			</TextBlock>
 			<TextBox x:Name="txtName" Width="200" HorizontalAlignment="Left" IsSpellCheckEnabled="False"/>
 
 			<TextBlock>
 				<Run x:Uid="Required_Field" Foreground="Red"/>
-				<Run x:Uid="Customers_Phone"/>
+				<Run Text="SĐT"/>
 			</TextBlock>
 			<TextBox
                 x:Name="txtPhoneNo"
                 Width="200"
                 HorizontalAlignment="Left"
-                BeforeTextChanging="txtPhoneNo_BeforeTextChanging"
-                TextChanged="txtPhoneNo_TextChanged"/>
+                BeforeTextChanging="txtPhoneNo_BeforeTextChanging"/>
 
 			<TextBlock>
 				<Run x:Uid="Required_Field" Foreground="Red"/>
-				<Run x:Uid="Customers_PriceGroup"/>
+				<Run Text="Loại giá"/>
 			</TextBlock>
             <ComboBox x:Name="CmbPriceType" Width="200" HorizontalAlignment="Left">
-                <ComboBoxItem x:Uid="Customers_PriceGroup_Sỉ"/>
-                <ComboBoxItem x:Uid="Customers_PriceGroup_Lẻ"/>
+                <ComboBoxItem Content="Sỉ"/>
+                <ComboBoxItem Content="Lẻ"/>
             </ComboBox>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Spacing="10" Margin="0,10,0,0">
@@ -104,7 +103,7 @@
             Orientation="Vertical"
             Grid.Column="1">
 			<StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-				<TextBlock x:Uid="Title_Search" VerticalAlignment="Center" Margin="0,0,10,0"/>
+				<TextBlock Text="Tìm kiếm : " VerticalAlignment="Center" Margin="0,0,10,0"/>
 				<TextBox x:Name="txtSearch" Width="250" TextChanged="txtSearch_TextChanged"/>
 			</StackPanel>
 			<controls:DataGrid
@@ -129,8 +128,8 @@
 					<SolidColorBrush x:Key="DataGridColumnHeaderBackgroundColor" Color="Transparent" />
 				</controls:DataGrid.Resources>
 				<controls:DataGrid.Columns>
-					<controls:DataGridTextColumn x:Uid="Customers_Grid_Name" Binding="{Binding Name}" />
-					<controls:DataGridTextColumn x:Uid="Customers_Grid_Phone" Binding="{Binding Phone}">
+					<controls:DataGridTextColumn Header="Tên" Binding="{Binding Name}" />
+					<controls:DataGridTextColumn Header="SĐT" Binding="{Binding Phone}">
 						<controls:DataGridTextColumn.ElementStyle>
 							<Style TargetType="TextBlock">
 								<Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -138,7 +137,7 @@
 							</Style>
 						</controls:DataGridTextColumn.ElementStyle>
 					</controls:DataGridTextColumn>
-					<controls:DataGridTextColumn x:Uid="Customers_Grid_PriceGroup" Binding="{Binding PriceGroup}">
+					<controls:DataGridTextColumn Header="Loại giá" Binding="{Binding PriceGroup}">
 						<controls:DataGridTextColumn.ElementStyle>
 							<Style TargetType="TextBlock">
 								<Setter Property="HorizontalAlignment" Value="Stretch"/>

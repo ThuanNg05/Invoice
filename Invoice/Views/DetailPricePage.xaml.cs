@@ -1,4 +1,5 @@
-﻿using Invoice.Core.Models;
+﻿using Invoice.Contracts.Services;
+using Invoice.Core.Models;
 using Invoice.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -7,6 +8,7 @@ namespace Invoice.Views;
 
 public sealed partial class DetailPricePage : Page
 {
+    private readonly IDialogService _dialogService;
     public DetailPriceViewModel ViewModel
     {
         get;
@@ -15,6 +17,7 @@ public sealed partial class DetailPricePage : Page
     public DetailPricePage()
     {
         ViewModel = App.GetService<DetailPriceViewModel>();
+        _dialogService = App.GetService<IDialogService>();
         InitializeComponent();
     }
 
@@ -41,10 +44,10 @@ public sealed partial class DetailPricePage : Page
                 PrDecal = double.TryParse(txtDecal.Text, out double decal) ? decal : 0
             };
             await ViewModel.UpdateDetailPriceAsync(tmpPrice);
-            await App.ShowSuccessAsync("Cập nhật thành công!");
+            await _dialogService.ShowSuccessAsync("Cập nhật thành công!");
         } catch (Exception ex)
         {
-            await App.ShowErrorAsync("Cập nhật thất bại:", ex);
+            await _dialogService.ShowErrorAsync("Cập nhật thất bại:", ex);
         }
     }
 }

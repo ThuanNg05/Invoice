@@ -8,13 +8,11 @@ using Microsoft.UI.Xaml.Controls;
 namespace Invoice.Helpers;
 
 public static class StringHelper
-{
-    public static string CleanStringSimple(string input)
+{    
+    public static string RemoveRedundantWhitespace(string input)
     {
         if (string.IsNullOrWhiteSpace(input)) return string.Empty;
-        
-        var words = input.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-        return string.Join(" ", words);
+        return Regex.Replace(input.Trim(), @"\s+", " ");
     }
 
     public static string GetNormalizedLastName(string fullName)
@@ -59,10 +57,7 @@ public static class StringHelper
     }
 
     private static readonly string[] Units = { "", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín" };
-
-    /// <summary>
-    /// Converts a number to Vietnamese currency text (e.g., 10500 -> "Mười nghìn năm trăm đồng")
-    /// </summary>
+   
     public static double ParseDouble(string text)
     {
         if (string.IsNullOrWhiteSpace(text)) return 0;

@@ -1,5 +1,4 @@
 using Invoice.Contracts.Services;
-using Invoice.Helpers;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
@@ -54,7 +53,7 @@ public class DialogService : IDialogService
         {
             Title = title,
             Content = content,
-            PrimaryButtonText = primaryButton ?? "CONFIRM".GetLocalized(),
+            PrimaryButtonText = primaryButton ?? "Xác nhận",
             CloseButtonText = "Huỷ",
             DefaultButton = ContentDialogButton.Close,
             XamlRoot = xamlRoot

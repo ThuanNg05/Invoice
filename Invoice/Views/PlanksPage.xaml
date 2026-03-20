@@ -131,7 +131,7 @@
 				</controls:DataGrid.Resources>
 
 				<controls:DataGrid.Columns>
-					<controls:DataGridTextColumn IsReadOnly="True" Header="Mã Rập" Binding="{Binding FrameNO}" Width="Auto">
+					<controls:DataGridTextColumn Header="Mã Rập" Binding="{Binding FrameNO}" Width="Auto">
 						<controls:DataGridTextColumn.ElementStyle>
 							<Style TargetType="TextBlock">
 								<Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -140,7 +140,7 @@
 						</controls:DataGridTextColumn.ElementStyle>
 					</controls:DataGridTextColumn>
 
-					<controls:DataGridTextColumn IsReadOnly="True" Header="Mô tả" Binding="{Binding Description}" Width="Auto">
+					<controls:DataGridTextColumn Header="Mô tả" Binding="{Binding Description}" Width="Auto">
 						<controls:DataGridTextColumn.ElementStyle>
 							<Style TargetType="TextBlock">
 								<Setter Property="HorizontalAlignment" Value="Stretch"/>

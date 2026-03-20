@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using Invoice.Contracts.Services;
 using Invoice.Core.Models;
 using Invoice.Helpers;
 using Invoice.ViewModels;
@@ -10,6 +11,7 @@ namespace Invoice.Views;
 
 public sealed partial class PlanksPage : Page
 {
+    private readonly IDialogService _dialogService;
     public PlanksViewModel ViewModel
     {
         get;
@@ -18,7 +20,11 @@ public sealed partial class PlanksPage : Page
     public PlanksPage()
     {
         ViewModel = App.GetService<PlanksViewModel>();
-        InitializeComponent();        
+        _dialogService = App.GetService<IDialogService>();
+        InitializeComponent();
+        btnAdd.IsEnabled = true;
+        btnUpdate.IsEnabled = false;
+        btnDelete.IsEnabled = false;
     }
 
     private void ClearInputs()
@@ -37,7 +43,7 @@ public sealed partial class PlanksPage : Page
         var validation = ValidatePlankInput();
         if (!validation.IsValid)
         {
-            await App.ShowErrorAsync(validation.Message);
+            await _dialogService.ShowErrorAsync(validation.Message);
             return;
         }
 
@@ -60,29 +66,29 @@ public sealed partial class PlanksPage : Page
             };
 
             await ViewModel.AddFrameAsync(plank);
-            await App.ShowSuccessAsync("Thêm thành công!");
+            await _dialogService.ShowSuccessAsync("Thêm thành công!");
             ClearInputs();
         }
         catch (Exception ex)
         {
-            await App.ShowErrorAsync("Thêm thất bại", ex);
+            await _dialogService.ShowErrorAsync("Thêm thất bại", ex);
         }
     }
 
     private async void BtnDelete_Click(object sender, RoutedEventArgs e)
     {
         if (PlankGrid.SelectedItem is not Frames selected) return;
-        if (await App.ShowConfirmAsync("Xác nhận xóa", $"Bạn có chắc muốn xóa rập {selected.FrameNO}?", "Xóa"))
+        if (await _dialogService.ShowConfirmAsync("Xác nhận xóa", $"Bạn có chắc muốn xóa rập {selected.FrameNO}?", "Xóa"))
         {
             try
             {
                 await ViewModel.DeleteFrameAsync(selected);
-                await App.ShowSuccessAsync("Xóa thành công!");
+                await _dialogService.ShowSuccessAsync("Xóa thành công!");
                 ClearInputs();
             }
             catch (Exception ex)
             {
-                await App.ShowErrorAsync("Xóa thất bại", ex);
+                await _dialogService.ShowErrorAsync("Xóa thất bại", ex);
             }
         }
     }
@@ -93,7 +99,7 @@ public sealed partial class PlanksPage : Page
         var validation = ValidatePlankInput();
         if (!validation.IsValid)
         {
-            await App.ShowErrorAsync(validation.Message);
+            await _dialogService.ShowErrorAsync(validation.Message);
             return;
         }
 
@@ -117,12 +123,12 @@ public sealed partial class PlanksPage : Page
             };
 
             await ViewModel.UpdateFrameAsync(tmpPlank);
-            await App.ShowSuccessAsync("Cập nhật thành công!");
+            await _dialogService.ShowSuccessAsync("Cập nhật thành công!");
             ClearInputs();
         }
         catch (Exception ex)
         {
-            await App.ShowErrorAsync("Cập nhật thất bại", ex);
+            await _dialogService.ShowErrorAsync("Cập nhật thất bại", ex);
         }
     }
 

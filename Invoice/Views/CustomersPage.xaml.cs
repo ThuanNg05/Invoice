@@ -1,4 +1,6 @@
-﻿using Invoice.Core.Models;
+﻿using System.Text.RegularExpressions;
+using Invoice.Contracts.Services;
+using Invoice.Core.Models;
 using Invoice.Helpers;
 using Invoice.ViewModels;
 using Microsoft.UI.Xaml;
@@ -8,6 +10,7 @@ namespace Invoice.Views;
 
 public sealed partial class CustomersPage : Page
 {
+    private readonly IDialogService _dialogService;
     public CustomersViewModel ViewModel
     {
         get;
@@ -16,7 +19,11 @@ public sealed partial class CustomersPage : Page
     public CustomersPage()
     {
         ViewModel = App.GetService<CustomersViewModel>();
+        _dialogService = App.GetService<IDialogService>();
         InitializeComponent();
+        btnAdd.IsEnabled = true;
+        btnUpdate.IsEnabled = false;
+        btnDelete.IsEnabled = false;
     }
 
     private void ClearInputs()
@@ -37,6 +44,9 @@ public sealed partial class CustomersPage : Page
             txtName.Text = selected.Name;
             txtPhoneNo.Text = selected.Phone;
             CmbPriceType.SelectedItem = CmbPriceType.Items.Cast<ComboBoxItem>().FirstOrDefault(i => i.Content.ToString() == selected.PriceGroup);
+            btnAdd.IsEnabled = false;
+            btnUpdate.IsEnabled = true;            
+            btnDelete.IsEnabled = true;
         }
     }
 
@@ -44,7 +54,13 @@ public sealed partial class CustomersPage : Page
     {
         if (string.IsNullOrWhiteSpace(txtName.Text))
         {
-            await App.ShowErrorAsync("Vui lòng nhập tên khách hàng.");
+            await _dialogService.ShowErrorAsync("Vui lòng nhập tên khách hàng.");
+            return;
+        }
+
+        if (!IsValidPhoneNumber(txtPhoneNo.Text))
+        {
+            await _dialogService.ShowErrorAsync("Số điện thoại không hợp lệ. Vui lòng nhập đúng chuẩn 10 số.");
             return;
         }
 
@@ -52,18 +68,18 @@ public sealed partial class CustomersPage : Page
         {
             var newCustomer = new Customers
             {
-                Name = txtName.Text,
+                Name = StringHelper.RemoveRedundantWhitespace(txtName.Text),
                 Phone = txtPhoneNo.Text,
-                PriceGroup = (CmbPriceType.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "Lẻ"
+                PriceGroup = (CmbPriceType.SelectedItem as ComboBoxItem)?.Content.ToString()
             };
 
             await ViewModel.AddCustomerAsync(newCustomer);
-            await App.ShowSuccessAsync("Thêm khách hàng thành công!");
+            await _dialogService.ShowSuccessAsync("Thêm khách hàng thành công!");
             ClearInputs();
         }
         catch (Exception ex)
         {
-            await App.ShowErrorAsync("Thêm khách hàng thất bại", ex);
+            await _dialogService.ShowErrorAsync("Thêm khách hàng thất bại", ex);
         }
     }
 
@@ -71,23 +87,35 @@ public sealed partial class CustomersPage : Page
     {
         if (CustomerGrid.SelectedItem is Customers selected)
         {
+            if (string.IsNullOrWhiteSpace(txtName.Text))
+            {
+                await _dialogService.ShowErrorAsync("Vui lòng nhập tên khách hàng.");
+                return;
+            }
+            
+            if(!IsValidPhoneNumber(txtPhoneNo.Text))
+            {                
+                await _dialogService.ShowErrorAsync("Số điện thoại đã tồn tại cho khách hàng khác. Vui lòng nhập số điện thoại khác.");
+                return;                
+            }
+
             try
             {
                 selected.Name = txtName.Text;
                 selected.Phone = txtPhoneNo.Text;
                 selected.PriceGroup = (CmbPriceType.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "Lẻ";
                 await ViewModel.UpdateCustomerAsync(selected);
-                await App.ShowSuccessAsync("Cập nhật thành công!");
+                await _dialogService.ShowSuccessAsync("SUCCESS_UPDATE".GetLocalized());
                 ClearInputs();
             }
             catch (Exception ex)
             {
-                await App.ShowErrorAsync("Cập nhật thất bại", ex);
+                await _dialogService.ShowErrorAsync("FAILED_UPDATE".GetLocalized(), ex);
             }
         }
         else
         {
-            await App.ShowErrorAsync("Vui lòng chọn khách hàng để sửa.");
+            await _dialogService.ShowErrorAsync("Vui lòng chọn khách hàng để sửa.");
         }
     }
 
@@ -95,23 +123,23 @@ public sealed partial class CustomersPage : Page
     {
         if (CustomerGrid.SelectedItem is Customers selected)
         {
-            if (await App.ShowConfirmAsync("Xác nhận xóa", $"Bạn có chắc muốn xóa khách hàng {selected.Name}?", "Xóa"))
+            if (await _dialogService.ShowConfirmAsync("Xác nhận xóa", $"Bạn có chắc muốn xóa khách hàng {selected.Name}?", "Xác nhận"))
             {
                 try
                 {
                     await ViewModel.DeleteCustomerAsync(selected);
-                    await App.ShowSuccessAsync("Xóa thành công!");
+                    await _dialogService.ShowSuccessAsync("SUCCESS_DELETE".GetLocalized());
                     ClearInputs();
                 }
                 catch (Exception ex)
                 {
-                    await App.ShowErrorAsync("Xóa thất bại", ex);
+                    await _dialogService.ShowErrorAsync("FAILED_DELETE".GetLocalized(), ex);
                 }
             }
         }
         else
         {
-            await App.ShowErrorAsync("Vui lòng chọn khách hàng để xoá.");
+            await _dialogService.ShowErrorAsync("Vui lòng chọn khách hàng để xoá.");
         }
     }
 
@@ -120,14 +148,16 @@ public sealed partial class CustomersPage : Page
         ClearInputs();
     }
 
+    private bool IsValidPhoneNumber(string phone)
+    {
+        string pattern = @"^0(3|5|7|8|9)[0-9]{8}$";
+        return Regex.IsMatch(phone, pattern);
+    }
+
     private void txtPhoneNo_BeforeTextChanging(TextBox sender, TextBoxBeforeTextChangingEventArgs args)
     {
         args.Cancel = args.NewText.Any(c => !char.IsDigit(c));
-    }
-
-    private void txtPhoneNo_TextChanged(object sender, TextChangedEventArgs e)
-    {
-    }
+    }    
 
     private void txtSearch_TextChanged(object sender, TextChangedEventArgs e)
     {

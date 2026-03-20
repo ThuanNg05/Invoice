@@ -142,22 +142,22 @@ public partial class ProductsViewModel : ViewModelBase, INavigationAware
         });
     }
 
-    private void AddToSource(Products? product)
-    {
-        if (product == null) return;
+    //private void AddToSource(Products? product)
+    //{
+    //    if (product == null) return;
 
-        var summary = new ProductSummary
-        {
-            ProductID = product.ProductID,
-            Name = product.Name,
-            BasePrice = product.BasePrice,
-            PriceOdd = product.PriceOdd,
-            PriceEven = product.PriceEven,
-            Inventory = product.Inventory
-        };
+    //    var summary = new ProductSummary
+    //    {
+    //        ProductID = product.ProductID,
+    //        Name = product.Name,
+    //        BasePrice = product.BasePrice,
+    //        PriceOdd = product.PriceOdd,
+    //        PriceEven = product.PriceEven,
+    //        Inventory = product.Inventory
+    //    };
 
-        Source.Insert(0, summary);
-    }
+    //    Source.Insert(0, summary);
+    //}
 
     private void UpdateInSource(Products? product)
     {

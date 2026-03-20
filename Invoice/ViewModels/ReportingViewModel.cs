@@ -55,7 +55,7 @@ public partial class ReportingViewModel : ViewModelBase
         }
         else
         {
-            ErrorMessage = "Mật khẩu không đúng!"; // Internal error, usually not localized or move to resw if needed
+            ErrorMessage = "Mật khẩu không đúng!";
             PasswordInput = "";
         }
     }
@@ -92,7 +92,7 @@ public partial class ReportingViewModel : ViewModelBase
             };
             OnPropertyChanged(nameof(Series));
             OnPropertyChanged(nameof(XAxes));
-        }, "Reporting_Error_Load".GetLocalized());
+        }, "LOAD_FAILED".GetLocalized());
     }
 
     [RelayCommand]
@@ -112,8 +112,8 @@ public partial class ReportingViewModel : ViewModelBase
                 path
             );
 
-            await DialogService.ShowSuccessAsync("Common_Success".GetLocalized());
-        }, "Reporting_Error_Export".GetLocalized());
+            await DialogService.ShowSuccessAsync("Thông báo");
+        }, "Reporting_Error_Export");
     }
 
     public void OnNavigatedTo(object parameter)

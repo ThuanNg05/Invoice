@@ -68,7 +68,7 @@ public partial class EditingInvoiceViewModel : ViewModelBase
             {
                 InvoiceCodes.Add(id);
             }
-        }, "EditingInvoice_Error_LoadList".GetLocalized());
+        }, "LOAD_FAILED".GetLocalized());
     }
 
     private async Task LoadInvoiceDetailsAsync(string id)
@@ -88,7 +88,7 @@ public partial class EditingInvoiceViewModel : ViewModelBase
                 CustomerName = firstItem.CustomerName;
                 CreatedDate = firstItem.Invoice?.CreatedDate ?? "N/A";
             }
-        }, "EditingInvoice_Error_LoadDetail".GetLocalized());
+        }, "LOAD_FAILED".GetLocalized());
     }
 
     private void ClearData()
