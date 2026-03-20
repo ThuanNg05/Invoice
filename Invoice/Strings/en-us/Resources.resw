@@ -198,44 +198,11 @@
   <data name="Product_Validation_SizeNotFound" xml:space="preserve">
     <value>Size not found</value>
   </data>
-  <data name="Common_Success" xml:space="preserve">
-    <value>Success</value>
-  </data>
-  <data name="Common_Error" xml:space="preserve">
-    <value>Error</value>
-  </data>
   <data name="Product_Add_Success" xml:space="preserve">
     <value>Product added successfully!</value>
   </data>
-  <data name="Common_Close" xml:space="preserve">
-    <value>Close</value>
-  </data>
-  <data name="Common_Confirm" xml:space="preserve">
-    <value>Confirm</value>
-  </data>
   <data name="Common_Cancel" xml:space="preserve">
     <value>Cancel</value>
-  </data>
-  <data name="Common_ErrorTitle" xml:space="preserve">
-    <value>Error</value>
-  </data>
-  <data name="Common_SuccessTitle" xml:space="preserve">
-    <value>Success</value>
-  </data>
-  <data name="Common_ConfirmDelete" xml:space="preserve">
-    <value>Confirm Delete</value>
-  </data>
-  <data name="Common_Delete" xml:space="preserve">
-    <value>Delete</value>
-  </data>
-  <data name="Common_UpdateSuccess" xml:space="preserve">
-    <value>Update successful!</value>
-  </data>
-  <data name="Common_UpdateError" xml:space="preserve">
-    <value>Update failed</value>
-  </data>
-  <data name="Common_DeleteError" xml:space="preserve">
-    <value>Delete failed</value>
   </data>
   <data name="Common_ProductSelection" xml:space="preserve">
     <value>Product Selection</value>
@@ -249,11 +216,8 @@
   <data name="CreateInvoice_CustomerName.Text" xml:space="preserve">
     <value>customer</value>
   </data>
-  <data name="CreateInvoice_CustomerName_Required.Text" xml:space="preserve">
-    <value>customer required</value>
-  </data>
-  <data name="CreateInvoice_CustomerName_Placeholder" xml:space="preserve">
-    <value>customer placeholder</value>
+  <data name="Required_Field.Text" xml:space="preserve">
+    <value>Requried Field</value>
   </data>
   <data name="CreateInvoice_PhoneNumber.Text" xml:space="preserve">
     <value>PhoneNo</value>
@@ -276,11 +240,8 @@
   <data name="CreateInvoice_Btn_Edit.Label" xml:space="preserve">
     <value>edit</value>
   </data>
-  <data name="CreateInvoice_Grid_ProductID.Header" xml:space="preserve">
-    <value>productid</value>
-  </data>
   <data name="CreateInvoice_Grid_ProductName.Header" xml:space="preserve">
-    <value>productname</value>
+    <value>Name</value>
   </data>
   <data name="CreateInvoice_Grid_SellPrice.Header" xml:space="preserve">
     <value>sellprice</value>
@@ -297,23 +258,8 @@
   <data name="CreateInvoice_Grid_Delete.Header" xml:space="preserve">
     <value>delete_header</value>
   </data>
-  <data name="CreateInvoice_Grid_Delete_ToolTip.ToolTip" xml:space="preserve">
-    <value>delete_tooltip</value>
-  </data>
-  <data name="CreateInvoice_Error_NoCustomer" xml:space="preserve">
-    <value>no customer</value>
-  </data>
-  <data name="CreateInvoice_Error_EmptyList" xml:space="preserve">
-    <value>empty invoice</value>
-  </data>
   <data name="CreateInvoice_Save_Success" xml:space="preserve">
     <value>SaveSuccess</value>
-  </data>
-  <data name="CreateInvoice_Pdf_Error" xml:space="preserve">
-    <value>PdfError</value>
-  </data>
-  <data name="CreateInvoice_File_Not_Exist" xml:space="preserve">
-    <value>not exist file</value>
   </data>
   <data name="Customers_Name.Text" xml:space="preserve">
     <value>Name</value>
@@ -339,7 +285,7 @@
   <data name="Customers_Btn_Delete.Label" xml:space="preserve">
     <value>DeleteLabel</value>
   </data>
-  <data name="Customers_Search.Text" xml:space="preserve">
+  <data name="Title_Search.Text" xml:space="preserve">
     <value>Search</value>
   </data>
   <data name="Customers_Grid_Name.Header" xml:space="preserve">
@@ -352,64 +298,40 @@
     <value>PriceGroupHeader</value>
   </data>
   <data name="Products_Name.Text" xml:space="preserve">
-    <value>a</value>
+    <value>Name</value>
   </data>
   <data name="Products_Frame.Text" xml:space="preserve">
-    <value>a</value>
+    <value>Frame</value>
   </data>
   <data name="Products_Frame_Placeholder" xml:space="preserve">
-    <value>a</value>
+    <value>Ex: 5070...</value>
   </data>
   <data name="Products_Wage.Text" xml:space="preserve">
-    <value>a</value>
+    <value>Wage</value>
   </data>
   <data name="Products_BasePrice.Text" xml:space="preserve">
-    <value>a</value>
+    <value>Base price</value>
   </data>
   <data name="Products_PriceOdd.Text" xml:space="preserve">
-    <value>a</value>
+    <value>Price odd</value>
   </data>
   <data name="Products_PriceEven.Text" xml:space="preserve">
-    <value>a</value>
-  </data>
-  <data name="Products_Btn_New.Label" xml:space="preserve">
-    <value>a</value>
-  </data>
-  <data name="Products_Search.Text" xml:space="preserve">
-    <value>a</value>
+    <value>Price even</value>
   </data>
   <data name="Products_Search_Placeholder" xml:space="preserve">
-    <value>a</value>
+    <value>Find by Name...</value>
   </data>
   <data name="Products_Grid_Name.Header" xml:space="preserve">
-    <value>a</value>
+    <value>Name</value>
   </data>
   <data name="Products_Grid_BasePrice.Header" xml:space="preserve">
-    <value>a</value>
+    <value>Base price</value>
   </data>
   <data name="Products_Grid_PriceOdd.Header" xml:space="preserve">
-    <value>a</value>
+    <value>Price odd</value>
   </data>
   <data name="Products_Grid_PriceEven.Header" xml:space="preserve">
-    <value>a</value>
-  </data>
-  <data name="Products_Error_Load" xml:space="preserve">
-    <value>a</value>
-  </data>
-  <data name="Products_Error_LoadMore" xml:space="preserve">
-    <value>a</value>
-  </data>
-  <data name="Products_Error_LoadDetail" xml:space="preserve">
-    <value>a</value>
-  </data>
-  <data name="Products_Error_Add" xml:space="preserve">
-    <value>a</value>
-  </data>
-  <data name="Products_Error_Update" xml:space="preserve">
-    <value>a</value>
-  </data>
-  <data name="Products_Error_Delete" xml:space="preserve">
-    <value>a</value>
+    <value>Price even</value>
   </data>
   <data name="History_From.Text" xml:space="preserve">
     <value>a</value>
@@ -432,97 +354,55 @@
   <data name="History_Grid_Amount.Header" xml:space="preserve">
     <value>a</value>
   </data>
-  <data name="History_Error_LoadCustomers" xml:space="preserve">
-    <value>a</value>
-  </data>
-  <data name="History_Error_Search" xml:space="preserve">
-    <value>a</value>
-  </data>
   <data name="Materials_Price.Text" xml:space="preserve">
-    <value>a</value>
+    <value>Price</value>
   </data>
   <data name="Materials_Total.Text" xml:space="preserve">
-    <value>a</value>
+    <value>Total</value>
   </data>
   <data name="Materials_MinInventory.Text" xml:space="preserve">
-    <value>a</value>
+    <value>Minium In Stock</value>
   </data>
-  <data name="Materials_Search_Placeholder" xml:space="preserve">
-    <value>a</value>
-  </data>
-  <data name="Materials_Grid_ProductID.Header" xml:space="preserve">
-    <value>a</value>
+  <data name="ProductID.Header" xml:space="preserve">
+    <value>ID</value>
   </data>
   <data name="Materials_Grid_Name.Header" xml:space="preserve">
-    <value>a</value>
+    <value>Name</value>
   </data>
   <data name="Materials_Grid_Price.Header" xml:space="preserve">
-    <value>a</value>
+    <value>Price</value>
   </data>
   <data name="Materials_Grid_Inventory.Header" xml:space="preserve">
-    <value>a</value>
+    <value>Inventory</value>
   </data>
   <data name="Materials_Grid_Total.Header" xml:space="preserve">
-    <value>a</value>
+    <value>Total</value>
   </data>
   <data name="Materials_Grid_MinInventory.Header" xml:space="preserve">
-    <value>a</value>
-  </data>
-  <data name="Materials_Error_Load" xml:space="preserve">
-    <value>a</value>
-  </data>
-  <data name="Materials_Error_Duplicate" xml:space="preserve">
-    <value>a</value>
-  </data>
-  <data name="Materials_Error_Add" xml:space="preserve">
-    <value>a</value>
-  </data>
-  <data name="Materials_Error_Delete" xml:space="preserve">
-    <value>a</value>
-  </data>
-  <data name="Materials_Error_Update" xml:space="preserve">
-    <value>a</value>
-  </data>
-  <data name="IOActions_ProductID.Header" xml:space="preserve">
-    <value>a</value>
+    <value>Minium In Stock</value>
   </data>
   <data name="IOActions_ProductName.Header" xml:space="preserve">
-    <value>a</value>
+    <value>Name</value>
   </data>
   <data name="IOActions_Inventory.Header" xml:space="preserve">
-    <value>a</value>
+    <value>Inventory</value>
   </data>
   <data name="IOActions_Amount.Header" xml:space="preserve">
-    <value>a</value>
+    <value>Amount</value>
   </data>
   <data name="IOActions_ActionType.Header" xml:space="preserve">
-    <value>a</value>
-  </data>
-  <data name="IOActions_Type_Import" xml:space="preserve">
-    <value>a</value>
-  </data>
-  <data name="IOActions_Type_Export" xml:space="preserve">
-    <value>a</value>
+    <value>Type</value>
   </data>
   <data name="IOActions_Btn_Save.Label" xml:space="preserve">
-    <value>a</value>
-  </data>
-  <data name="IOActions_Search_Placeholder" xml:space="preserve">
-    <value>a</value>
+    <value>Save to Storage</value>
   </data>
   <data name="IOActions_List_Source" xml:space="preserve">
-    <value>a</value>
+    <value>Goods list</value>
   </data>
   <data name="IOActions_List_Pending" xml:space="preserve">
-    <value>a</value>
-  </data>
-  <data name="IOActions_Error_Load" xml:space="preserve">
-    <value>a</value>
+    <value>Pending list</value>
   </data>
   <data name="IOActions_Save_Success" xml:space="preserve">
-    <value>a</value>
-  </data>
-  <data name="IOActions_Error_Save" xml:space="preserve">
     <value>a</value>
   </data>
   <data name="Planks_Size.Header" xml:space="preserve">
@@ -546,61 +426,7 @@
   <data name="Planks_Error_Add" xml:space="preserve">
     <value>a</value>
   </data>
-  <data name="Planks_Error_Delete" xml:space="preserve">
-    <value>a</value>
-  </data>
   <data name="Planks_Error_Update" xml:space="preserve">
-    <value>a</value>
-  </data>
-  <data name="DetailPrice_Kieng.Header" xml:space="preserve">
-    <value>a</value>
-  </data>
-  <data name="DetailPrice_NhuaLon.Header" xml:space="preserve">
-    <value>a</value>
-  </data>
-  <data name="DetailPrice_NhuaNho.Header" xml:space="preserve">
-    <value>a</value>
-  </data>
-  <data name="DetailPrice_GoLon.Header" xml:space="preserve">
-    <value>a</value>
-  </data>
-  <data name="DetailPrice_GoNho.Header" xml:space="preserve">
-    <value>a</value>
-  </data>
-  <data name="DetailPrice_DenLon.Header" xml:space="preserve">
-    <value>a</value>
-  </data>
-  <data name="DetailPrice_Hau.Header" xml:space="preserve">
-    <value>a</value>
-  </data>
-  <data name="DetailPrice_Lua.Header" xml:space="preserve">
-    <value>a</value>
-  </data>
-  <data name="DetailPrice_KimTuyen.Header" xml:space="preserve">
-    <value>a</value>
-  </data>
-  <data name="DetailPrice_Oc.Header" xml:space="preserve">
-    <value>a</value>
-  </data>
-  <data name="DetailPrice_Nhom.Header" xml:space="preserve">
-    <value>a</value>
-  </data>
-  <data name="DetailPrice_Go7F.Header" xml:space="preserve">
-    <value>a</value>
-  </data>
-  <data name="DetailPrice_2D.Header" xml:space="preserve">
-    <value>2d</value>
-  </data>
-  <data name="DetailPrice_Decal.Header" xml:space="preserve">
-    <value>a</value>
-  </data>
-  <data name="DetailPrice_Btn_Save.Label" xml:space="preserve">
-    <value>save</value>
-  </data>
-  <data name="DetailPrice_Error_Load" xml:space="preserve">
-    <value>a</value>
-  </data>
-  <data name="DetailPrice_Error_Update" xml:space="preserve">
     <value>a</value>
   </data>
   <data name="IOPlanks_FrameNO.Header" xml:space="preserve">
@@ -628,63 +454,102 @@
     <value>a</value>
   </data>
   <data name="Reporting_Btn_Export.Content" xml:space="preserve">
-    <value>a</value>
+    <value>Send report via Email</value>
   </data>
   <data name="Reporting_Revenue.Text" xml:space="preserve">
-    <value>a</value>
+    <value>Revenue</value>
   </data>
   <data name="Reporting_Profit.Text" xml:space="preserve">
-    <value>a</value>
+    <value>Profit</value>
   </data>
   <data name="Reporting_Chart_Title.Text" xml:space="preserve">
-    <value>a</value>
+    <value>Chart bills by month</value>
   </data>
   <data name="Reporting_TopProducts.Text" xml:space="preserve">
-    <value>a</value>
+    <value>Top Products</value>
   </data>
   <data name="Reporting_Locked_Title.Text" xml:space="preserve">
-    <value>a</value>
+    <value>Limition area</value>
   </data>
   <data name="Reporting_Locked_Password.Header" xml:space="preserve">
-    <value>a</value>
+    <value>Password</value>
   </data>
   <data name="Reporting_Locked_Btn_Unlock.Content" xml:space="preserve">
-    <value>a</value>
+    <value>Unlock</value>
   </data>
   <data name="Reporting_Error_Load" xml:space="preserve">
-    <value>a</value>
+    <value>Error loading report</value>
   </data>
   <data name="Reporting_Error_Export" xml:space="preserve">
-    <value>a</value>
+    <value>Error export report</value>
   </data>
   <data name="Settings_Storage_Title.Text" xml:space="preserve">
-    <value>a</value>
+    <value>Storage</value>
   </data>
   <data name="Settings_Storage_Folder_Label.Text" xml:space="preserve">
-    <value>a</value>
+    <value>Folder storage invoice (PDF)</value>
   </data>
   <data name="Settings_Storage_Btn_Select.Content" xml:space="preserve">
-    <value>a</value>
+    <value>Select folder</value>
   </data>
   <data name="Settings_Storage_Description.Text" xml:space="preserve">
-    <value>a</value>
+    <value>Description</value>
   </data>
   <data name="Settings_Error_Init" xml:space="preserve">
-    <value>a</value>
+    <value>Error initalization</value>
   </data>
   <data name="Settings_Error_SelectFolder" xml:space="preserve">
-    <value>a</value>
+    <value>Error select folder</value>
   </data>
-  <data name="EditingInvoice_Title.Text" xml:space="preserve">
-    <value>a</value>
+  <data name="Btn_Save.Label" xml:space="preserve">
+    <value>Save</value>
   </data>
-  <data name="EditingInvoice_Placeholder" xml:space="preserve">
-    <value>a</value>
+  <data name="Btn_Add.Label" xml:space="preserve">
+    <value>Add</value>
   </data>
-  <data name="EditingInvoice_Error_LoadList" xml:space="preserve">
-    <value>aa</value>
+  <data name="Btn_Delete.Label" xml:space="preserve">
+    <value>Delete</value>
   </data>
-  <data name="EditingInvoice_Error_LoadDetail" xml:space="preserve">
-    <value>a</value>
+  <data name="Btn_Update.Label" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Btn_Reset.Label" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="FILE_NOT_FOUND" xml:space="preserve">
+    <value>File not found</value>
+  </data>
+  <data name="ERROR_PDF_SERVICE" xml:space="preserve">
+    <value>Error create PDF</value>
+  </data>
+  <data name="CUSTOMER_NOT_SELECT" xml:space="preserve">
+    <value>No select customer</value>
+  </data>
+  <data name="LOAD_FAILED" xml:space="preserve">
+    <value>Load data failed</value>
+  </data>
+  <data name="SUCCESS_ADD" xml:space="preserve">
+    <value>Add succesfull</value>
+  </data>
+  <data name="SUCCESS_UPDATE" xml:space="preserve">
+    <value>Delete succesfull</value>
+  </data>
+  <data name="FAILED_ADD" xml:space="preserve">
+    <value>Add failed</value>
+  </data>
+  <data name="FAILED_DELETE" xml:space="preserve">
+    <value>Delete failed</value>
+  </data>
+  <data name="FAILED_UPDATE" xml:space="preserve">
+    <value>Update failed</value>
+  </data>
+  <data name="SUCCESS_DELETE" xml:space="preserve">
+    <value>Update succesfull</value>
+  </data>
+  <data name="CONFIRM_DELETE" xml:space="preserve">
+    <value>Confirm Delete</value>
+  </data>
+  <data name="CONFIRM" xml:space="preserve">
+    <value>Confirm</value>
   </data>
 </root>

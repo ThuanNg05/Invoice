@@ -72,13 +72,13 @@
                          Grid.Row="1" Grid.Column="1"/>
 
                 <ComboBox x:Name="cmbType" x:Uid="IOActions_ActionType" HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="2">
-                    <x:String x:Uid="IOActions_Type_Import">Nhập kho</x:String>
-                    <x:String x:Uid="IOActions_Type_Export">Xuất kho</x:String>
+                    <x:String>Nhập kho</x:String>
+                    <x:String>Xuất kho</x:String>
                 </ComboBox>
 
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0" Spacing="10" Grid.ColumnSpan="3" Grid.Row="2">
-                    <AppBarButton x:Name="btnAdd" x:Uid="IOActions_Btn_Save" Background="#07af00"
+                    <AppBarButton x:Name="btnAdd" x:Uid="Btn_Save" Background="#07af00"
                                   IsEnabled="{x:Bind ViewModel.IsBusy, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}"
                                   CornerRadius="10" Icon="Add" Foreground="{ThemeResource SettingsForegroundBrush}"
                                   Click="BtnAddProduct_Click" ToolTipService.ToolTip="Press F1">
@@ -86,28 +86,28 @@
                             <KeyboardAccelerator Key="F1"/>
                         </AppBarButton.KeyboardAccelerators>
                     </AppBarButton>
-                    <AppBarButton x:Name="btnEdit" x:Uid="Customers_Btn_Update" Background="#6514db"
+                    <AppBarButton x:Name="btnEdit" x:Uid="Btn_Update" Background="#6514db"
                                   Foreground="{ThemeResource SettingsForegroundBrush}"
                                   CornerRadius="10" Icon="Edit" Click="BtnEdit_Click" ToolTipService.ToolTip="Press F2">
                         <AppBarButton.KeyboardAccelerators>
                             <KeyboardAccelerator Key="F2"/>
                         </AppBarButton.KeyboardAccelerators>
                     </AppBarButton>
-                    <AppBarButton x:Name="btnDelete" x:Uid="Customers_Btn_Delete"
+                    <AppBarButton x:Name="btnDelete" x:Uid="Btn_Delete"
                                   Foreground="{ThemeResource SettingsForegroundBrush}"
                                   Background="#ff3800" CornerRadius="10" Icon="Delete" Click="BtnDelete_Click" ToolTipService.ToolTip="Press F3">
                         <AppBarButton.KeyboardAccelerators>
                             <KeyboardAccelerator Key="F3"/>
                         </AppBarButton.KeyboardAccelerators>
                     </AppBarButton>
-                    <AppBarButton x:Uid="CreateInvoice_Btn_Reset" Background="#b48b14" Foreground="{ThemeResource SettingsForegroundBrush}"
+                    <AppBarButton x:Uid="Btn_Reset" Background="#b48b14" Foreground="{ThemeResource SettingsForegroundBrush}"
                                   IsEnabled="{x:Bind ViewModel.IsBusy, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}"
                                   CornerRadius="10" Icon="Refresh" Click="BtnReset_Click" ToolTipService.ToolTip="Press F5">
                         <AppBarButton.KeyboardAccelerators>
                             <KeyboardAccelerator Key="F5"/>
                         </AppBarButton.KeyboardAccelerators>
                     </AppBarButton>
-                    <AppBarButton x:Name="btnSave" x:Uid="IOActions_Btn_Save" Background="#516dcf" Foreground="{ThemeResource SettingsForegroundBrush}"
+                    <AppBarButton x:Name="btnSave" x:Uid="Btn_Save" Background="#516dcf" Foreground="{ThemeResource SettingsForegroundBrush}"
                                   IsEnabled="{x:Bind ViewModel.IsBusy, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}"
                                   CornerRadius="10" Icon="Save" Click="BtnSave_Click" ToolTipService.ToolTip="Press F4">
                         <AppBarButton.KeyboardAccelerators>
@@ -121,7 +121,7 @@
         <Grid Grid.Row="2" ColumnSpacing="10">
             <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                 <TextBlock x:Uid="Customers_Search" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                <TextBox x:Name="txtSearch" x:Uid="IOActions_Search_Placeholder"
+                <TextBox x:Name="txtSearch"
                          IsEnabled="{x:Bind ViewModel.IsBusy, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}"
                          Width="250" TextChanged="txtSearch_TextChanged" />
             </StackPanel>
@@ -168,8 +168,8 @@
                     </controls:DataGrid.Resources>
 
                     <controls:DataGrid.Columns>
-                        <controls:DataGridTextColumn Header="ID" Binding="{Binding ProductID}"/>
-                        <controls:DataGridTextColumn x:Uid="Customers_Grid_Name" Binding="{Binding Name}" Width="*"/>
+                        <controls:DataGridTextColumn Header="ID" Binding="{Binding ProductID}" Visibility="Collapsed"/>
+                        <controls:DataGridTextColumn x:Uid="Materials_Grid_Name" Binding="{Binding Name}" Width="*"/>
                         <controls:DataGridTextColumn x:Uid="Materials_Grid_Inventory" Binding="{Binding Inventory}"/>
                     </controls:DataGrid.Columns>
                 </controls:DataGrid>

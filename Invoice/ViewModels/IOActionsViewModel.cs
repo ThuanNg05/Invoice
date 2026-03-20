@@ -62,7 +62,7 @@ public partial class IOActionsViewModel : ViewModelBase, INavigationAware
             }
 
             foreach (var item in _allItems) SourceList.Add(item);
-        }, "IOActions_Error_Load".GetLocalized());
+        }, "Load data failed");
     }
 
     public async Task SaveData()
@@ -88,8 +88,7 @@ public partial class IOActionsViewModel : ViewModelBase, INavigationAware
                 }
             }
 
-            TransactionList.Clear();
-            await DialogService.ShowSuccessAsync("IOActions_Save_Success".GetLocalized());
+            TransactionList.Clear();            
         }, "IOActions_Error_Save".GetLocalized());
     }
 

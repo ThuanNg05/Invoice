@@ -35,7 +35,7 @@
                 <ComboBox ItemsSource="{x:Bind ViewModel.InvoiceCodes, Mode=OneWay}" 
                           SelectedItem="{x:Bind ViewModel.SelectedInvoiceID, Mode=TwoWay}"
                           x:Name="invoiceCode"
-                          x:Uid="EditingInvoice_Placeholder"
+                          Text="Chọn hoá đơn"
                           Width="180"/>
             </StackPanel>
 
@@ -65,7 +65,7 @@
                             <KeyboardAccelerator Key="F1"/>
                         </AppBarButton.KeyboardAccelerators>
                     </AppBarButton>
-                    <AppBarButton x:Uid="CreateInvoice_Btn_Reset" Background="#24a6d5" Icon="Refresh" Command="{x:Bind ViewModel.ResetCommand}" ToolTipService.ToolTip="Press F2" CornerRadius="10">
+                    <AppBarButton x:Uid="Btn_Reset" Background="#24a6d5" Icon="Refresh" Command="{x:Bind ViewModel.ResetCommand}" ToolTipService.ToolTip="Press F2" CornerRadius="10">
                         <AppBarButton.KeyboardAccelerators>
                             <KeyboardAccelerator Key="F2"/>
                         </AppBarButton.KeyboardAccelerators>
@@ -93,7 +93,7 @@
             </controls:DataGrid.Resources>
 
             <controls:DataGrid.Columns>
-                <controls:DataGridTextColumn IsReadOnly="True" x:Uid="CreateInvoice_Grid_ProductID" Binding="{Binding ProductID}">
+                <controls:DataGridTextColumn IsReadOnly="True" x:Uid="ProductID" Binding="{Binding ProductID}">
                     <controls:DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="HorizontalAlignment" Value="Stretch"/>

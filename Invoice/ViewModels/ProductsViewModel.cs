@@ -1,7 +1,6 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
-using System.Diagnostics;
 using Invoice.Contracts.ViewModels;
 using Invoice.Core.Contracts;
 using Invoice.Core.Contracts.Services;
@@ -48,7 +47,7 @@ public partial class ProductsViewModel : ViewModelBase, INavigationAware
             _hasMoreItems = true;
             Source.Clear();
             await InternalLoadMoreDataAsync();
-        }, "Products_Error_Load".GetLocalized());
+        }, "LOAD_FAILED".GetLocalized());
     }
 
     public async Task LoadMoreDataAsync()
@@ -58,7 +57,7 @@ public partial class ProductsViewModel : ViewModelBase, INavigationAware
         await ExecuteAsync(async () =>
         {
             await InternalLoadMoreDataAsync();
-        }, "Products_Error_LoadMore".GetLocalized());
+        }, "LOAD_FAILED".GetLocalized());
     }
 
     private async Task InternalLoadMoreDataAsync()
@@ -83,7 +82,7 @@ public partial class ProductsViewModel : ViewModelBase, INavigationAware
         await ExecuteAsync(async () =>
         {
             SelectedProductFull = await _dataService.GetProductById(productId);
-        }, "Products_Error_LoadDetail".GetLocalized());
+        }, "LOAD_FAILED".GetLocalized());
     }
 
     public async void OnNavigatedTo(object parameter)
@@ -106,7 +105,7 @@ public partial class ProductsViewModel : ViewModelBase, INavigationAware
         await ExecuteAsync(async () =>
         {
             await _dataService.AddProduct(p);
-        }, "Products_Error_Add".GetLocalized());
+        }, "LOAD_FAILED".GetLocalized());
     }
 
     public async Task UpdateProductAsync(Products p)
@@ -115,7 +114,7 @@ public partial class ProductsViewModel : ViewModelBase, INavigationAware
         {
             await _dataService.UpdateProduct(p);
             WeakReferenceMessenger.Default.Send(new ProductsChangedMessage(DataAction.Update, p));
-        }, "Products_Error_Update".GetLocalized());
+        }, "FAILED_UPDATE".GetLocalized());
     }
 
     public async Task DeleteProductAsync(long id)
@@ -124,7 +123,7 @@ public partial class ProductsViewModel : ViewModelBase, INavigationAware
         {
             await _dataService.DeleteProduct(id);
             WeakReferenceMessenger.Default.Send(new ProductsChangedMessage(DataAction.Delete, id));
-        }, "Products_Error_Delete".GetLocalized());
+        }, "FAILED_DELETE".GetLocalized());
     }
 
     private void HandleDataChange(ProductsChangedMessage message)

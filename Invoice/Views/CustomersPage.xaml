@@ -34,13 +34,13 @@
 		</Grid.ColumnDefinitions>
 		<StackPanel Grid.Column="0" Spacing="10" Margin="0,0,30,0">
 			<TextBlock>
-				<Run Text="(*) " Foreground="Red"/>
+				<Run x:Uid="Required_Field" Foreground="Red"/>
 				<Run x:Uid="Customers_Name"/>
 			</TextBlock>
 			<TextBox x:Name="txtName" Width="200" HorizontalAlignment="Left" IsSpellCheckEnabled="False"/>
 
 			<TextBlock>
-				<Run Text="(*) " Foreground="Red"/>
+				<Run x:Uid="Required_Field" Foreground="Red"/>
 				<Run x:Uid="Customers_Phone"/>
 			</TextBlock>
 			<TextBox
@@ -51,7 +51,7 @@
                 TextChanged="txtPhoneNo_TextChanged"/>
 
 			<TextBlock>
-				<Run Text="(*) " Foreground="Red"/>
+				<Run x:Uid="Required_Field" Foreground="Red"/>
 				<Run x:Uid="Customers_PriceGroup"/>
 			</TextBlock>
             <ComboBox x:Name="CmbPriceType" Width="200" HorizontalAlignment="Left">
@@ -61,7 +61,7 @@
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Spacing="10" Margin="0,10,0,0">
 				<CommandBar Background="Transparent" DefaultLabelPosition="Right">
-					<AppBarButton x:Name="btnAdd" x:Uid="Customers_Btn_New" Background="#07af00"
+					<AppBarButton x:Name="btnAdd" x:Uid="Btn_Add" Background="#07af00"
                                   CornerRadius="10" Icon="Add"
                                   Click="BtnAdd_Click" ToolTipService.ToolTip="Press F1"
                                   Foreground="{ThemeResource SettingsForegroundBrush}"
@@ -70,7 +70,7 @@
 							<KeyboardAccelerator Key="F1"/>
 						</AppBarButton.KeyboardAccelerators>
 					</AppBarButton>
-					<AppBarButton x:Name="btnUpdate" x:Uid="Customers_Btn_Update" Background="#b48b14"
+					<AppBarButton x:Name="btnUpdate" x:Uid="Btn_Update" Background="#b48b14"
                                   CornerRadius="10" Icon="Edit"
                                   Click="BtnUpdate_Click" ToolTipService.ToolTip="Press F2"
                                   Foreground="{ThemeResource SettingsForegroundBrush}"
@@ -79,7 +79,7 @@
 							<KeyboardAccelerator Key="F2"/>
 						</AppBarButton.KeyboardAccelerators>
 					</AppBarButton>
-					<AppBarButton x:Name="btnDelete" x:Uid="Customers_Btn_Delete" Background="#ff3800"
+					<AppBarButton x:Name="btnDelete" x:Uid="Btn_Delete" Background="#ff3800"
                                   CornerRadius="10" Icon="Delete"
                                   Click="BtnDelete_Click" ToolTipService.ToolTip="Press F3"
                                   Foreground="{ThemeResource SettingsForegroundBrush}"
@@ -88,7 +88,7 @@
 							<KeyboardAccelerator Key="F3"/>
 						</AppBarButton.KeyboardAccelerators>
 					</AppBarButton>
-					<AppBarButton x:Name="btnReset" x:Uid="CreateInvoice_Btn_Reset" Background="#24a6d5"
+					<AppBarButton x:Name="btnReset" x:Uid="Btn_Reset" Background="#24a6d5"
                                   CornerRadius="10" Icon="Refresh"
                                   Click="BtnReset_Click" ToolTipService.ToolTip="Press F5"
                                   Foreground="{ThemeResource SettingsForegroundBrush}"
@@ -104,7 +104,7 @@
             Orientation="Vertical"
             Grid.Column="1">
 			<StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-				<TextBlock x:Uid="Customers_Search" VerticalAlignment="Center" Margin="0,0,10,0"/>
+				<TextBlock x:Uid="Title_Search" VerticalAlignment="Center" Margin="0,0,10,0"/>
 				<TextBox x:Name="txtSearch" Width="250" TextChanged="txtSearch_TextChanged"/>
 			</StackPanel>
 			<controls:DataGrid

@@ -66,13 +66,13 @@
                 <Grid>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                         <CommandBar Background="Transparent" DefaultLabelPosition="Right" >
-                            <AppBarButton x:Name="btnAdd" x:Uid="Customers_Btn_New" Background="#07af00" Foreground="{ThemeResource SettingsForegroundBrush}"
+                            <AppBarButton x:Name="btnAdd" x:Uid="Btn_add" Background="#07af00" Foreground="{ThemeResource SettingsForegroundBrush}"
                                           CornerRadius="10" Icon="Add" Click="BtnNew_Click"/>
-                            <AppBarButton x:Name="btnDelete" x:Uid="Customers_Btn_Delete" Background="#ff3800" Foreground="{ThemeResource SettingsForegroundBrush}"
+                            <AppBarButton x:Name="btnDelete" x:Uid="Btn_Delete" Background="#ff3800" Foreground="{ThemeResource SettingsForegroundBrush}"
                                           CornerRadius="10" Icon="Delete" Click="BtnDelete_Click"/>
-                            <AppBarButton x:Name="btnUpdate" x:Uid="Customers_Btn_Update" Background="#b48b14" Foreground="{ThemeResource SettingsForegroundBrush}"
+                            <AppBarButton x:Name="btnUpdate" x:Uid="Btn_Update" Background="#b48b14" Foreground="{ThemeResource SettingsForegroundBrush}"
                                           CornerRadius="10" Icon="Edit" Click="BtnUpdate_Click"/>
-                            <AppBarButton x:Name="btnReset" x:Uid="CreateInvoice_Btn_Reset" Background="#24a6d5" Foreground="{ThemeResource SettingsForegroundBrush}"
+                            <AppBarButton x:Name="btnReset" x:Uid="Btn_Reset" Background="#24a6d5" Foreground="{ThemeResource SettingsForegroundBrush}"
                                           CornerRadius="10" Icon="Refresh" Click="BtnReset_Click"/>
                         </CommandBar>
                     </StackPanel>

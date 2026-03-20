@@ -1,7 +1,6 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System.Diagnostics;
 using Invoice.Contracts.ViewModels;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
@@ -58,7 +57,7 @@ public partial class HistoryViewModel : ViewModelBase, INavigationAware
             {
                 CustomersList.Add(customer);
             }
-        }, "History_Error_LoadCustomers".GetLocalized());
+        }, "LOAD_FAILED".GetLocalized());
     }
 
     [RelayCommand]
@@ -77,7 +76,7 @@ public partial class HistoryViewModel : ViewModelBase, INavigationAware
             {
                 Source.Add(item);
             }
-        }, "History_Error_Search".GetLocalized());
+        }, "LOAD_FAILED".GetLocalized());
     }
 
     [RelayCommand]

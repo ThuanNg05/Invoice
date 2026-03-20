@@ -45,7 +45,7 @@
                 <!--Name-->
                 <StackPanel Spacing="5">
                     <TextBlock>
-                        <Run x:Uid="CreateInvoice_CustomerName_Required" Foreground="Red"/>
+                        <Run x:Uid="Required_Field" Foreground="Red"/>
                         <Run x:Uid="CreateInvoice_CustomerName"/>
                     </TextBlock>
                     <AutoSuggestBox x:Name="asbCustomer"
@@ -70,19 +70,19 @@
                 </StackPanel>
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,10,0,10" Spacing="10">
-                <AppBarButton x:Uid="CreateInvoice_Btn_New" Background="#07af00" Foreground="{ThemeResource SettingsForegroundBrush}" 
+                <AppBarButton x:Uid="Btn_Add" Background="#07af00" Foreground="{ThemeResource SettingsForegroundBrush}" 
                               CornerRadius="10" Icon="Add" Click="BtnAddProduct_Click" ToolTipService.ToolTip="Press F1">
                     <AppBarButton.KeyboardAccelerators>
                         <KeyboardAccelerator Key="F1"/>
                     </AppBarButton.KeyboardAccelerators>
                 </AppBarButton>
-                <AppBarButton x:Uid="CreateInvoice_Btn_Save" Background="#6514db" Foreground="{ThemeResource SettingsForegroundBrush}"
+                <AppBarButton x:Uid="Btn_Save" Background="#6514db" Foreground="{ThemeResource SettingsForegroundBrush}"
                               CornerRadius="10" Icon="Save" Click="SaveInvoice_Click" ToolTipService.ToolTip="Press F2">
                     <AppBarButton.KeyboardAccelerators>
                         <KeyboardAccelerator Key="F2"/>
                     </AppBarButton.KeyboardAccelerators>
                 </AppBarButton>
-                <AppBarButton x:Uid="CreateInvoice_Btn_Reset" Background="#24a6d5" Foreground="{ThemeResource SettingsForegroundBrush}"
+                <AppBarButton x:Uid="Btn_Reset" Background="#24a6d5" Foreground="{ThemeResource SettingsForegroundBrush}"
                               CornerRadius="10" Icon="Refresh" Click="ResetInvoice_Click" ToolTipService.ToolTip="Press F5">
                     <AppBarButton.KeyboardAccelerators>
                         <KeyboardAccelerator Key="F5"/>
@@ -128,7 +128,7 @@
                 
                 <controls:DataGrid.Columns>
                     <!--ReadOnly-->
-                    <controls:DataGridTextColumn x:Uid="CreateInvoice_Grid_ProductID" Width="Auto" Binding="{Binding ProductID}" IsReadOnly="True" Visibility="Collapsed"/>
+                    <controls:DataGridTextColumn x:Uid="ProductID" Width="Auto" Binding="{Binding ProductID}" IsReadOnly="True" Visibility="Collapsed"/>
 
                     <!--Editable-->
                     <controls:DataGridTextColumn x:Uid="CreateInvoice_Grid_ProductName" Width="Auto" Binding="{Binding ProductName, Mode=TwoWay}" />
@@ -189,7 +189,7 @@
                     <controls:DataGridTemplateColumn x:Uid="CreateInvoice_Grid_Delete" Width="Auto">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button x:Uid="CreateInvoice_Grid_Delete_ToolTip" Click="BtnRemoveItem_Click" Background="Transparent" BorderThickness="0" HorizontalAlignment="Center">
+                                <Button Click="BtnRemoveItem_Click" Background="Transparent" BorderThickness="0" HorizontalAlignment="Center">
                                     <SymbolIcon Symbol="Delete" Foreground="Red"/>
                                 </Button>
                             </DataTemplate>

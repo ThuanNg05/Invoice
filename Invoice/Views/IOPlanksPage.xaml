@@ -80,14 +80,14 @@
 
 				<StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Spacing="10" Margin="0,10,0,0">
 					<CommandBar Background="Transparent" DefaultLabelPosition="Right">
-                        <AppBarButton x:Name="btnSave" x:Uid="IOPlanks_Btn_Save" Background="#07af00" Foreground="{ThemeResource SettingsForegroundBrush}"
+                        <AppBarButton x:Name="btnSave" x:Uid="Btn_Save" Background="#07af00" Foreground="{ThemeResource SettingsForegroundBrush}"
                                       Icon="Save" Click="BtnSave_Click" ToolTipService.ToolTip="Press F1" CornerRadius="10"
                                       IsEnabled="{x:Bind ViewModel.IsBusy, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}">
 							<AppBarButton.KeyboardAccelerators>
 								<KeyboardAccelerator Key="F1"/>
 							</AppBarButton.KeyboardAccelerators>
 						</AppBarButton>
-                        <AppBarButton x:Uid="Planks_Btn_Reset" Background="#24a6d5" Icon="Refresh" Foreground="{ThemeResource SettingsForegroundBrush}"
+                        <AppBarButton x:Uid="Btn_Reset" Background="#24a6d5" Icon="Refresh" Foreground="{ThemeResource SettingsForegroundBrush}"
                                       Click="BtnReset_Click" ToolTipService.ToolTip="Press F2" CornerRadius="10"
                                       IsEnabled="{x:Bind ViewModel.IsBusy, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}">
 							<AppBarButton.KeyboardAccelerators>

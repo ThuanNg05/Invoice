@@ -229,7 +229,7 @@ public partial class App : Application
             {
                 Title = title,
                 Content = content,
-                PrimaryButtonText = primaryButton ?? "Common_Confirm".GetLocalized(),
+                PrimaryButtonText = primaryButton ?? "CONFIRM".GetLocalized(),
                 CloseButtonText = "Common_Cancel".GetLocalized(),
                 DefaultButton = ContentDialogButton.Close,
                 XamlRoot = element.XamlRoot

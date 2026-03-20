@@ -42,7 +42,7 @@
             </Grid.RowDefinitions>
 
             <StackPanel Orientation="Horizontal" Spacing="20" Padding="20">
-                <Button x:Uid="Reporting_Btn_Export" Command="{x:Bind ViewModel.ExportAndEmailCommand}" Style="{StaticResource AccentButtonStyle}"/>
+                <Button Content="Gửi Báo Cáo Email" Command="{x:Bind ViewModel.ExportAndEmailCommand}" Style="{StaticResource AccentButtonStyle}"/>
             </StackPanel>
 
             <ScrollViewer Grid.Row="1" Padding="20">
@@ -50,24 +50,24 @@
                     <StackPanel Orientation="Horizontal" Spacing="20">
                         <Border Width="200" Height="100" Background="{ThemeResource SystemControlBackgroundAccentBrush}" CornerRadius="8" Padding="15">
                             <StackPanel>
-                                <TextBlock x:Uid="Reporting_Revenue" Foreground="White" Opacity="0.8" Style="{StaticResource BodyTextStyle}"/>
+                                <TextBlock Text="Doanh Thu Năm" Foreground="White" Opacity="0.8" Style="{StaticResource BodyTextStyle}"/>
                                 <TextBlock Text="{x:Bind ViewModel.TotalRevenue, Mode=OneWay, Converter={StaticResource DoubleToStringConverter}}" Foreground="White" FontSize="24" FontWeight="Bold"/>
                             </StackPanel>
                         </Border>
                         <Border Width="200" Height="100" Background="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}" CornerRadius="8" Padding="15">
                             <StackPanel>
-                                <TextBlock x:Uid="Reporting_Profit" Opacity="0.8" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource BodyTextStyle}"/>
+                                <TextBlock Text="Lợi Nhuận (Ước tính)" Opacity="0.8" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource BodyTextStyle}"/>
                                 <TextBlock Text="{x:Bind ViewModel.TotalProfit, Mode=OneWay, Converter={StaticResource DoubleToStringConverter}}" FontSize="24" FontWeight="Bold" Foreground="{ThemeResource SystemFillColorSuccessBrush}"/>
                             </StackPanel>
                         </Border>
                     </StackPanel>
 
-                    <TextBlock x:Uid="Reporting_Chart_Title" Style="{StaticResource SubtitleTextBlockStyle}" FontWeight="SemiBold"/>
+                    <TextBlock Text="Biểu đồ đơn hàng theo tháng" Style="{StaticResource SubtitleTextBlockStyle}" FontWeight="SemiBold"/>
                     <Grid Height="300" Background="{ThemeResource LayerFillColorDefaultBrush}" CornerRadius="8" Padding="10">
                         <lvc:CartesianChart Series="{x:Bind ViewModel.Series, Mode=OneWay}" XAxes="{x:Bind ViewModel.XAxes, Mode=OneWay}" TooltipPosition="Top"/>
                     </Grid>
 
-                    <TextBlock x:Uid="Reporting_TopProducts" Style="{StaticResource SubtitleTextBlockStyle}" FontWeight="SemiBold"/>
+                    <TextBlock Text="Top 10 Sản Phẩm" Style="{StaticResource SubtitleTextBlockStyle}" FontWeight="SemiBold"/>
                     <ListView ItemsSource="{x:Bind ViewModel.TopProducts}" Background="{ThemeResource LayerFillColorDefaultBrush}" CornerRadius="8"
                                   Padding="5">
                         <ListView.ItemTemplate>
@@ -97,10 +97,10 @@
           Background="{ThemeResource SolidBackgroundFillColorBaseBrush}">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="15" Width="300">
                 <FontIcon Glyph="&#xE1F6;" FontSize="40" Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
-                <TextBlock x:Uid="Reporting_Locked_Title" HorizontalAlignment="Center" Style="{StaticResource PageTitleStyle}"/>
-                <PasswordBox x:Uid="Reporting_Locked_Password" Password="{x:Bind ViewModel.PasswordInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <TextBlock Text="Khu vực hạn chế" HorizontalAlignment="Center" Style="{StaticResource PageTitleStyle}"/>
+                <PasswordBox Header="Nhập mật khẩu" Password="{x:Bind ViewModel.PasswordInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                 <TextBlock Text="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}" Foreground="{ThemeResource SystemFillColorCriticalBrush}"/>
-                <Button x:Uid="Reporting_Locked_Btn_Unlock" Command="{x:Bind ViewModel.UnlockCommand}" HorizontalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}"/>
+                <Button Content="Mở khóa" Command="{x:Bind ViewModel.UnlockCommand}" HorizontalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}"/>
             </StackPanel>
         </Grid>
     </Grid>

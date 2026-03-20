@@ -25,7 +25,7 @@ public class DialogService : IDialogService
         {
             Title = title,
             Content = content,
-            CloseButtonText = "Common_Close".GetLocalized(),
+            CloseButtonText = "Huỷ",
             XamlRoot = xamlRoot
         };
 
@@ -40,10 +40,10 @@ public class DialogService : IDialogService
     }
 
     public Task ShowSuccessAsync(string content)
-        => ShowMessageAsync("Common_Success".GetLocalized(), content);
+        => ShowMessageAsync("Thông báo", content);
 
     public Task ShowErrorAsync(string content, Exception? ex = null)
-        => ShowMessageAsync("Common_Error".GetLocalized(), ex == null ? content : $"{content}\nChi tiết: {ex.Message}");
+        => ShowMessageAsync("Thông báo", ex == null ? content : $"{content}\nChi tiết: {ex.Message}");
 
     public async Task<bool> ShowConfirmAsync(string title, string content, string? primaryButton = null)
     {
@@ -54,8 +54,8 @@ public class DialogService : IDialogService
         {
             Title = title,
             Content = content,
-            PrimaryButtonText = primaryButton ?? "Common_Confirm".GetLocalized(),
-            CloseButtonText = "Common_Cancel".GetLocalized(),
+            PrimaryButtonText = primaryButton ?? "CONFIRM".GetLocalized(),
+            CloseButtonText = "Huỷ",
             DefaultButton = ContentDialogButton.Close,
             XamlRoot = xamlRoot
         };

@@ -27,12 +27,12 @@
             <StackPanel Grid.Column="0" Margin="50">
                 <StackPanel Orientation="Vertical" Spacing="10">
                     <TextBlock>
-                        <Run Text="(*) " Foreground="Red"/>
+                        <Run x:Uid="Required_Field" Foreground="Red"/>
                         <Run Text="Tên SP:"/>
                     </TextBlock>
                     <TextBox x:Name="txtName" Width="300" HorizontalAlignment="Left"/>
                     <TextBlock>   
-                        <Run Text="(*) " Foreground="Red"/>
+                        <Run x:Uid="Required_Field" Foreground="Red"/>
                         <Run Text="Đơn Giá :"/>
                     </TextBlock>
                     <TextBox x:Name="txtBasePrice" Width="140" TextAlignment="Right"                             
@@ -59,13 +59,13 @@
                              TextWrapping="Wrap"/>
                 </StackPanel>
                 <CommandBar Background="Transparent" DefaultLabelPosition="Right" HorizontalAlignment="Left" Margin="-5,10,0,0">
-                    <AppBarButton x:Name="btnAdd" Background="#07af00" Icon="Add" Label="Thêm" Click="BtnAdd_Click"
+                    <AppBarButton x:Name="btnAdd" Background="#07af00" Icon="Add" x:Uid="Btn_Add" Click="BtnAdd_Click"
                                   CornerRadius="10" ToolTipService.ToolTip="Press F1">
                         <AppBarButton.KeyboardAccelerators>
                             <KeyboardAccelerator Key="F1"/>
                         </AppBarButton.KeyboardAccelerators>
                     </AppBarButton>
-                    <AppBarButton x:Name="btnReset" Background="#24a6d5" Icon="Refresh" Label="Reset" Click="BtnReset_Click"
+                    <AppBarButton x:Name="btnReset" Background="#24a6d5" Icon="Refresh" x:Uid="Btn_Reset" Click="BtnReset_Click"
                                   CornerRadius="10" ToolTipService.ToolTip="Press F2">
                         <AppBarButton.KeyboardAccelerators>
                             <KeyboardAccelerator Key="F2"/>

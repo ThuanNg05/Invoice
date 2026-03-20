@@ -34,7 +34,7 @@ public partial class DetailPriceViewModel : ViewModelBase, INavigationAware
         {
             var prices = await _dataService.GetPrice();
             CurrentDetailPrice = prices.FirstOrDefault();
-        }, "DetailPrice_Error_Load".GetLocalized());
+        }, "LOAD_FAILED".GetLocalized());
     }
 
     public async Task UpdateDetailPriceAsync(DetailPrice price)
@@ -42,6 +42,6 @@ public partial class DetailPriceViewModel : ViewModelBase, INavigationAware
         await ExecuteAsync(async () =>
         {
             await _dataService.UpdatePrice(price);
-        }, "DetailPrice_Error_Update".GetLocalized());
+        }, "FAILED_UPDATE".GetLocalized());
     }
 }

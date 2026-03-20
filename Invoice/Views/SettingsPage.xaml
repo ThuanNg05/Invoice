@@ -10,25 +10,25 @@
     <Grid>
         <StackPanel
             x:Name="ContentArea">
-            <TextBlock x:Uid="Settings_Personalization" Style="{ThemeResource SubtitleTextBlockStyle}"/>
+            <TextBlock Text="Cá nhân hoá" Style="{ThemeResource SubtitleTextBlockStyle}"/>
             <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
-                <TextBlock x:Uid="Settings_Theme"/>
+                <TextBlock Text="Màu nền"/>
 
                 <StackPanel Margin="{StaticResource XSmallTopMargin}">
                     <RadioButton
-                        x:Uid="Settings_Theme_Light"
+                        Content="Sáng"
                         IsChecked="{x:Bind ViewModel.ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Light, Mode=TwoWay}"
                         FontSize="15"                        
                         GroupName="AppTheme">
                     </RadioButton>
                     <RadioButton
-                        x:Uid="Settings_Theme_Dark"
+                        Content="Tối"
                         IsChecked="{x:Bind ViewModel.ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Dark, Mode=TwoWay}"
                         FontSize="15"                        
                         GroupName="AppTheme" >
                     </RadioButton>
                     <RadioButton
-                        x:Uid="Settings_Theme_Default"
+                        Content="Mặc định"
                         IsChecked="{x:Bind ViewModel.ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Default, Mode=TwoWay}"
                         FontSize="15"                        
                         GroupName="AppTheme" >
@@ -36,10 +36,10 @@
                 </StackPanel>
                 <StackPanel Spacing="10" >
 
-                    <TextBlock x:Uid="Settings_Storage_Title" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,20,0,0"/>
+                    <TextBlock Text="Lưu trữ" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0,20,0,0"/>
 
                     <StackPanel Spacing="10" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" Padding="16" CornerRadius="8" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1">
-                        <TextBlock x:Uid="Settings_Storage_Folder_Label" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
+                        <TextBlock Text="Thư mục lưu hoá đơn (PDF)" Style="{ThemeResource BodyStrongTextBlockStyle}"/>
 
                         <Grid ColumnSpacing="12">
                             <Grid.ColumnDefinitions>
@@ -52,26 +52,26 @@
                                      VerticalAlignment="Center"/>
 
                             <Button Grid.Column="1" 
-                                    x:Uid="Settings_Storage_Btn_Select"
+                                    Content="Chọn thư mục"
                                     Command="{x:Bind ViewModel.SelectStorageFolderCommand}"/>
                         </Grid>
 
-                        <TextBlock x:Uid="Settings_Storage_Description" 
+                        <TextBlock Text="Các hoá đơn xuất ra sẽ được lưu tại đây. Nếu chưa chọn, mặc định sẽ lưu tại thư mục Documents." 
                                    Style="{ThemeResource CaptionTextBlockStyle}"/>
                     </StackPanel>
                 </StackPanel>
             </StackPanel>
 
-            <TextBlock x:Uid="Settings_About" Style="{ThemeResource SubtitleTextBlockStyle}" />
+            <TextBlock Text="About this application" Style="{ThemeResource SubtitleTextBlockStyle}" />
 
             <StackPanel Margin="{StaticResource XSmallTopMargin}">
                 <TextBlock Text="{x:Bind ViewModel.VersionDescription, Mode=OneWay}" Style="{ThemeResource BodyTextBlockStyle}" Foreground="{ThemeResource SettingsForegroundBrush}" />
 
                 <TextBlock
-                    x:Uid="Settings_AboutDescription"
+                    Text="Phần mềm quản lý hoá đơn và kho hàng."
                     Margin="{StaticResource XSmallTopMargin}"
                     Style="{ThemeResource BodyTextBlockStyle}"/>
-                <HyperlinkButton x:Uid="SettingsPage_PrivacyTermsLink" Margin="{StaticResource SettingsPageHyperlinkButtonMargin}" />
+                <HyperlinkButton Content="Privacy Statement" NavigateUri="https://YourPrivacyUrlGoesHere/" Margin="{StaticResource SettingsPageHyperlinkButtonMargin}" />
             </StackPanel>
         </StackPanel>
     </Grid>

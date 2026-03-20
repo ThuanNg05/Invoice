@@ -21,7 +21,7 @@ public class WindowService : IWindowService
 
         var newWindow = new WindowEx
         {
-            Title = "Common_ProductSelection".GetLocalized(),
+            Title = "Chọn sản phẩm",
             Height = 800,
             Width = 1200
         };
@@ -55,7 +55,7 @@ public class WindowService : IWindowService
 
         var newWindow = new WindowEx
         {
-            Title = "Common_EditingInvoice".GetLocalized(),
+            Title = "Sửa hoá đơn",
             Height = 800,
             Width = 1200
         };

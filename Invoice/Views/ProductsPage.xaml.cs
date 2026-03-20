@@ -64,16 +64,9 @@ public sealed partial class ProductsPage : Page
         if (await ValidateProductInputs() == false) return;
         var product = CreateProductFromInputs();
 
-        try
-        {
-            await ViewModel.AddProductAsync(product);
-            await App.ShowSuccessAsync("Product_Add_Success".GetLocalized());
-            ClearInputs();
-        }
-        catch (Exception ex)
-        {
-            await App.ShowErrorAsync("Thêm sản phẩm thất bại", ex);
-        }
+        await ViewModel.AddProductAsync(product);
+        await App.ShowSuccessAsync("SUCCESS_ADD".GetLocalized());
+        ClearInputs();        
     }
 
     private Products CreateProductFromInputs()
@@ -121,37 +114,23 @@ public sealed partial class ProductsPage : Page
         var product = CreateProductFromInputs();
         product.ProductID = selectedSummary.ProductID;
 
-        try
-        {
-            await ViewModel.UpdateProductAsync(product);
-            await App.ShowSuccessAsync("Common_UpdateSuccess".GetLocalized());
-            ClearInputs();
-        }
-        catch (Exception ex)
-        {
-            await App.ShowErrorAsync("Common_UpdateError".GetLocalized(), ex);
-        }
+        await ViewModel.UpdateProductAsync(product);
+        await App.ShowSuccessAsync("SUCCESS_UPDATE".GetLocalized());
+        ClearInputs();        
     }
 
     private async void BtnDelete_Click(object sender, RoutedEventArgs e)
     {
         if (ProductGrid.SelectedItem is not ProductSummary selected) return;
         
-        bool isConfirmed = await App.ShowConfirmAsync("Common_ConfirmDelete".GetLocalized(), 
-            $"Bạn có chắc muốn xóa sản phẩm {selected.Name} (ID: {selected.ProductID})?", "Common_Delete".GetLocalized());
+        bool isConfirmed = await App.ShowConfirmAsync("CONFIRM_DELETE".GetLocalized(), 
+            $"Bạn có chắc muốn xóa sản phẩm {selected.Name} (ID: {selected.ProductID})?", "CONFIRM".GetLocalized());
 
         if (isConfirmed)
-        {
-            try
-            {
-                await ViewModel.DeleteProductAsync(selected.ProductID);
-                await App.ShowSuccessAsync("Common_Success".GetLocalized());
-                ClearInputs();
-            }
-            catch (Exception ex)
-            {
-                await App.ShowErrorAsync("Common_DeleteError".GetLocalized(), ex);
-            }
+        {            
+            await ViewModel.DeleteProductAsync(selected.ProductID);
+            await App.ShowSuccessAsync("SUCCESS_DELETE".GetLocalized());
+            ClearInputs();            
         }
     }
 
