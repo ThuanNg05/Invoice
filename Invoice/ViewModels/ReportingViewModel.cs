@@ -1,3 +1,4 @@
+using System;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -23,21 +24,10 @@ public partial class ReportingViewModel : ViewModelBase
     [ObservableProperty] private string _errorMessage = string.Empty;
 
     [ObservableProperty] private double _totalRevenue;
-    [ObservableProperty] private double _totalProfit;
+    [ObservableProperty] private double _totalProfit;    
 
-    // Renamed properties to avoid name collisions with LiveChartsCore.Series
-    //[ObservableProperty] private ISeries[] _chartSeries = [];
-    //[ObservableProperty] private ICartesianAxis[] _chartXAxes = [];
-
-    public ISeries[] Series
-    {
-        get; set;
-    }
-
-    public ICartesianAxis[] XAxes
-    {
-        get; set;
-    }
+    [ObservableProperty] private ISeries[]? _series;
+    [ObservableProperty] private ICartesianAxis[]? _xAxes;
 
     public ObservableCollection<ProductStat> TopProducts { get; } = new();
 
@@ -57,17 +47,25 @@ public partial class ReportingViewModel : ViewModelBase
     [RelayCommand]
     public async Task Unlock()
     {
-        var pass = _configuration["PasswordReport:Password"];
-        if (string.Equals(PasswordInput, pass, StringComparison.Ordinal))
+        try 
         {
-            IsLocked = false;
-            ErrorMessage = "";
-            await LoadDataAsync();
+            var pass = _configuration["PasswordReport:Password"];
+            if (string.Equals(PasswordInput, pass, StringComparison.Ordinal))
+            {
+                await LoadDataAsync();
+                IsLocked = false;
+                ErrorMessage = "";
+            }
+            else
+            {
+                ErrorMessage = "Mật khẩu không đúng!";
+                PasswordInput = "";
+            }
         }
-        else
+        catch (Exception ex)
         {
-            ErrorMessage = "Mật khẩu không đúng!";
-            PasswordInput = "";
+            System.Diagnostics.Debug.WriteLine($"Unlock Error: {ex.Message}");
+            ErrorMessage = "Lỗi khi mở khóa dữ liệu.";
         }
     }
 
@@ -86,13 +84,13 @@ public partial class ReportingViewModel : ViewModelBase
                 foreach (var p in data.TopProducts) TopProducts.Add(p);
             }
 
-            // Setup Chart
+            // Setup Chart - Minimal for stability test
             Series = new ISeries[]
             {
-                new ColumnSeries<int>
+                new ColumnSeries<double>
                 {
-                    Name = "Đơn hàng: ",
-                    Values = data.MonthlyStats.Select(x => x.OrderCount).ToArray()
+                    Name = "Số đơn hàng",
+                    Values = data.MonthlyStats.Select(x => (double)x.OrderCount).ToArray()
                 }
             };
 
@@ -100,7 +98,7 @@ public partial class ReportingViewModel : ViewModelBase
             {
                 new Axis
                 {
-                    Labels = data.MonthlyStats.Select(x => x.Label).ToList(),
+                    Labels = data.MonthlyStats.Select(x => x.Label).ToArray(),
                     LabelsRotation = 15
                 }
             };

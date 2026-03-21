@@ -1,5 +1,4 @@
 using Invoice.Core.Contracts.Services;
-using Invoice.Core.Models;
 using Newtonsoft.Json;
 
 namespace Invoice.Services;
