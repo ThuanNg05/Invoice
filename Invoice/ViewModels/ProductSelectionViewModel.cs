@@ -1,14 +1,16 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Messaging;
 using Invoice.Contracts.ViewModels;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
 using Microsoft.UI.Dispatching;
 using Invoice.Contracts.Services;
+using Invoice.Core.Contracts;
 
 namespace Invoice.ViewModels;
 
-public partial class ProductSelectionViewModel : ViewModelBase, INavigationAware
+public partial class ProductSelectionViewModel : ViewModelBase, INavigationAware, IRecipient<ProductsSelectedMessage>
 {
     private readonly IDataService _dataService;
     private ProductSelectionNavigationParameter? _navParam;
@@ -24,6 +26,7 @@ public partial class ProductSelectionViewModel : ViewModelBase, INavigationAware
     {
         _dataService = dataService;
         _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
+        WeakReferenceMessenger.Default.Register<ProductsSelectedMessage>(this);
     }
 
     public async void FilterData(string query)
@@ -65,6 +68,16 @@ public partial class ProductSelectionViewModel : ViewModelBase, INavigationAware
 
         foreach (var item in list)
         {
+            // Subtract pending quantities from temp invoice
+            if (_navParam?.CurrentInvoiceItems != null)
+            {
+                var pendingAmount = _navParam.CurrentInvoiceItems
+                    .Where(x => x.ProductID == item.ProductID)
+                    .Sum(x => x.Amount);
+                
+                item.Inventory -= pendingAmount;
+            }
+
             Source.Add(item);
         }
         _currentSkip += list.Count;
@@ -86,5 +99,18 @@ public partial class ProductSelectionViewModel : ViewModelBase, INavigationAware
 
     public void OnNavigatedFrom()
     {
+        WeakReferenceMessenger.Default.Unregister<ProductsSelectedMessage>(this);
+    }
+
+    public void Receive(ProductsSelectedMessage message)
+    {
+        _dispatcherQueue.TryEnqueue(() =>
+        {
+            var item = Source.FirstOrDefault(x => x.ProductID == message.Product.ProductID);
+            if (item != null)
+            {
+                item.Inventory -= message.Amount;
+            }
+        });
     }
 }

@@ -43,6 +43,10 @@ public class ReportingService
             var json = await _dataService.GetDashboardData(year);
             var report = JsonConvert.DeserializeObject<ReportData>(json) ?? new ReportData();
 
+            // Null safety for lists after deserialization
+            report.MonthlyStats ??= new List<MonthlyStat>();
+            report.TopProducts ??= new List<ProductStat>();
+
             // Ensure all 12 months are present for the chart
             for (int i = 1; i <= 12; i++)
             {

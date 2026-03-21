@@ -1,10 +1,8 @@
 using System.Collections.ObjectModel;
-using CommunityToolkit.Mvvm.ComponentModel;
 using Invoice.Contracts.ViewModels;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
 using Invoice.Contracts.Services;
-using Invoice.Helpers;
 
 namespace Invoice.ViewModels;
 
@@ -12,9 +10,9 @@ public partial class IOActionsViewModel : ViewModelBase, INavigationAware
 {
     private readonly IDataService _dataService;
 
-    private List<InventoryItem> _allItems = new();
-    public ObservableCollection<InventoryItem> SourceList { get; } = new ObservableCollection<InventoryItem>();
-    public ObservableCollection<WarehouseTransaction> TransactionList { get; } = new ObservableCollection<WarehouseTransaction>();
+    private List<InventoryItem> _allItems = [];
+    public ObservableCollection<InventoryItem> SourceList { get; } = [];
+    public ObservableCollection<WarehouseTransaction> TransactionList { get; } = [];
 
     public IOActionsViewModel(IDataService dataService, IDialogService dialogService) : base(dialogService)
     {
@@ -102,9 +100,7 @@ public partial class IOActionsViewModel : ViewModelBase, INavigationAware
         }
         else
         {
-            var filtered = _allItems.Where(x =>
-                x.ProductID.ToString().Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
-                (x.Name != null && x.Name.Contains(keyword, StringComparison.OrdinalIgnoreCase))
+            var filtered = _allItems.Where(x => x.Name != null && x.Name.Contains(keyword, StringComparison.OrdinalIgnoreCase)
             );
 
             foreach (var item in filtered) SourceList.Add(item);

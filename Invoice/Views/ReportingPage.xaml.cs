@@ -16,4 +16,12 @@ public sealed partial class ReportingPage : Page
         ViewModel = App.GetService<ReportingViewModel>();
         InitializeComponent();
     }
+
+    private void OnPasswordChanged(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        if (sender is PasswordBox passwordBox)
+        {
+            ViewModel.PasswordInput = passwordBox.Password;
+        }
+    }
 }

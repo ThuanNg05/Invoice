@@ -43,8 +43,8 @@ public class WarehouseTransaction : BaseModel, INotifyPropertyChanged
             if (_amount != value)
             {
                 _amount = value;
-                OnPropertyChanged(); // <--- Notifies the UI
-                OnPropertyChanged(nameof(FinalChange)); // <--- Also update dependent property
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(FinalChange));
             }
         }
     }

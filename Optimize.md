@@ -1,40 +1,58 @@
-﻿`Invoice.Core.csproj` shares the same risky versioning: it targets `net8.0` but uses version 10.0.5 for configuration and 10.0.2 for `Npgsql`. While not a direct optimization, it's a maintenance risk. I've gathered enough info to create a prioritized optimization list: Level 1 for performance and architecture, Level 2 for code quality and MVVM, and Level 3 for UI/UX and cleanup.
+﻿ Act as a senior software engineer and code reviewer.
 
-### 🚀 Invoice Project Optimization Roadmap
+Task:
+Refactor and debug the business logic in file: @Invoice/Views/IOActionsPage.xaml.cs @Invoice/ViewModels/IOActionsViewModel.cs @Invoice.Core/Services/SupabaseDataService.cs
 
-Based on the project scan, here is a prioritized list of optimizations categorized by impact and effort.
+Objective:
+Fix incorrect product detection and broken inventory updates while preserving the existing invoice save workflow.
 
-#### **Level 1: High Impact (Performance & Scalability) - ✅ COMPLETED**
+Current problems:
+- The current logic incorrectly detects different products as the same product.
+- When adding a different product, the system behaves as if it is an existing product and increases the quantity instead of creating/separating the correct line item.
+- Inventory is not being calculated or updated correctly.
+- The inventory issue may come from either:
+  - application-side business logic
+  - Supabase stored procedure / RPC / database function
+- The refactor must remain consistent with the invoice saving workflow, especially inventory updates for both Product and Plank.
 
-1.  **Eliminate N+1 Queries in `ReportingService`**:
-    *   **Optimization**: Implemented `get_dashboard_data` RPC to fetch aggregated report data in one network roundtrip.
-2.  **Move Complex Business Logic to Database (RPC)**:
-    *   **Optimization**: (Partial) Refactored client-side logic to be more batch-oriented; ready for further RPC migration of `ProcessInventoryTransaction`.
-3.  **Optimize PDF Generation**:
-    *   **Optimization**: Refactored `InvoicePdfService` using reusable `IComponent` objects for headers, improving maintainability and reducing redundant logic.
-4.  **Implement Server-Side Filtering/Aggregation**:
-    *   **Optimization**: Moved dashboard calculation logic to Supabase using SQL/RPC, returning pre-calculated stats.
+What I need you to do:
+1. Analyze the existing logic in [@Invoice.Core/Services/SupabaseDataService.cs].
+2. Identify the exact root cause of why different products are being merged incorrectly.
+3. Identify whether the bug comes from:
+   - bad comparison logic
+   - missing unique key validation
+   - duplicate handling logic
+   - wrong state mutation
+   - wrong Supabase procedure call
+   - incorrect order of operations
+4. Refactor the logic with minimal unnecessary architecture changes.
+5. Preserve the current business workflow:
+   - save invoice
+   - save invoice details
+   - update Product inventory
+   - update Plank inventory
+6. Ensure inventory updates are accurate and consistent.
+7. If Supabase RPC / procedure is faulty, propose the corrected implementation or corrected calling pattern.
+8. Highlight any risky assumptions in the current code.
 
-#### **Level 2: Medium Impact (Architecture & Maintainability) - 🔄 IN PROGRESS**
+Strict rules:
+- Different products must NEVER be merged unless they share the same stable unique identifier.
+- Do not rely only on product name, display text, formatted string, or partial object equality.
+- Prefer matching by unique product ID / SKU / database primary key.
+- Quantity should only increase when the item is truly the same product.
+- Refactor for correctness first, then maintainability.
+- Do not break the existing invoice save workflow.
 
-1.  **Strict MVVM Adherence (UI Decoupling)**: ✅ **COMPLETED**
-    *   **Optimization**: Use `IWindowService` and `INavigationService` to handle window/page creation, removing direct dependencies on `Frame` and `WindowEx` from ViewModels.
-2.  **Refactor `SupabaseDataService`**: ✅ **COMPLETED**
-    *   **Optimization**: Split the service into partial classes (`SupabaseDataService.Customers.cs`, `SupabaseDataService.Inventory.cs`, `SupabaseDataService.Invoices.cs`) to improve maintainability.
-3.  **Standardize Error Handling & Logging**:
-    *   **Issue**: Some services use `Debug.WriteLine`, others use `App.ShowErrorAsync`, and some have no error handling at all.
-    *   **Optimization**: Implement a consistent logging strategy (e.g., `Microsoft.Extensions.Logging` with a Serilog or file sink). Use a global exception handler for UI-level errors.
-4.  **Consolidate Dependency Versions**:
-    *   **Issue**: The project targets `.net8.0` but uses `10.0.x` (likely Preview/RC) packages for some libraries.
-    *   **Optimization**: Standardize all packages to their stable versions (ideally 8.0.x or 9.0.x) to ensure long-term stability and avoid potential runtime mismatches.
+Expected response format:
+1. Root cause analysis
+2. Bug explanation for wrong product detection
+3. Bug explanation for inventory not updating
+4. Refactored code for [@Invoice.Core/Services/SupabaseDataService.cs]
+5. If needed, corrected Supabase procedure / RPC logic
+6. Final recommended workflow order for invoice save and inventory update
+7. Notes on edge cases / failure scenarios
 
-#### **Level 3: Low Impact (UI/UX & Cleanup) - ✅ COMPLETED**
-
-1.  **XAML Style Compilation**: ✅ **COMPLETED**
-    *   **Optimization**: Changed `Build Action` to `Page` for `FontSizes.xaml`, `Thickness.xaml`, and `TextBlock.xaml` and ensured they are merged into `App.xaml`.
-2.  **Logo Path Handling**: ✅ **COMPLETED**
-    *   **Optimization**: Refactored `InvoicePdfService` to use `Windows.ApplicationModel.Package.Current.InstalledLocation.Path` when running as an MSIX package for robust path resolution.
-3.  **UI Feedback Consistency**: ✅ **COMPLETED**
-    *   **Optimization**: Implemented `ViewModelBase` and `IDialogService` to provide consistent visual feedback (`IsBusy` state) and decoupled dialog management across all pages.
-4.  **Localization Cleanup**: ✅ **COMPLETED**
-    *   **Optimization**: Moved all user-facing strings from C# and XAML to `Resources.resw` using `x:Uid` and `GetLocalized()`, ensuring full localization support for the entire application.
+Extra note:
+The function must stay fully consistent with the workflow of saving invoice, especially:
+- update inventory of Product
+- update inventory of Plank

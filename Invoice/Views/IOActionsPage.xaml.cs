@@ -49,21 +49,23 @@ public sealed partial class IOActionsPage : Page
             await _dialogService.ShowErrorAsync("Vui lòng nhập đủ thông tin (Số lượng, Hình thức).");
             return;
         }
-        if (!int.TryParse(txtAmount.Text, out int amount) || amount <= 0)
-        {
-            await _dialogService.ShowErrorAsync("Số lượng phải là số dương.");
-            return;
-        }      
 
-        string actionType = cmbType.SelectedValue.ToString();
-        int currentInventory = int.Parse(txtInventory.Text);
+        if (SourceDataGrid.SelectedItem is not InventoryItem selectedSourceItem)
+        {
+            await _dialogService.ShowErrorAsync("Vui lòng chọn sản phẩm từ danh sách.");
+            return;
+        }
+
+        var actionType = cmbType.SelectedValue.ToString();
+        int currentInventory = selectedSourceItem.Inventory;
+        int amount = int.Parse(txtAmount.Text);
 
         var existingTransaction = ViewModel.TransactionList
-            .FirstOrDefault(t => t.ActionType == actionType);
+            .FirstOrDefault(t => t.ProductID == selectedSourceItem.ProductID && t.ActionType == actionType);
 
         if (existingTransaction != null)
         {            
-            if(await _dialogService.ShowConfirmAsync("Sản phẩm trùng lặp", $"Sản phẩm '{txtName.Text}' với hình thức '{actionType}' đã có trong danh sách chờ.\nBạn có muốn cộng dồn số lượng không?", "Đồng ý"))
+            if(await _dialogService.ShowConfirmAsync("Sản phẩm trùng lặp", $"Sản phẩm '{selectedSourceItem.Name}' với hình thức '{actionType}' đã có trong danh sách chờ.\nBạn có muốn cộng dồn số lượng không?", "Đồng ý"))
             {
                 int totalAmount = existingTransaction.Amount + amount;
 
@@ -84,13 +86,13 @@ public sealed partial class IOActionsPage : Page
                 return;
             }
 
-            var selectedSourceItem = SourceDataGrid.SelectedItem as InventoryItem;
-            string itemSource = selectedSourceItem?.Source ?? "PRODUCTS";
+            string itemSource = selectedSourceItem.Source ?? "PRODUCTS";
 
             var newTransaction = new WarehouseTransaction
             {
+                ProductID = selectedSourceItem.ProductID,
                 InvoiceID = null,
-                Name = txtName.Text,
+                Name = selectedSourceItem.Name,
                 Amount = amount,
                 ActionType = actionType,
                 Note = $"Nguồn: {itemSource}"
@@ -98,7 +100,6 @@ public sealed partial class IOActionsPage : Page
 
             ViewModel.TransactionList.Add(newTransaction);
         }
-        //btnSave.IsEnabled = true;
         ClearInput();
     }
     private async void BtnEdit_Click(object sender, RoutedEventArgs e)

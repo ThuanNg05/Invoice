@@ -242,7 +242,7 @@ public partial class CreateInvoiceViewModel : ViewModelBase, IRecipient<Products
             return;
         }
 
-        _windowService.OpenProductSelectionWindow(SelectedCustomer);
+        _windowService.OpenProductSelectionWindow(SelectedCustomer, InvoiceItems);
         await Task.CompletedTask;
     }
 

@@ -23,7 +23,6 @@ public partial class SupabaseDataService
         if (fromDate.HasValue)
         {            
             string fromStr = fromDate.Value.ToString("yyyy-MM-dd");
-            query = query.Filter("Invoice.created_date", Operator.Equals, fromStr);
 
             if (toDate.HasValue)
             {                
@@ -31,6 +30,15 @@ public partial class SupabaseDataService
                 query = query.Filter("Invoice.created_date", Operator.GreaterThanOrEqual, fromStr)
                              .Filter("Invoice.created_date", Operator.LessThanOrEqual, toStr);
             }            
+            else
+            {
+                query = query.Filter("Invoice.created_date", Operator.Equals, fromStr);
+            }
+        }
+        else if (toDate.HasValue)
+        {
+            string toStr = toDate.Value.ToString("yyyy-MM-dd");
+            query = query.Filter("Invoice.created_date", Operator.LessThanOrEqual, toStr);
         }
 
         if (customerId.HasValue)

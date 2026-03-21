@@ -116,7 +116,23 @@ public partial class SupabaseDataService
         await EnsureConnectionAsync();
         var response = await _client.From<Products>()
                                     .Order("product_id", Ordering.Ascending).Get();
-        return response.Models;
+        
+        var products = response.Models;
+        var planks = await GetPlanks();
+
+        foreach (var p in products)
+        {
+            if (!string.IsNullOrEmpty(p.SizeID))
+            {
+                var plank = planks.FirstOrDefault(x => x.sizeID == p.SizeID);
+                if (plank != null)
+                {
+                    p.Inventory = plank.inventory;
+                }
+            }
+        }
+
+        return products;
     }
 
     public async Task SubscribeToProductsRealtime(Action<string, Products> onDataChanged)

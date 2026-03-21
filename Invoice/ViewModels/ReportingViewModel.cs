@@ -25,8 +25,19 @@ public partial class ReportingViewModel : ViewModelBase
     [ObservableProperty] private double _totalRevenue;
     [ObservableProperty] private double _totalProfit;
 
-    public ISeries[] Series { get; set; } = [];
-    public ICartesianAxis[] XAxes { get; set; } = [];
+    // Renamed properties to avoid name collisions with LiveChartsCore.Series
+    //[ObservableProperty] private ISeries[] _chartSeries = [];
+    //[ObservableProperty] private ICartesianAxis[] _chartXAxes = [];
+
+    public ISeries[] Series
+    {
+        get; set;
+    }
+
+    public ICartesianAxis[] XAxes
+    {
+        get; set;
+    }
 
     public ObservableCollection<ProductStat> TopProducts { get; } = new();
 
@@ -70,7 +81,10 @@ public partial class ReportingViewModel : ViewModelBase
             TotalProfit = data.TotalProfit;
 
             TopProducts.Clear();
-            foreach (var p in data.TopProducts) TopProducts.Add(p);
+            if (data.TopProducts != null)
+            {
+                foreach (var p in data.TopProducts) TopProducts.Add(p);
+            }
 
             // Setup Chart
             Series = new ISeries[]
@@ -90,8 +104,6 @@ public partial class ReportingViewModel : ViewModelBase
                     LabelsRotation = 15
                 }
             };
-            OnPropertyChanged(nameof(Series));
-            OnPropertyChanged(nameof(XAxes));
         }, "LOAD_FAILED".GetLocalized());
     }
 

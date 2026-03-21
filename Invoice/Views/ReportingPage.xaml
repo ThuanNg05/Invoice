@@ -98,7 +98,7 @@
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="15" Width="300">
                 <FontIcon Glyph="&#xE1F6;" FontSize="40" Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
                 <TextBlock Text="Khu vực hạn chế" HorizontalAlignment="Center" Style="{StaticResource PageTitleStyle}"/>
-                <PasswordBox Header="Nhập mật khẩu" Password="{x:Bind ViewModel.PasswordInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <PasswordBox Header="Nhập mật khẩu" PasswordChanged="OnPasswordChanged"/>
                 <TextBlock Text="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}" Foreground="{ThemeResource SystemFillColorCriticalBrush}"/>
                 <Button Content="Mở khóa" Command="{x:Bind ViewModel.UnlockCommand}" HorizontalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}"/>
             </StackPanel>
