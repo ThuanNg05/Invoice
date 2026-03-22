@@ -66,7 +66,7 @@ public partial class App : Application
         {
             // Supabase service
             var supabaseUrl = context.Configuration["Supabase:Url"];
-            var supabaseKey = context.Configuration["Supabase:Key"];
+            var supabaseKey = context.Configuration.GetRequiredDecrypted("Supabase:Key");
 
             if (string.IsNullOrEmpty(supabaseUrl) || string.IsNullOrEmpty(supabaseKey))
             {

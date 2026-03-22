@@ -2,6 +2,7 @@
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Configuration;
 using MimeKit;
+using Invoice.Helpers;
 
 namespace Invoice.Services;
 
@@ -19,7 +20,7 @@ public class EmailService
 
         var senderName = _configuration["EmailSettings:SenderName"];
         var senderEmail = _configuration["EmailSettings:SenderEmail"];
-        var appPassword = _configuration["EmailSettings:AppPassword"];
+        var appPassword = _configuration.GetRequiredDecrypted("EmailSettings:AppPassword");
         var smtpServer = _configuration["EmailSettings:SmtpServer"];
         var port = int.Parse(_configuration["EmailSettings:Port"]);
 

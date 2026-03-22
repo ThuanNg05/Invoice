@@ -53,7 +53,7 @@ public partial class ReportingViewModel : ViewModelBase
     {
         try 
         {
-            var pass = _configuration["PasswordReport:Password"];
+            var pass = _configuration.GetRequiredDecrypted("PasswordReport:Password");
             if (string.Equals(PasswordInput, pass, StringComparison.Ordinal))
             {
                 await LoadDataAsync();

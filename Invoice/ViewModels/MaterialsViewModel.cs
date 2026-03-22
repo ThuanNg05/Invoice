@@ -55,7 +55,7 @@ public partial class MaterialsViewModel : ViewModelBase, INavigationAware
             await _dataService.AddMaterial(material);
             MaterialsCollection.Add(material);
             AllMaterials.Add(material);
-            await DialogService.ShowSuccessAsync("SUCESS_ADD".GetLocalized());
+            await DialogService.ShowSuccessAsync("SUCCESS_ADD".GetLocalized());
         }, "Lỗi thêm vật tư");
     }
 
@@ -67,7 +67,7 @@ public partial class MaterialsViewModel : ViewModelBase, INavigationAware
             MaterialsCollection.Remove(material);
             var itemAll = AllMaterials.FirstOrDefault(m => m.ProductID == material.ProductID);
             if (itemAll != null) AllMaterials.Remove(itemAll);
-            await DialogService.ShowSuccessAsync("SUCESS_DELETE".GetLocalized());
+            await DialogService.ShowSuccessAsync("SUCCESS_DELETE".GetLocalized());
         }, "Lỗi xoá vật tư");
     }
 
@@ -103,7 +103,7 @@ public partial class MaterialsViewModel : ViewModelBase, INavigationAware
                     AllMaterials[indexAll] = material;
                 }
             }
-            await DialogService.ShowSuccessAsync("SUCESS_UPDATE".GetLocalized());
+            await DialogService.ShowSuccessAsync("SUCCESS_UPDATE".GetLocalized());
         }, "Lỗi cập nhật vật tư");
     }
 }
