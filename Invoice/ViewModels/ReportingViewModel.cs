@@ -7,8 +7,11 @@ using Invoice.Services;
 using LiveChartsCore;
 using LiveChartsCore.Kernel.Sketches;
 using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.Painting;
 using Microsoft.Extensions.Configuration;
 using Invoice.Helpers;
+using Microsoft.UI.Xaml;
+using SkiaSharp;
 
 namespace Invoice.ViewModels;
 
@@ -28,6 +31,7 @@ public partial class ReportingViewModel : ViewModelBase
 
     [ObservableProperty] private ISeries[]? _series;
     [ObservableProperty] private ICartesianAxis[]? _xAxes;
+    [ObservableProperty] private ICartesianAxis[]? _yAxes;
 
     public ObservableCollection<ProductStat> TopProducts { get; } = new();
 
@@ -84,13 +88,19 @@ public partial class ReportingViewModel : ViewModelBase
                 foreach (var p in data.TopProducts) TopProducts.Add(p);
             }
 
-            // Setup Chart - Minimal for stability test
+            var themeSelector = App.GetService<IThemeSelectorService>();
+            var isDark = themeSelector.Theme == ElementTheme.Dark;
+            var labelColor = isDark ? SKColors.White : SKColors.Black;
+
+            // Setup Chart
             Series = new ISeries[]
             {
                 new ColumnSeries<double>
                 {
                     Name = "Số đơn hàng",
-                    Values = data.MonthlyStats.Select(x => (double)x.OrderCount).ToArray()
+                    Values = data.MonthlyStats.Select(x => (double)x.OrderCount).ToArray(),
+                    DataLabelsPaint = new SolidColorPaint(labelColor),
+                    DataLabelsPosition = LiveChartsCore.Measure.DataLabelsPosition.Top
                 }
             };
 
@@ -99,7 +109,16 @@ public partial class ReportingViewModel : ViewModelBase
                 new Axis
                 {
                     Labels = data.MonthlyStats.Select(x => x.Label).ToArray(),
-                    LabelsRotation = 15
+                    LabelsRotation = 15,
+                    LabelsPaint = new SolidColorPaint(labelColor)
+                }
+            };
+
+            YAxes = new ICartesianAxis[]
+            {
+                new Axis
+                {
+                    LabelsPaint = new SolidColorPaint(labelColor)
                 }
             };
         }, "LOAD_FAILED".GetLocalized());

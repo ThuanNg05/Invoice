@@ -1,4 +1,4 @@
-﻿using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Invoice.Contracts.Services;
 using Invoice.Core.Models;
@@ -34,6 +34,7 @@ public sealed partial class MaterialsPage : Page
         btnDelete.IsEnabled = false;
         btnUpdate.IsEnabled = false;
         txtTotal.IsReadOnly = true;
+        MaterialGrid.SelectedItem = null;
     }  
 
     private async void BtnNew_Click(object sender, RoutedEventArgs e)
@@ -61,8 +62,7 @@ public sealed partial class MaterialsPage : Page
                 MinAmount = int.TryParse(txtMinAmount.Text.Trim(), out int minAmt) ? minAmt : 0
             };
 
-            await ViewModel.AddMaterialAsync(material);
-            await _dialogService.ShowSuccessAsync("SUCCESS_ADD".GetLocalized());
+            await ViewModel.AddMaterialAsync(material);            
             ClearInputs();
         }
         catch (Exception ex)
@@ -96,8 +96,7 @@ public sealed partial class MaterialsPage : Page
                 BasePrice = decimal.TryParse(txtBasePrice.Text, out decimal price) ? price : 0,
                 MinAmount = int.TryParse(txtMinAmount.Text, out int minAmt) ? minAmt : 0,
             };
-            await ViewModel.UpdateMaterialAsync(tmpMaterial);
-            await _dialogService.ShowSuccessAsync("SUCCESS_UPDATE".GetLocalized());
+            await ViewModel.UpdateMaterialAsync(tmpMaterial);            
             ClearInputs();
         }
         catch (Exception ex)
@@ -113,8 +112,7 @@ public sealed partial class MaterialsPage : Page
         {
             try
             {
-                await ViewModel.DeleteMaterialAsync(selected);
-                await _dialogService.ShowSuccessAsync("SUCCESS_DELETE".GetLocalized());
+                await ViewModel.DeleteMaterialAsync(selected);                
                 ClearInputs();
             }
             catch (Exception ex)
@@ -143,7 +141,7 @@ public sealed partial class MaterialsPage : Page
     }
 
     private void txtSearch_TextChanged(object sender, TextChangedEventArgs e)
-    {        
+    {
         var searchText = txtSearch.Text;
         if (string.IsNullOrWhiteSpace(searchText))
         {
@@ -151,13 +149,8 @@ public sealed partial class MaterialsPage : Page
         }
         else
         {
-            MaterialGrid.ItemsSource = ViewModel.AllMaterials
+            MaterialGrid.ItemsSource = ViewModel.MaterialsCollection
                 .Where(c => c.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase));
         }
-    }
-
-    private void Number_BeforeTextChanging(TextBox sender, TextBoxBeforeTextChangingEventArgs args)
-    {
-        args.Cancel = args.NewText.Any(c => !char.IsDigit(c));
     }
 }

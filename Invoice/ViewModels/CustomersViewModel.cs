@@ -3,6 +3,7 @@ using Invoice.Contracts.ViewModels;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
 using Invoice.Contracts.Services;
+using Invoice.Helpers;
 
 namespace Invoice.ViewModels;
 
@@ -60,6 +61,7 @@ public partial class CustomersViewModel : ViewModelBase, INavigationAware
             await _dataService.AddCustomer(customer);
             CustomersCollection.Add(customer);
             AllCustomers.Add(customer);
+            await DialogService.ShowSuccessAsync("SUCCESS_ADD".GetLocalized());
         }, "Lỗi khi thêm khách hàng");
     }
 
@@ -71,6 +73,7 @@ public partial class CustomersViewModel : ViewModelBase, INavigationAware
             CustomersCollection.Remove(customers);
             var itemInAll = AllCustomers.FirstOrDefault(c => c.CustomerID == customers.CustomerID);
             if (itemInAll != null) AllCustomers.Remove(itemInAll);
+            await DialogService.ShowSuccessAsync("SUCCESS_DELETE".GetLocalized());
         }, "Lỗi khi xóa khách hàng");
     }
 
@@ -107,6 +110,7 @@ public partial class CustomersViewModel : ViewModelBase, INavigationAware
                     AllCustomers[indexAll] = customer;
                 }
             }
+            await DialogService.ShowSuccessAsync("SUCCESS_UPDATE".GetLocalized());
         }, "Lỗi khi cập nhật khách hàng");
     }
 }

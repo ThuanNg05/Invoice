@@ -1,5 +1,6 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
 using Invoice.Contracts.Services;
+using Invoice.Core.Helpers;
 using Invoice.Core.Models;
 using Invoice.Helpers;
 using Invoice.ViewModels;
@@ -30,7 +31,7 @@ public sealed partial class CustomersPage : Page
     {
         StringHelper.ClearInputs(this);
         CmbPriceType.SelectedIndex = -1;
-        CustomerGrid.SelectedItem = -1;
+        CustomerGrid.SelectedItem = null;
         btnAdd.IsEnabled = true;
         btnUpdate.IsEnabled = false;
         btnDelete.IsEnabled = false;
@@ -58,9 +59,9 @@ public sealed partial class CustomersPage : Page
             return;
         }
 
-        if (!IsValidPhoneNumber(txtPhoneNo.Text))
+        if (!BusinessValidation.IsValidVietnamesePhoneNumber(txtPhoneNo.Text))
         {
-            await _dialogService.ShowErrorAsync("Số điện thoại không hợp lệ. Vui lòng nhập đúng chuẩn 10 số.");
+            await _dialogService.ShowErrorAsync("Số điện thoại không hợp lệ. Vui lòng nhập đúng chuẩn 10 số (bắt đầu bằng số 0).");
             return;
         }
 
@@ -73,8 +74,7 @@ public sealed partial class CustomersPage : Page
                 PriceGroup = (CmbPriceType.SelectedItem as ComboBoxItem)?.Content.ToString()
             };
 
-            await ViewModel.AddCustomerAsync(newCustomer);
-            await _dialogService.ShowSuccessAsync("Thêm khách hàng thành công!");
+            await ViewModel.AddCustomerAsync(newCustomer);            
             ClearInputs();
         }
         catch (Exception ex)
@@ -93,9 +93,9 @@ public sealed partial class CustomersPage : Page
                 return;
             }
             
-            if(!IsValidPhoneNumber(txtPhoneNo.Text))
+            if(!BusinessValidation.IsValidVietnamesePhoneNumber(txtPhoneNo.Text))
             {                
-                await _dialogService.ShowErrorAsync("Số điện thoại đã tồn tại cho khách hàng khác. Vui lòng nhập số điện thoại khác.");
+                await _dialogService.ShowErrorAsync("Số điện thoại không hợp lệ. Vui lòng nhập đúng chuẩn 10 số (bắt đầu bằng số 0).");
                 return;                
             }
 
@@ -104,8 +104,7 @@ public sealed partial class CustomersPage : Page
                 selected.Name = txtName.Text;
                 selected.Phone = txtPhoneNo.Text;
                 selected.PriceGroup = (CmbPriceType.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "Lẻ";
-                await ViewModel.UpdateCustomerAsync(selected);
-                await _dialogService.ShowSuccessAsync("SUCCESS_UPDATE".GetLocalized());
+                await ViewModel.UpdateCustomerAsync(selected);                
                 ClearInputs();
             }
             catch (Exception ex)
@@ -127,8 +126,7 @@ public sealed partial class CustomersPage : Page
             {
                 try
                 {
-                    await ViewModel.DeleteCustomerAsync(selected);
-                    await _dialogService.ShowSuccessAsync("SUCCESS_DELETE".GetLocalized());
+                    await ViewModel.DeleteCustomerAsync(selected);                    
                     ClearInputs();
                 }
                 catch (Exception ex)
@@ -147,17 +145,6 @@ public sealed partial class CustomersPage : Page
     {
         ClearInputs();
     }
-
-    private bool IsValidPhoneNumber(string phone)
-    {
-        string pattern = @"^0(3|5|7|8|9)[0-9]{8}$";
-        return Regex.IsMatch(phone, pattern);
-    }
-
-    private void txtPhoneNo_BeforeTextChanging(TextBox sender, TextBoxBeforeTextChangingEventArgs args)
-    {
-        args.Cancel = args.NewText.Any(c => !char.IsDigit(c));
-    }    
 
     private void txtSearch_TextChanged(object sender, TextChangedEventArgs e)
     {

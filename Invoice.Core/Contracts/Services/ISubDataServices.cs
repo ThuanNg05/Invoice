@@ -43,6 +43,7 @@ public interface IInvoiceService
 {
     Task<IEnumerable<Invoices>> GetAllInvoices();
     Task<IEnumerable<History>> GetInvoiceHistory(DateTime? fromDate, DateTime? toDate, long? customerID);
+    Task<IEnumerable<WarehouseHistoryItem>> GetQueryableHistory(DateTime? fromDate, DateTime? toDate, string? sourceType = null);
     Task<IEnumerable<InvoiceDetail>> GetInvoiceDetails(string invoiceID);
     Task<int> GetInvoiceCountByDate(DateTime date);
     Task AddInvoice(Invoices invoice, IEnumerable<InvoiceDetail> details, IEnumerable<WarehouseTransaction> transactions);

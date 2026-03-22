@@ -1,4 +1,4 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
 using Invoice.Contracts.Services;
 using Invoice.Core.Models;
 using Invoice.Helpers;
@@ -34,7 +34,7 @@ public sealed partial class PlanksPage : Page
         btnAdd.IsEnabled = true;
         btnUpdate.IsEnabled = false;
         btnDelete.IsEnabled = false;
-        PlankGrid.SelectedIndex = -1;
+        PlankGrid.SelectedItem = null;
         txtSize1.Focus(FocusState.Programmatic);
     }
 
@@ -65,8 +65,7 @@ public sealed partial class PlanksPage : Page
                 Description = txtDescribe.Text.Trim().ToLower()
             };
 
-            await ViewModel.AddFrameAsync(plank);
-            await _dialogService.ShowSuccessAsync("Thêm thành công!");
+            await ViewModel.AddFrameAsync(plank);            
             ClearInputs();
         }
         catch (Exception ex)
@@ -82,8 +81,7 @@ public sealed partial class PlanksPage : Page
         {
             try
             {
-                await ViewModel.DeleteFrameAsync(selected);
-                await _dialogService.ShowSuccessAsync("Xóa thành công!");
+                await ViewModel.DeleteFrameAsync(selected);                
                 ClearInputs();
             }
             catch (Exception ex)
@@ -122,8 +120,7 @@ public sealed partial class PlanksPage : Page
                 Description = txtDescribe.Text.Trim().ToLower()
             };
 
-            await ViewModel.UpdateFrameAsync(tmpPlank);
-            await _dialogService.ShowSuccessAsync("Cập nhật thành công!");
+            await ViewModel.UpdateFrameAsync(tmpPlank);            
             ClearInputs();
         }
         catch (Exception ex)
@@ -172,11 +169,6 @@ public sealed partial class PlanksPage : Page
         btnAdd.IsEnabled = false;
         btnUpdate.IsEnabled = true;
         btnDelete.IsEnabled = true;
-    }
-
-    private void Amount_BeforeTextChanging(TextBox sender, TextBoxBeforeTextChangingEventArgs args)
-    {
-        args.Cancel = args.NewText.Any(c => !char.IsDigit(c));
     }
 
     // Helper function

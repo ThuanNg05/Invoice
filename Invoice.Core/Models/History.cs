@@ -35,4 +35,8 @@ public class History
     {
         get; set;
     }
+    public int IsQueryable
+    {
+        get; set;
+    }
 }

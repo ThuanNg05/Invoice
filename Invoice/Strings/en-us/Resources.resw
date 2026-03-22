@@ -249,4 +249,10 @@
   <data name="SUCCESS_DELETE" xml:space="preserve">
     <value>Update succesfull</value>
   </data>
+  <data name="SUCCESS_SAVE" xml:space="preserve">
+    <value>Save succesfull</value>
+  </data>
+  <data name="Shell_HistoryTransaction.Content" xml:space="preserve">
+    <value>HistoryTransaction</value>
+  </data>
 </root>

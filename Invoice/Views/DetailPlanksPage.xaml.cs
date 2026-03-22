@@ -54,8 +54,7 @@ public sealed partial class DetailPlanksPage : Page
             {
                 sizeID = size.Text                
             };
-            await ViewModel.AddPlankAsync(newSize);
-            await _dialogService.ShowSuccessAsync("Thêm thành công!");
+            await ViewModel.AddPlankAsync(newSize);            
             ClearInputs();
         }
         catch (Exception ex)
@@ -71,8 +70,7 @@ public sealed partial class DetailPlanksPage : Page
         {
             try
             {
-                await ViewModel.DeletePlankAsync(selected);
-                await _dialogService.ShowSuccessAsync("SUCCESS_DELETE".GetLocalized());
+                await ViewModel.DeletePlankAsync(selected);                
                 ClearInputs();
             }
             catch (Exception ex)
@@ -103,8 +101,7 @@ public sealed partial class DetailPlanksPage : Page
                 sizeID = size.Text.Trim().ToLower()
             };
 
-            await ViewModel.UpdatePlankAsync(tmpPlank);
-            await _dialogService.ShowSuccessAsync("SUCCESS_UPDATE".GetLocalized());
+            await ViewModel.UpdatePlankAsync(tmpPlank);            
             ClearInputs();
         }
         catch (Exception ex)

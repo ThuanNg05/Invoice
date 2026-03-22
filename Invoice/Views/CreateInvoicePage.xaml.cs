@@ -122,11 +122,6 @@ public sealed partial class CreateInvoicePage : Page
         }
     }
 
-    private void AmountTextBox_BeforeTextChanging(TextBox sender, TextBoxBeforeTextChangingEventArgs args)
-    {
-        args.Cancel = args.NewText.Any(c => !char.IsDigit(c));
-    }
-
     private async void AmountTextBox_LostFocus(object sender, RoutedEventArgs e)
     {
         

@@ -32,6 +32,10 @@ public class WarehouseTransaction : BaseModel, INotifyPropertyChanged
     [JsonProperty("date")]
     public DateTime CreatedDate { get; set; }
 
+    [Column("source_type")]
+    [JsonProperty("source_type")]
+    public string SourceType { get; set; }
+
     private int _amount;
     [Column("amount")]    
     [JsonProperty("amount")]
@@ -69,6 +73,10 @@ public class WarehouseTransaction : BaseModel, INotifyPropertyChanged
     [Column("note")]
     [JsonProperty("note")]
     public string Note { get; set; }
+
+    [Column("is_queryable")]
+    [JsonProperty("is_queryable")]
+    public int IsQueryable { get; set; } = 1;
 
     [JsonIgnore]
     public int FinalChange => ActionType == "Nhập kho" ? Amount : -Amount;

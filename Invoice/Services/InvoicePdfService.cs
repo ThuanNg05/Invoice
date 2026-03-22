@@ -110,7 +110,7 @@ public class InvoicePdfService
                 columns.ConstantColumn(80);
                 columns.ConstantColumn(40);
                 columns.ConstantColumn(90);
-                columns.RelativeColumn(1);
+                columns.RelativeColumn(2);
             });
 
             table.Header(header =>
@@ -156,7 +156,7 @@ public class InvoicePdfService
                 columns.ConstantColumn(30);
                 columns.RelativeColumn(3);
                 columns.ConstantColumn(40);
-                columns.RelativeColumn(1);
+                columns.RelativeColumn(2);
             });
 
             table.Header(header =>

@@ -64,6 +64,64 @@ public partial class SupabaseDataService
         return [.. result.OrderByDescending(x => x.CreatedDate).ThenBy(x => x.InvoiceID)];
     }
 
+    public async Task<IEnumerable<WarehouseHistoryItem>> GetQueryableHistory(DateTime? fromDate, DateTime? toDate, string? sourceType = null)
+    {
+        await EnsureConnectionAsync();
+
+        var query = _client.From<WarehouseTransaction>()
+                           .Where(t => t.IsQueryable == 1);
+
+        if (fromDate.HasValue)
+        {
+            query = query.Filter("date", Operator.GreaterThanOrEqual, fromDate.Value.ToString("yyyy-MM-dd"));
+        }
+        if (toDate.HasValue)
+        {
+            query = query.Filter("date", Operator.LessThanOrEqual, toDate.Value.ToString("yyyy-MM-dd"));
+        }
+        if (!string.IsNullOrEmpty(sourceType))
+        {
+            query = query.Where(t => t.SourceType == sourceType);
+        }
+
+        var response = await query.Order("date", Ordering.Descending).Get();
+        var transactions = response.Models;
+
+        if (!transactions.Any()) return new List<WarehouseHistoryItem>();
+
+        // Lấy danh sách tên sản phẩm/nguyên liệu để map vào DTO
+        var productIds = transactions.Where(t => t.SourceType == "PRODUCT").Select(t => t.ProductID).Distinct().ToList();
+        var materialIds = transactions.Where(t => t.SourceType == "MATERIAL").Select(t => t.ProductID).Distinct().ToList();
+
+        var products = new List<Products>();
+        var materials = new List<Materials>();
+
+        if (productIds.Any())
+        {
+            var pResp = await _client.From<Products>().Filter("product_id", Operator.In, productIds).Get();
+            products = pResp.Models;
+        }
+        if (materialIds.Any())
+        {
+            var mResp = await _client.From<Materials>().Filter("product_id", Operator.In, materialIds).Get();
+            materials = mResp.Models;
+        }
+
+        var result = transactions.Select(t => new WarehouseHistoryItem
+        {
+            Date = t.CreatedDate,
+            TransactionType = t.ActionType,
+            Amount = t.Amount,
+            Note = t.Note,
+            SourceType = t.SourceType,
+            ProductName = t.SourceType == "PRODUCT" 
+                ? products.FirstOrDefault(p => p.ProductID == t.ProductID)?.Name ?? "N/A"
+                : materials.FirstOrDefault(m => m.ProductID == t.ProductID)?.Name ?? "N/A"
+        });
+
+        return result.ToList();
+    }
+
     public async Task<IEnumerable<InvoiceDetail>> GetInvoiceDetails(string invoiceID)
     {
         await EnsureConnectionAsync();

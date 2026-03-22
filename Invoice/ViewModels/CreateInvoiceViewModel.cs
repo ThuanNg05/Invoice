@@ -295,6 +295,7 @@ public partial class CreateInvoiceViewModel : ViewModelBase, IRecipient<Products
                 Amount = item.Amount,
                 ActionType = "Xuất kho",
                 CreatedDate = DateTime.Now,
+                SourceType = "PRODUCT",
                 Note = $"Xuất hoá đơn {SelectedCustomer.Name}"
             }).ToList();
 

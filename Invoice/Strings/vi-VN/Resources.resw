@@ -249,4 +249,10 @@
   <data name="SUCCESS_DELETE" xml:space="preserve">
     <value>Xoá thành công</value>
   </data>
+  <data name="SUCCESS_SAVE" xml:space="preserve">
+    <value>Lưu thành công</value>
+  </data>
+  <data name="Shell_HistoryTransaction.Content" xml:space="preserve">
+    <value>Lịch sử kho</value>
+  </data>
 </root>

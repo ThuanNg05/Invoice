@@ -4,7 +4,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"        
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:behaviors="using:Invoice.Behaviors"
     mc:Ignorable="d">
 
     <Page.Resources>
@@ -43,14 +44,14 @@
                             </TextBlock>
                             <TextBox x:Name="txtName" Width="300" HorizontalAlignment="Left" Margin="0,0,0,5"/>
                             <TextBlock Text="Cỡ ván"/>
-                            <TextBox x:Name="txtSizeID" x:Uid="Products_Frame_Placeholder" Width="300" HorizontalAlignment="Left" />
+                            <TextBox x:Name="txtSizeID" PlaceholderText="VD: 50x70" Width="300" HorizontalAlignment="Left" />
                         </StackPanel>
                         <StackPanel>
                             <TextBlock>
                                 <Run x:Uid="Required_Field" Foreground="Red"/>
                                 <Run Text="Tiền công"/>
                             </TextBlock>
-                            <TextBox x:Name="txtWage" Width="140" HorizontalAlignment="Left" BeforeTextChanging="inputDecimal" TextChanged="computeBasePrice"/>
+                            <TextBox x:Name="txtWage" Width="140" HorizontalAlignment="Left" behaviors:TextBoxInputBehavior.InputType="Decimal" TextChanged="computeBasePrice"/>
                         </StackPanel>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,0,0,10">
@@ -126,22 +127,22 @@
                         </Grid.RowDefinitions>
 
                         <!-- Column 1 -->
-                        <TextBox Margin="0,0,10,4" BeforeTextChanging="inputDecimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="0" Grid.Column="0" x:Name="txtKieng" Header="Kiếng " />
-                        <TextBox Margin="0,0,10,4" BeforeTextChanging="inputDecimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="1" Grid.Column="0" x:Name="txtNhL" Header="Nhựa lớn "/>
-                        <TextBox Margin="0,0,10,4" BeforeTextChanging="inputDecimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="2" Grid.Column="0" x:Name="txtNhN" Header="Nhựa nhỏ "/>
-                        <TextBox Margin="0,0,10,4" BeforeTextChanging="inputDecimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="3" Grid.Column="0" x:Name="txtG_l" Header="Gỗ lớn "  />
-                        <TextBox Margin="0,0,10,4" BeforeTextChanging="inputDecimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="4" Grid.Column="0" x:Name="txtG_n" Header="Gỗ nhỏ "  />
-                        <TextBox Margin="0,0,10,4" BeforeTextChanging="inputDecimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="5" Grid.Column="0" x:Name="txtDl" Header="Đen lớn "  />
-                        <TextBox Margin="0,0,10,0" BeforeTextChanging="inputDecimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="6" Grid.Column="0" x:Name="txtHau" Header="Hậu "      />
+                        <TextBox Margin="0,0,10,4" behaviors:TextBoxInputBehavior.InputType="Decimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="0" Grid.Column="0" x:Name="txtKieng" Header="Kiếng " />
+                        <TextBox Margin="0,0,10,4" behaviors:TextBoxInputBehavior.InputType="Decimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="1" Grid.Column="0" x:Name="txtNhL" Header="Nhựa lớn "/>
+                        <TextBox Margin="0,0,10,4" behaviors:TextBoxInputBehavior.InputType="Decimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="2" Grid.Column="0" x:Name="txtNhN" Header="Nhựa nhỏ "/>
+                        <TextBox Margin="0,0,10,4" behaviors:TextBoxInputBehavior.InputType="Decimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="3" Grid.Column="0" x:Name="txtG_l" Header="Gỗ lớn "  />
+                        <TextBox Margin="0,0,10,4" behaviors:TextBoxInputBehavior.InputType="Decimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="4" Grid.Column="0" x:Name="txtG_n" Header="Gỗ nhỏ "  />
+                        <TextBox Margin="0,0,10,4" behaviors:TextBoxInputBehavior.InputType="Decimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="5" Grid.Column="0" x:Name="txtDl" Header="Đen lớn "  />
+                        <TextBox Margin="0,0,10,0" behaviors:TextBoxInputBehavior.InputType="Decimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="6" Grid.Column="0" x:Name="txtHau" Header="Hậu "      />
 
                         <!-- Column 2 -->
-                        <TextBox Margin="0,0,10,4" BeforeTextChanging="inputDecimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="0" Grid.Column="1" x:Name="txtLua" Header="Lụa "/>
-                        <TextBox Margin="0,0,10,4" BeforeTextChanging="inputDecimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="1" Grid.Column="1" x:Name="txtKt" Header="Kim tuyến "/>
-                        <TextBox Margin="0,0,10,4" BeforeTextChanging="inputDecimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="2" Grid.Column="1" x:Name="txtOc" Header="Ốc "/>
-                        <TextBox Margin="0,0,10,4" BeforeTextChanging="inputDecimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="3" Grid.Column="1" x:Name="txtNhom" Header="Nhôm "/>
-                        <TextBox Margin="0,0,10,4" BeforeTextChanging="inputDecimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="4" Grid.Column="1" x:Name="txt7f" Header="Gỗ 7F "/>
-                        <TextBox Margin="0,0,10,4" BeforeTextChanging="inputDecimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="5" Grid.Column="1" x:Name="txt2D" Header="2D "/>
-                        <TextBox Margin="0,0,10,0" BeforeTextChanging="inputDecimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="6" Grid.Column="1" x:Name="txtDecal" Header="Decal "/>
+                        <TextBox Margin="0,0,10,4" behaviors:TextBoxInputBehavior.InputType="Decimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="0" Grid.Column="1" x:Name="txtLua" Header="Lụa "/>
+                        <TextBox Margin="0,0,10,4" behaviors:TextBoxInputBehavior.InputType="Decimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="1" Grid.Column="1" x:Name="txtKt" Header="Kim tuyến "/>
+                        <TextBox Margin="0,0,10,4" behaviors:TextBoxInputBehavior.InputType="Decimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="2" Grid.Column="1" x:Name="txtOc" Header="Ốc "/>
+                        <TextBox Margin="0,0,10,4" behaviors:TextBoxInputBehavior.InputType="Decimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="3" Grid.Column="1" x:Name="txtNhom" Header="Nhôm "/>
+                        <TextBox Margin="0,0,10,4" behaviors:TextBoxInputBehavior.InputType="Decimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="4" Grid.Column="1" x:Name="txt7f" Header="Gỗ 7F "/>
+                        <TextBox Margin="0,0,10,4" behaviors:TextBoxInputBehavior.InputType="Decimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="5" Grid.Column="1" x:Name="txt2D" Header="2D "/>
+                        <TextBox Margin="0,0,10,0" behaviors:TextBoxInputBehavior.InputType="Decimal" TextChanged="computeBasePrice" TextAlignment="Right" Grid.Row="6" Grid.Column="1" x:Name="txtDecal" Header="Decal "/>
 
                         <!-- Column 3-->
                         <TextBox Margin="0,0,0,4" TextAlignment="Right" Grid.Row="0" Grid.Column="2" x:Name="txtMDFodd" Header="MDF Lẻ "/>

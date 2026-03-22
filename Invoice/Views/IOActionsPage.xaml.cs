@@ -19,8 +19,7 @@ public sealed partial class IOActionsPage : Page
     {
         InitializeComponent();
         ViewModel = App.GetService<IOActionsViewModel>();
-        _dialogService = App.GetService<IDialogService>();
-        //ClearInput();
+        _dialogService = App.GetService<IDialogService>();        
         btnAdd.IsEnabled = false;
         btnEdit.IsEnabled = false;
         btnDelete.IsEnabled = false;
@@ -145,8 +144,7 @@ public sealed partial class IOActionsPage : Page
         try
         {
             btnSave.IsEnabled = false;
-            await ViewModel.SaveData();
-            await _dialogService.ShowSuccessAsync("SUCCESS_UPDATE".GetLocalized());
+            await ViewModel.SaveData();            
             ClearInput();
         }
         catch (Exception ex)
@@ -195,10 +193,5 @@ public sealed partial class IOActionsPage : Page
     private void txtSearch_TextChanged(object sender, TextChangedEventArgs e)
     {
         ViewModel.Search(txtSearch.Text);
-    }
-
-    private void txtAmount_BeforeTextChanging(TextBox sender, TextBoxBeforeTextChangingEventArgs args)
-    {
-        args.Cancel = args.NewText.Any(c => !char.IsDigit(c));
     }
 }

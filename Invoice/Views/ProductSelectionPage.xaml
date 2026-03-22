@@ -4,7 +4,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"        
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:behaviors="using:Invoice.Behaviors"
     Background="#272727"
     mc:Ignorable="d">
 
@@ -42,7 +43,7 @@
                         <Run Text="Số lượng :"/>
                     </TextBlock>
                     <TextBox x:Name="txtAmount" Width="140" TextAlignment="Right"
-                             BeforeTextChanging="Amount_BeforeTextChanging"
+                             behaviors:TextBoxInputBehavior.InputType="Numeric"
                              TextChanged="Input_TextChanged"
                              HorizontalAlignment="Left"/>
                     <TextBlock>                                

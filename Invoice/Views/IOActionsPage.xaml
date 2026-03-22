@@ -5,7 +5,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
-    xmlns:primitives="using:CommunityToolkit.WinUI.UI.Controls.Primitives"    
+    xmlns:primitives="using:CommunityToolkit.WinUI.UI.Controls.Primitives"
+    xmlns:behaviors="using:Invoice.Behaviors"
     mc:Ignorable="d">
 
     <Page.Resources>
@@ -62,7 +63,7 @@
                 <TextBox Header="Số lượng" 
                          x:Name="txtAmount"
                          IsEnabled="{x:Bind ViewModel.IsBusy, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}"
-                         BeforeTextChanging="txtAmount_BeforeTextChanging"
+                         behaviors:TextBoxInputBehavior.InputType="Numeric"
                          Grid.Row="0" Grid.Column="1"/>
 
                 <ComboBox Header="Hình thức" x:Name="cmbType" HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="1">
@@ -72,7 +73,7 @@
 
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0" Spacing="10" Grid.ColumnSpan="3" Grid.Row="2">
-                    <AppBarButton x:Name="btnAdd" x:Uid="Btn_Save" Background="#07af00"
+                    <AppBarButton x:Name="btnAdd" Label="Thêm" Background="#07af00"
                                   IsEnabled="{x:Bind ViewModel.IsBusy, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}"
                                   CornerRadius="10" Icon="Add" Foreground="{ThemeResource SettingsForegroundBrush}"
                                   Click="BtnAddProduct_Click" ToolTipService.ToolTip="Press F1">

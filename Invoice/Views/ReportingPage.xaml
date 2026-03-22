@@ -64,7 +64,7 @@
 
                     <TextBlock Text="Biểu đồ thống kê theo tháng" Style="{StaticResource SubtitleTextBlockStyle}" FontWeight="SemiBold"/>
                     <Grid Height="300" Background="{ThemeResource LayerFillColorDefaultBrush}" CornerRadius="8" Padding="10">
-                        <lvc:CartesianChart Series="{x:Bind ViewModel.Series, Mode=OneWay}" XAxes="{x:Bind ViewModel.XAxes, Mode=OneWay}" TooltipPosition="Top"/>
+                        <lvc:CartesianChart Series="{x:Bind ViewModel.Series, Mode=OneWay}" XAxes="{x:Bind ViewModel.XAxes, Mode=OneWay}" YAxes="{x:Bind ViewModel.YAxes, Mode=OneWay}" TooltipPosition="Top"/>
                     </Grid>
 
                     <TextBlock Text="Top 10 Sản Phẩm" Style="{StaticResource SubtitleTextBlockStyle}" FontWeight="SemiBold"/>

@@ -4,6 +4,7 @@ using Invoice.Contracts.ViewModels;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
 using Invoice.Contracts.Services;
+using Invoice.Helpers;
 
 namespace Invoice.ViewModels;
 
@@ -52,6 +53,7 @@ public partial class PlanksViewModel : ViewModelBase, INavigationAware
         {
             await _dataService.AddFrame(frame);
             Frames.Add(frame);
+            await DialogService.ShowSuccessAsync("SUCCESS_ADD".GetLocalized());
         }, "Lỗi khi thêm ván");
     }
 
@@ -61,6 +63,7 @@ public partial class PlanksViewModel : ViewModelBase, INavigationAware
         {
             await _dataService.DeleteFrame(frame.FrameID);
             Frames.Remove(frame);
+            await DialogService.ShowSuccessAsync("SUCCESS_DELETE".GetLocalized());
         }, "Lỗi khi xóa ván");
     }
 
@@ -80,6 +83,7 @@ public partial class PlanksViewModel : ViewModelBase, INavigationAware
                     Frames.Insert(index, frame);
                 }
             }
+            await DialogService.ShowSuccessAsync("SUCCESS_UPDATE".GetLocalized());
         }, "Lỗi khi cập nhật ván");
     }
 }

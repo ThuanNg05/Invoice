@@ -93,7 +93,7 @@ public sealed partial class ProductSelectionPage : Page
     private void ClearSelection()
     {
         StringHelper.ClearInputs(this);
-        ProductGrid.SelectedIndex = -1;
+        ProductGrid.SelectedItem = null;
         txtTotal.Text = "0";
         txtName.IsReadOnly = false;
         _currentInventory = 0;
@@ -161,11 +161,6 @@ public sealed partial class ProductSelectionPage : Page
         {
             txtTotal.Text = "0";
         }
-    }
-
-    private void Amount_BeforeTextChanging(TextBox sender, TextBoxBeforeTextChangingEventArgs args)
-    {
-        args.Cancel = args.NewText.Any(c => !char.IsDigit(c));
     }
 
     private void Input_TextChanged(object sender, TextChangedEventArgs e)

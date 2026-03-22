@@ -4,8 +4,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"    
-    xmlns:converters="using:Invoice.Helpers"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:behaviors="using:Invoice.Behaviors"
+    xmlns:helpers="using:Invoice.Helpers"
     mc:Ignorable="d">
 
     <Page.Resources>
@@ -25,8 +26,9 @@
                 <Setter Property="FontWeight" Value="Bold"/>
                 <Setter Property="HorizontalContentAlignment" Value="Center"/>
             </Style>
-            <converters:IntToStringConverter x:Key="IntToStringConverter"/>
-            <converters:DoubleToStringConverter x:Key="FormatConverter"/>
+            <!-- Use converters from App.xaml or redefine here with correct namespace -->
+            <helpers:IntToStringConverter x:Key="IntToStringConverter"/>
+            <helpers:DoubleToStringConverter x:Key="FormatConverter"/>
         </ResourceDictionary>
     </Page.Resources>
     <Grid x:Name="ContentArea">
@@ -146,7 +148,7 @@
                             <DataTemplate>
                                 <TextBox Text="{Binding SellPrice, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource IntToStringConverter}}"
                                          InputScope="Number"
-                                         BeforeTextChanging="AmountTextBox_BeforeTextChanging"/>
+                                         behaviors:TextBoxInputBehavior.InputType="Numeric"/>
                             </DataTemplate>
                         </controls:DataGridTemplateColumn.CellEditingTemplate>
                     </controls:DataGridTemplateColumn>
@@ -166,7 +168,7 @@
                             <DataTemplate>
                                 <TextBox Text="{Binding Amount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource IntToStringConverter}}"
                                          InputScope="Number" 
-                                         BeforeTextChanging="AmountTextBox_BeforeTextChanging"
+                                         behaviors:TextBoxInputBehavior.InputType="Numeric"
                                          LostFocus="AmountTextBox_LostFocus"/>
                             </DataTemplate>
                         </controls:DataGridTemplateColumn.CellEditingTemplate>

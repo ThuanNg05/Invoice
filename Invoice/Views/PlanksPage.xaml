@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:behaviors="using:Invoice.Behaviors"
     mc:Ignorable="d">
 
 	<Page.Resources>
@@ -50,23 +51,23 @@
 				</StackPanel>
 
 				<StackPanel Orientation="Horizontal" Spacing="10">
-					<TextBox x:Name="txtAmount1" TextAlignment="Right" BeforeTextChanging="Amount_BeforeTextChanging"/>
-					<TextBox x:Name="txtAmount2" TextAlignment="Right" BeforeTextChanging="Amount_BeforeTextChanging"/>
-					<TextBox x:Name="txtAmount3" TextAlignment="Right" BeforeTextChanging="Amount_BeforeTextChanging"/>
-					<TextBox x:Name="txtAmount4" TextAlignment="Right" BeforeTextChanging="Amount_BeforeTextChanging"/>
-					<TextBox x:Name="txtAmount5" TextAlignment="Right" BeforeTextChanging="Amount_BeforeTextChanging"/>
-					<TextBox x:Name="txtAmount6" TextAlignment="Right" BeforeTextChanging="Amount_BeforeTextChanging"/>
-					<TextBox x:Name="txtAmount7" TextAlignment="Right" BeforeTextChanging="Amount_BeforeTextChanging"/>
-					<TextBox x:Name="txtAmount8" TextAlignment="Right" BeforeTextChanging="Amount_BeforeTextChanging"/>
-					<TextBox x:Name="txtAmount9" TextAlignment="Right" BeforeTextChanging="Amount_BeforeTextChanging"/>
-					<TextBox x:Name="txtAmount10" TextAlignment="Right" BeforeTextChanging="Amount_BeforeTextChanging"/>
+					<TextBox x:Name="txtAmount1" TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Numeric" />
+					<TextBox x:Name="txtAmount2" TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Numeric" />
+					<TextBox x:Name="txtAmount3" TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Numeric" />
+					<TextBox x:Name="txtAmount4" TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Numeric" />
+					<TextBox x:Name="txtAmount5" TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Numeric" />
+					<TextBox x:Name="txtAmount6" TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Numeric" />
+					<TextBox x:Name="txtAmount7" TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Numeric" />
+					<TextBox x:Name="txtAmount8" TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Numeric" />
+					<TextBox x:Name="txtAmount9" TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Numeric" />
+					<TextBox x:Name="txtAmount10" TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Numeric" />
 				</StackPanel>
 			</StackPanel>
 
 
 			<StackPanel Orientation="Vertical">
 				<StackPanel Orientation="Horizontal" Spacing="10">
-					<TextBox HorizontalAlignment="Left" Header="Mã rập :" x:Name="frameNO" Width="100" BeforeTextChanging="Amount_BeforeTextChanging"/>
+					<TextBox HorizontalAlignment="Left" Header="Mã rập :" x:Name="frameNO" Width="100" behaviors:TextBoxInputBehavior.InputType="Numeric" />
 					<TextBox x:Name="txtDescribe" Header="Mô tả"
                             TextWrapping="Wrap" AcceptsReturn="True" IsSpellCheckEnabled="False" Width="300" />
 				</StackPanel>

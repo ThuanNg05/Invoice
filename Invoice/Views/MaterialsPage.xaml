@@ -4,9 +4,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"        
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:behaviors="using:Invoice.Behaviors"
     mc:Ignorable="d">
-
     <Page.Resources>
         <ResourceDictionary>
             <ResourceDictionary.ThemeDictionaries>
@@ -36,13 +36,6 @@
             <StackPanel Grid.Column="0" Margin="0,0,10,0">
                 <StackPanel Orientation="Vertical" Margin="0,0,0,10">
                     <StackPanel Orientation="Vertical" Spacing="10">
-                        <!--<StackPanel>
-                            <TextBlock>
-                                <Run Text="(*) " Foreground="Red"/>
-                                <Run Text="Mã SP:"/>
-                            </TextBlock>
-                            <TextBox x:Name="txtProductID" Width="140" HorizontalAlignment="Left"/>
-                        </StackPanel>-->
                         <StackPanel>
                             <TextBlock>
                                 <Run Text="(*) " Foreground="Red"/>
@@ -56,7 +49,7 @@
                                 <Run Text="Giá :"/>
                             </TextBlock>
                             <TextBox x:Name="txtBasePrice" Width="140" TextAlignment="Right"
-                                     BeforeTextChanging="Number_BeforeTextChanging"/>
+                                     behaviors:TextBoxInputBehavior.InputType="Numeric" />
                         </StackPanel>
                         <StackPanel HorizontalAlignment="Left">
                             <TextBlock>                                
@@ -69,7 +62,7 @@
                                 <Run Text="Tồn kho tối thiểu :"/>
                             </TextBlock>
                             <TextBox x:Name="txtMinAmount"
-                                     BeforeTextChanging="Number_BeforeTextChanging"
+                                     behaviors:TextBoxInputBehavior.InputType="Numeric"
                                      Width="140" TextAlignment="Right"/>
                         </StackPanel>
                     </StackPanel>

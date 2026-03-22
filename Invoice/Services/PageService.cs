@@ -28,6 +28,7 @@ public class PageService : IPageService
         Configure<ReportingViewModel, ReportingPage>();
         Configure<IOPlanksViewModel, IOPlanksPage>();
         Configure<PlanksViewModel, PlanksPage>();
+        Configure<HistoryTransactionViewModel, HistoryTransactionPage>();
     }
 
     public Type GetPageType(string key)

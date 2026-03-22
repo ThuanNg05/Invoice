@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:behaviors="using:Invoice.Behaviors"
     mc:Ignorable="d">
 
 	<Page.Resources>
@@ -68,7 +69,7 @@
 				<StackPanel Orientation="Vertical" Spacing="10">
 					<StackPanel Orientation="Horizontal" Spacing="10">
                         <TextBox HorizontalAlignment="Left" Header="Mã rập" x:Name="frameNO" Width="100" IsReadOnly="true"/>
-                        <TextBox HorizontalAlignment="left" Header="Số lượng tấm lớn" x:Name="amount" Width="190" TextAlignment="Center" BeforeTextChanging="Amount_BeforeTextChanging"/>
+                        <TextBox HorizontalAlignment="left" Header="Số lượng tấm lớn" x:Name="amount" Width="190" TextAlignment="Center" behaviors:TextBoxInputBehavior.InputType="Numeric"/>
 						<ComboBox Header="Loại ván" x:Name="cbbPlankType" Width="100" HorizontalAlignment="Left">
 							<ComboBoxItem Content="HP"/>
 							<ComboBoxItem Content="MDF"/>

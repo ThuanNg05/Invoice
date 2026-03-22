@@ -1,4 +1,4 @@
-using Invoice.Activation;
+﻿using Invoice.Activation;
 using Invoice.Contracts.Services;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Services;
@@ -7,12 +7,15 @@ using Invoice.Models;
 using Invoice.Services;
 using Invoice.ViewModels;
 using Invoice.Views;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+
 using Supabase;
+
 using Windows.Globalization;
 
 namespace Invoice;
@@ -113,6 +116,8 @@ public partial class App : Application
             services.AddSingleton<EmailService>();
 
             // Views and ViewModels
+            services.AddTransient<HistoryTransactionViewModel>();
+            services.AddTransient<HistoryTransactionPage>();
             services.AddTransient<PlanksViewModel>();
             services.AddTransient<PlanksPage>();
             services.AddTransient<IOPlanksViewModel>();

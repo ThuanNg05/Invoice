@@ -79,8 +79,7 @@ public sealed partial class IOPlanksPage : Page
         StringHelper.ClearInputs(this);
         amount.IsEnabled = false;
         btnSave.IsEnabled = false;
-        cbbPlankType.SelectedIndex = -1;
-        PlankGrid.SelectedIndex = -1;
+        cbbPlankType.SelectedIndex = -1;        
         PlankGrid.SelectedItem = null;
     }
 

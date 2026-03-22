@@ -1,12 +1,13 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
+using Invoice.Contracts.Services;
 using Invoice.Contracts.ViewModels;
 using Invoice.Core.Contracts;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
-using Invoice.Contracts.Services;
 using Invoice.Helpers;
+using Invoice.Services;
 
 namespace Invoice.ViewModels;
 
@@ -105,6 +106,7 @@ public partial class ProductsViewModel : ViewModelBase, INavigationAware
         await ExecuteAsync(async () =>
         {
             await _dataService.AddProduct(p);
+            await DialogService.ShowSuccessAsync("SUCCESS_ADD".GetLocalized());
         }, "LOAD_FAILED".GetLocalized());
     }
 
@@ -114,6 +116,7 @@ public partial class ProductsViewModel : ViewModelBase, INavigationAware
         {
             await _dataService.UpdateProduct(p);
             WeakReferenceMessenger.Default.Send(new ProductsChangedMessage(DataAction.Update, p));
+            await DialogService.ShowSuccessAsync("SUCCESS_UPDATE".GetLocalized());
         }, "FAILED_UPDATE".GetLocalized());
     }
 
@@ -123,6 +126,7 @@ public partial class ProductsViewModel : ViewModelBase, INavigationAware
         {
             await _dataService.DeleteProduct(id);
             WeakReferenceMessenger.Default.Send(new ProductsChangedMessage(DataAction.Delete, id));
+            await DialogService.ShowSuccessAsync("SUCCESS_DELETE".GetLocalized());
         }, "FAILED_DELETE".GetLocalized());
     }
 
@@ -140,24 +144,7 @@ public partial class ProductsViewModel : ViewModelBase, INavigationAware
                     break;
             }
         });
-    }
-
-    //private void AddToSource(Products? product)
-    //{
-    //    if (product == null) return;
-
-    //    var summary = new ProductSummary
-    //    {
-    //        ProductID = product.ProductID,
-    //        Name = product.Name,
-    //        BasePrice = product.BasePrice,
-    //        PriceOdd = product.PriceOdd,
-    //        PriceEven = product.PriceEven,
-    //        Inventory = product.Inventory
-    //    };
-
-    //    Source.Insert(0, summary);
-    //}
+    }    
 
     private void UpdateInSource(Products? product)
     {

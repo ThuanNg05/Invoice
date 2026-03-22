@@ -3,6 +3,7 @@ using Invoice.Contracts.ViewModels;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
 using Invoice.Contracts.Services;
+using Invoice.Helpers;
 
 namespace Invoice.ViewModels;
 
@@ -77,6 +78,13 @@ public partial class IOActionsViewModel : ViewModelBase, INavigationAware
                     trans.InvoiceID = null;
                 }
 
+                // Tự động gán SourceType dựa trên nguồn của item gốc
+                var originalItem = _allItems.FirstOrDefault(x => x.ProductID == trans.ProductID);
+                if (originalItem != null)
+                {
+                    trans.SourceType = originalItem.Source == "PRODUCTS" ? "PRODUCT" : "MATERIAL";
+                }
+
                 await _dataService.AddWarehouseTransaction(trans);
 
                 var localItem = _allItems.FirstOrDefault(x => x.ProductID == trans.ProductID);
@@ -86,7 +94,8 @@ public partial class IOActionsViewModel : ViewModelBase, INavigationAware
                 }
             }
 
-            TransactionList.Clear();            
+            TransactionList.Clear();
+            await DialogService.ShowSuccessAsync("SUCCESS_SAVE".GetLocalized());
         }, "Lỗi lưu kho");
     }
 

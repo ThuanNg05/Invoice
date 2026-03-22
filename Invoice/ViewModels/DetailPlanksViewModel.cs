@@ -1,9 +1,10 @@
 using System.Collections.ObjectModel;
+using Invoice.Contracts.Services;
 using Invoice.Contracts.ViewModels;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
-using Invoice.Contracts.Services;
 using Invoice.Helpers;
+using Invoice.Services;
 
 namespace Invoice.ViewModels;
 
@@ -52,6 +53,7 @@ public partial class DetailPlanksViewModel : ViewModelBase, INavigationAware
         {
             await _dataService.AddPlank(planks);
             Planks.Add(planks);
+            await DialogService.ShowSuccessAsync("SUCCESS_ADD".GetLocalized());
         }, "Lỗi thêm cỡ ván");
     }
 
@@ -61,6 +63,7 @@ public partial class DetailPlanksViewModel : ViewModelBase, INavigationAware
         {
             await _dataService.DeletePlank(planks.sizeID);
             Planks.Remove(planks);
+            await DialogService.ShowSuccessAsync("SUCCESS_DELETE".GetLocalized());
         }, "Lỗi xoá ván");
     }
 
@@ -69,6 +72,7 @@ public partial class DetailPlanksViewModel : ViewModelBase, INavigationAware
         await ExecuteAsync(async () =>
         {
             await _dataService.UpdatePlank(planks);
+            await DialogService.ShowSuccessAsync("SUCCESS_UPDATE".GetLocalized());
         }, "Lỗi cập nhật ván");
     }
 }
