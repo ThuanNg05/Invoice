@@ -1,14 +1,15 @@
-﻿using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Invoice.Core.Contracts.Services;
+using Invoice.Contracts.Services;
 using Invoice.Core.Models;
-using Invoice.Core.Services;
 using Invoice.ViewModels;
+using Invoice.Helpers;
 
 namespace Invoice.Views;
 
 public sealed partial class MaterialsPage : Page
 {
+    private readonly IDialogService _dialogService;
     public MaterialsViewModel ViewModel
     {
         get;
@@ -17,111 +18,118 @@ public sealed partial class MaterialsPage : Page
     public MaterialsPage()
     {
         ViewModel = App.GetService<MaterialsViewModel>();
+        _dialogService = App.GetService<IDialogService>();
         InitializeComponent();
-        ClearInputs();
+        btnAdd.IsEnabled = true;
+        btnDelete.IsEnabled = false;
+        btnUpdate.IsEnabled = false;
+        txtTotal.IsReadOnly = true;
     }
 
     private void ClearInputs()
     {
-        txtProductID.Text = string.Empty;
-        txtName.Text = string.Empty;
-        txtBasePrice.Text = string.Empty;
-        txtMinAmount.Text = string.Empty;
-        txtTotal.Text = string.Empty;
-
+        StringHelper.ClearInputs(this);
         txtName.Focus(FocusState.Programmatic);
         btnAdd.IsEnabled = true;
         btnDelete.IsEnabled = false;
         btnUpdate.IsEnabled = false;
-    }
-
-    private async Task RefreshData()
-    {
-        txtSearch_TextChanged(txtSearch, null);
-        txtProductID.IsEnabled = true;
         txtTotal.IsReadOnly = true;
-    }
+        MaterialGrid.SelectedItem = null;
+    }  
 
     private async void BtnNew_Click(object sender, RoutedEventArgs e)
     {
-        if (string.IsNullOrWhiteSpace(txtProductID.Text))
-        {
-            await App.ShowMessageAsync("Lỗi xác thực", "Mã SP không được rỗng.");
-            txtProductID.Focus(FocusState.Programmatic);
-            return;
-        }
         if (string.IsNullOrWhiteSpace(txtName.Text))
         {
-            await App.ShowMessageAsync("Lỗi xác thực", "Tên SP không được rỗng.");
+            await _dialogService.ShowErrorAsync("Tên SP không được rỗng.");
             txtName.Focus(FocusState.Programmatic);
             return;
         }
         if (string.IsNullOrWhiteSpace(txtBasePrice.Text))
         {
-            await App.ShowMessageAsync("Lỗi xác thực", "Đơn giá không được rỗng.");
+            await _dialogService.ShowErrorAsync("Đơn giá không được rỗng.");
             txtBasePrice.Focus(FocusState.Programmatic);
             return;
         }
 
-        var material = new Materials
+        try
         {
-            ProductID = txtProductID.Text.Trim(),
-            Name = txtName.Text.Trim(),
-            BasePrice = decimal.TryParse(txtBasePrice.Text.Trim(), out decimal price) ? price : 0,
-            Inventory = 0,
-            MinAmount = int.TryParse(txtMinAmount.Text.Trim(), out int minAmt) ? minAmt : 0
-        };
+            var material = new Materials
+            {
+                Name = txtName.Text.Trim(),
+                BasePrice = decimal.TryParse(txtBasePrice.Text.Trim(), out decimal price) ? price : 0,
+                Inventory = 0,
+                MinAmount = int.TryParse(txtMinAmount.Text.Trim(), out int minAmt) ? minAmt : 0
+            };
 
-        await ViewModel.AddMaterialAsync(material);
-        ClearInputs();
+            await ViewModel.AddMaterialAsync(material);            
+            ClearInputs();
+        }
+        catch (Exception ex)
+        {
+            await _dialogService.ShowErrorAsync("FAILED_ADD".GetLocalized(), ex);
+        }
     }
 
     private async void BtnUpdate_Click(object sender, RoutedEventArgs e)
     {
-        if (MaterialGrid.SelectedItem is not Materials selected) return;
-        txtProductID.IsEnabled = false;
+        if (MaterialGrid.SelectedItem is not Materials selected) return;        
         if (string.IsNullOrWhiteSpace(txtName.Text))
         {
-            await App.ShowMessageAsync("Lỗi xác thực", "Tên SP không được rỗng.");
+            await _dialogService.ShowErrorAsync("Tên SP không được rỗng.");
             txtName.Focus(FocusState.Programmatic);
             return;
         }
         if (string.IsNullOrWhiteSpace(txtBasePrice.Text))
         {
-            await App.ShowMessageAsync("Lỗi xác thực", "Đơn giá không được rỗng.");
+            await _dialogService.ShowErrorAsync("Đơn giá không được rỗng.");
             txtBasePrice.Focus(FocusState.Programmatic);
             return;
         }
-
-        //decimal newPrice = decimal.TryParse(txtBasePrice.Text, out decimal price) ? price : 0;
-        var tmpMaterial = new Materials
+        
+        try
         {
-            ProductID = selected.ProductID,
-            Name = txtName.Text.Trim(),
-            BasePrice = decimal.TryParse(txtBasePrice.Text, out decimal price) ? price : 0,
-            MinAmount = int.TryParse(txtMinAmount.Text, out int minAmt) ? minAmt : 0,
-        };
-        await ViewModel.UpdateMaterialAsync(tmpMaterial);
-        ClearInputs();
+            var tmpMaterial = new Materials
+            {
+                ProductID = selected.ProductID,
+                Name = txtName.Text.Trim(),
+                BasePrice = decimal.TryParse(txtBasePrice.Text, out decimal price) ? price : 0,
+                MinAmount = int.TryParse(txtMinAmount.Text, out int minAmt) ? minAmt : 0,
+            };
+            await ViewModel.UpdateMaterialAsync(tmpMaterial);            
+            ClearInputs();
+        }
+        catch (Exception ex)
+        {
+            await _dialogService.ShowErrorAsync("FAILED_UPDATE".GetLocalized(), ex);
+        }
     }
 
     private async void BtnDelete_Click(object sender, RoutedEventArgs e)
     {
         if (MaterialGrid.SelectedItem is not Materials selected) return;
-        await ViewModel.DeleteMaterialAsync(selected);
-        ClearInputs();
+        if (await _dialogService.ShowConfirmAsync("Xác nhận xóa", $"Bạn có chắc muốn xóa vật tư {selected.Name}?", "Xóa"))
+        {
+            try
+            {
+                await ViewModel.DeleteMaterialAsync(selected);                
+                ClearInputs();
+            }
+            catch (Exception ex)
+            {
+                await _dialogService.ShowErrorAsync("FAILED_DELETE".GetLocalized(), ex);
+            }
+        }
     }
 
     private void BtnReset_Click(object sender, RoutedEventArgs e)
     {
-        ClearInputs();
-        RefreshData();
+        ClearInputs();        
     }
 
     private void MaterialGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (MaterialGrid.SelectedItem is not Materials selected) return;
-        txtProductID.Text = selected.ProductID;
+        if (MaterialGrid.SelectedItem is not Materials selected) return;        
         txtName.Text = selected.Name;
         txtBasePrice.Text = selected.BasePrice.ToString();
         txtMinAmount.Text = selected.MinAmount.ToString();
@@ -134,29 +142,15 @@ public sealed partial class MaterialsPage : Page
 
     private void txtSearch_TextChanged(object sender, TextChangedEventArgs e)
     {
-        var service = App.GetService<IDataService>() as SupabaseDataService;
-
-        if (service == null || service.CachedMaterials == null) return;
-
-        var query = txtSearch.Text.Trim().ToLower();
-
-        var filteredList = string.IsNullOrWhiteSpace(query)
-            ? service.CachedMaterials
-            : service.CachedMaterials.Where(c =>
-                (c.ProductID != null && c.ProductID.ToLower().Contains(query)) ||
-                (c.Name != null && c.Name.Contains(query))
-              );
-
-        ViewModel.Materials.Clear();
-
-        foreach (var material in filteredList)
+        var searchText = txtSearch.Text;
+        if (string.IsNullOrWhiteSpace(searchText))
         {
-            ViewModel.Materials.Add(material);
+            MaterialGrid.ItemsSource = ViewModel.MaterialsCollection;
         }
-    }
-
-    private void Number_BeforeTextChanging(TextBox sender, TextBoxBeforeTextChangingEventArgs args)
-    {
-        args.Cancel = args.NewText.Any(c => !char.IsDigit(c));
+        else
+        {
+            MaterialGrid.ItemsSource = ViewModel.MaterialsCollection
+                .Where(c => c.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase));
+        }
     }
 }

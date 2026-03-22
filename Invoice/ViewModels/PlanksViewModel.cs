@@ -1,110 +1,75 @@
-﻿using System.Collections.ObjectModel;
-using System.Diagnostics;
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
-
 using Invoice.Contracts.ViewModels;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
+using Invoice.Contracts.Services;
+using Invoice.Helpers;
 
 namespace Invoice.ViewModels;
 
-public partial class PlanksViewModel : ObservableRecipient, INavigationAware
+public partial class PlanksViewModel : ViewModelBase, INavigationAware
 {
     private readonly IDataService _dataService;
 
-    [ObservableProperty]
-    private bool isLoading;
-
     public ObservableCollection<Frames> Frames { get; } = new ObservableCollection<Frames>();
 
-    public PlanksViewModel(IDataService dataService)
+    public PlanksViewModel(IDataService dataService, IDialogService dialogService) : base(dialogService)
     {
         _dataService = dataService;
     }
 
-    public async void OnNavigatedTo(object parameter)
+    public void OnNavigatedTo(object parameter)
     {
-        _ = LoadDataSafeAsync();
-    }
-
-    private async Task LoadDataSafeAsync()
-    {
-        try { await LoadData(); }
-        catch (Exception ex)
-        {
-            Debug.WriteLine(ex);
-            await App.ShowMessageAsync("Lỗi", "Không thể tải dữ liệu.");
-        }
-    }
-
-    private async Task LoadData()
-    {
-        IsLoading = true;
-        Frames.Clear();
-        var data = await _dataService.GetFrames(forceRefresh: false);
-        foreach (var item in data)
-        {
-            Frames.Add(item);
-        }
-        IsLoading = false;
-
+        _ = LoadDataAsync();
     }
 
     public void OnNavigatedFrom()
     {
     }
 
+    private async Task LoadDataAsync()
+    {
+        await ExecuteAsync(async () =>
+        {
+            Frames.Clear();
+            var data = await _dataService.GetFrames(forceRefresh: false);
+            foreach (var item in data)
+            {
+                Frames.Add(item);
+            }
+        }, "Lỗi khi tải danh mục ván");
+    }
+
     public async Task AddFrameAsync(Frames frame)
     {
         if (Frames.Any(p => p.FrameNO.Equals(frame.FrameNO, StringComparison.OrdinalIgnoreCase)))
         {
-            Debug.WriteLine("Lỗi: Mã ván đã tồn tại!");
-            await App.ShowMessageAsync("Lỗi", "Mã ván đã tồn tại!");
+            await DialogService.ShowErrorAsync("Mã ván đã tồn tại!");
             return;
         }
-        try
+
+        await ExecuteAsync(async () =>
         {
             await _dataService.AddFrame(frame);
             Frames.Add(frame);
-            await App.ShowMessageAsync("Thông báo", "Đã thêm rập mới.");
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Lỗi khi thêm rập: {ex.Message}");
-            await App.ShowMessageAsync("Lỗi", "Không thể thêm rập mới.");
-            return;
-        }
-        finally
-        {
-            IsLoading = false;
-        }
+            await DialogService.ShowSuccessAsync("SUCCESS_ADD".GetLocalized());
+        }, "Lỗi khi thêm ván");
     }
 
     public async Task DeleteFrameAsync(Frames frame)
     {
-        IsLoading = true;
-        try
+        await ExecuteAsync(async () =>
         {
             await _dataService.DeleteFrame(frame.FrameID);
             Frames.Remove(frame);
-            await App.ShowMessageAsync("Thông báo", "Đã xóa rập.");
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Lỗi khi xóa rập: {ex.Message}");
-            await App.ShowMessageAsync("Lỗi", "Không thể xóa rập.");
-            return;
-        }
-        finally
-        {
-            IsLoading = false;
-        }
+            await DialogService.ShowSuccessAsync("SUCCESS_DELETE".GetLocalized());
+        }, "Lỗi khi xóa ván");
     }
 
     public async Task UpdateFrameAsync(Frames frame)
     {
-        IsLoading = true;
-        try
+        await ExecuteAsync(async () =>
         {
             await _dataService.UpdateFrame(frame);
 
@@ -118,17 +83,7 @@ public partial class PlanksViewModel : ObservableRecipient, INavigationAware
                     Frames.Insert(index, frame);
                 }
             }
-            await App.ShowMessageAsync("Thông báo", "Đã cập nhật rập.");
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Lỗi khi cập nhật rập: {ex.Message}");
-            await App.ShowMessageAsync("Lỗi", "Không thể cập nhật rập.");
-            return;
-        }
-        finally
-        {
-            IsLoading = false;
-        }
+            await DialogService.ShowSuccessAsync("SUCCESS_UPDATE".GetLocalized());
+        }, "Lỗi khi cập nhật ván");
     }
 }

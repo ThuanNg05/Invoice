@@ -6,7 +6,8 @@ namespace Invoice.Core.Models;
 [Table("listplanks")]
 public class DetailPlanks : BaseModel
 {
-    [PrimaryKey("size_id")]
+    [PrimaryKey("size_id", true)]
+    [Column("size_id")]
     public string sizeID { get; set; }
 
     [Column("inventory")]

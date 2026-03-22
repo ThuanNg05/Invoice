@@ -1,4 +1,4 @@
-﻿<Page
+<Page
     x:Class="Invoice.Views.DetailPricePage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -29,10 +29,6 @@
     <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
                   HorizontalScrollMode="Auto" VerticalScrollMode="Auto" ZoomMode="Disabled">
         <Grid x:Name="ContentArea">
-            <!--<Grid.ColumnDefinitions>
-                <ColumnDefinition Width="330"/>
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>-->
             <StackPanel Margin="0,0,30,0" Spacing="10">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -92,13 +88,13 @@
                     Text="{x:Bind ViewModel.CurrentDetailPrice.PrDecal, Mode=TwoWay}" />
                 </Grid>
                 <CommandBar Background="Transparent" DefaultLabelPosition="Right" HorizontalAlignment="Left" Margin="-5,0,0,0">
-                    <AppBarButton Background="#07af00" Foreground="{ThemeResource SettingsForegroundBrush}"
-                                  CornerRadius="10" Icon="Save" Label="Lưu" Click="BtnUpdate_Click"/>
+                    <AppBarButton x:Uid="Btn_Save" Background="#07af00" Foreground="{ThemeResource SettingsForegroundBrush}"
+                                  CornerRadius="10" Icon="Save" Click="BtnUpdate_Click"/>
                 </CommandBar>
             </StackPanel>
             <ProgressRing
-              IsActive="{x:Bind ViewModel.IsLoading, Mode=OneWay}"
-              Visibility="{x:Bind ViewModel.IsLoading, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+              IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
+              Visibility="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
               Width="60" Height="60"
               HorizontalAlignment="Center"
               VerticalAlignment="Center" />

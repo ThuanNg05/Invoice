@@ -1,15 +1,21 @@
-﻿using System.Collections.ObjectModel;
+using System;
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Invoice.Contracts.Services;
 using Invoice.Services;
 using LiveChartsCore;
 using LiveChartsCore.Kernel.Sketches;
 using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.Painting;
 using Microsoft.Extensions.Configuration;
+using Invoice.Helpers;
+using Microsoft.UI.Xaml;
+using SkiaSharp;
 
 namespace Invoice.ViewModels;
 
-public partial class ReportingViewModel : ObservableObject
+public partial class ReportingViewModel : ViewModelBase
 {
     private readonly IConfiguration _configuration;
     private readonly ReportingService _reportingService;
@@ -17,26 +23,24 @@ public partial class ReportingViewModel : ObservableObject
     private readonly EmailService _emailService;
 
     [ObservableProperty] private bool _isLocked = true;
-    [ObservableProperty] private string _passwordInput;
-    [ObservableProperty] private string _errorMessage;
-    [ObservableProperty] private bool _isLoading;
+    [ObservableProperty] private string _passwordInput = string.Empty;
+    [ObservableProperty] private string _errorMessage = string.Empty;
 
     [ObservableProperty] private double _totalRevenue;
-    [ObservableProperty] private double _totalProfit;
+    [ObservableProperty] private double _totalProfit;    
 
-    public ISeries[] Series
-    {
-        get; set;
-    }
-
-    public ICartesianAxis[] XAxes
-    {
-        get; set;
-    }
+    [ObservableProperty] private ISeries[]? _series;
+    [ObservableProperty] private ICartesianAxis[]? _xAxes;
+    [ObservableProperty] private ICartesianAxis[]? _yAxes;
 
     public ObservableCollection<ProductStat> TopProducts { get; } = new();
 
-    public ReportingViewModel(ReportingService reportingService, ReportPdfService pdfService, EmailService emailService, IConfiguration configuration)
+    public ReportingViewModel(
+        ReportingService reportingService, 
+        ReportPdfService pdfService, 
+        EmailService emailService, 
+        IConfiguration configuration,
+        IDialogService dialogService) : base(dialogService)
     {
         _reportingService = reportingService;
         _pdfService = pdfService;
@@ -45,26 +49,33 @@ public partial class ReportingViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public void Unlock()
+    public async Task Unlock()
     {
-        var pass = _configuration["PasswordReport:Password"];
-        if (string.Equals(PasswordInput, pass, StringComparison.Ordinal))
+        try 
         {
-            IsLocked = false;
-            ErrorMessage = "";
-            LoadDataAsync();
+            var pass = _configuration["PasswordReport:Password"];
+            if (string.Equals(PasswordInput, pass, StringComparison.Ordinal))
+            {
+                await LoadDataAsync();
+                IsLocked = false;
+                ErrorMessage = "";
+            }
+            else
+            {
+                ErrorMessage = "Mật khẩu không đúng!";
+                PasswordInput = "";
+            }
         }
-        else
+        catch (Exception ex)
         {
-            ErrorMessage = "Mật khẩu không đúng!";
-            PasswordInput = "";
+            System.Diagnostics.Debug.WriteLine($"Unlock Error: {ex.Message}");
+            ErrorMessage = "Lỗi khi mở khóa dữ liệu.";
         }
     }
 
     public async Task LoadDataAsync()
     {
-        IsLoading = true;
-        try
+        await ExecuteAsync(async () =>
         {
             var data = await _reportingService.GetDashboardDataAsync(DateTime.Now.Year);
 
@@ -72,15 +83,24 @@ public partial class ReportingViewModel : ObservableObject
             TotalProfit = data.TotalProfit;
 
             TopProducts.Clear();
-            foreach (var p in data.TopProducts) TopProducts.Add(p);
+            if (data.TopProducts != null)
+            {
+                foreach (var p in data.TopProducts) TopProducts.Add(p);
+            }
+
+            var themeSelector = App.GetService<IThemeSelectorService>();
+            var isDark = themeSelector.Theme == ElementTheme.Dark;
+            var labelColor = isDark ? SKColors.White : SKColors.Black;
 
             // Setup Chart
             Series = new ISeries[]
             {
-                new ColumnSeries<int>
+                new ColumnSeries<double>
                 {
-                    Name = "Đơn hàng: ",
-                    Values = data.MonthlyStats.Select(x => x.OrderCount).ToArray()
+                    Name = "Số đơn hàng",
+                    Values = data.MonthlyStats.Select(x => (double)x.OrderCount).ToArray(),
+                    DataLabelsPaint = new SolidColorPaint(labelColor),
+                    DataLabelsPosition = LiveChartsCore.Measure.DataLabelsPosition.Top
                 }
             };
 
@@ -88,24 +108,26 @@ public partial class ReportingViewModel : ObservableObject
             {
                 new Axis
                 {
-                    Labels = data.MonthlyStats.Select(x => x.Label).ToList(),
-                    LabelsRotation = 15
+                    Labels = data.MonthlyStats.Select(x => x.Label).ToArray(),
+                    LabelsRotation = 15,
+                    LabelsPaint = new SolidColorPaint(labelColor)
                 }
             };
-            OnPropertyChanged(nameof(Series));
-            OnPropertyChanged(nameof(XAxes));
-        }
-        finally
-        {
-            IsLoading = false;
-        }
+
+            YAxes = new ICartesianAxis[]
+            {
+                new Axis
+                {
+                    LabelsPaint = new SolidColorPaint(labelColor)
+                }
+            };
+        }, "LOAD_FAILED".GetLocalized());
     }
 
     [RelayCommand]
     public async Task ExportAndEmail()
     {
-        IsLoading = true;
-        try
+        await ExecuteAsync(async () =>
         {
             var data = await _reportingService.GetDashboardDataAsync(DateTime.Now.Year);
             string path = _pdfService.GenerateFinancialReport(data, DateTime.Now.Year);
@@ -119,16 +141,11 @@ public partial class ReportingViewModel : ObservableObject
                 path
             );
 
-            await App.ShowMessageAsync("Thành công", "Đã gửi báo cáo qua Email!");
-        }
-        catch (Exception ex)
-        {
-            await App.ShowMessageAsync("Lỗi", ex.Message);
-        }
-        finally { IsLoading = false; }
+            await DialogService.ShowSuccessAsync("Thông báo");
+        }, "Reporting_Error_Export");
     }
 
-    public async void OnNavigatedTo(object parameter)
+    public void OnNavigatedTo(object parameter)
     {
     }
 

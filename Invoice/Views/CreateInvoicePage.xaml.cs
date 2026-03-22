@@ -1,5 +1,6 @@
 ﻿using Invoice.ViewModels;
 using Invoice.Core.Models;
+using Invoice.Contracts.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
@@ -8,6 +9,8 @@ namespace Invoice.Views;
 
 public sealed partial class CreateInvoicePage : Page
 {
+    private readonly IDialogService _dialogService;
+
     public CreateInvoiceViewModel ViewModel
     {
         get;
@@ -16,6 +19,7 @@ public sealed partial class CreateInvoicePage : Page
     public CreateInvoicePage()
     {
         ViewModel = App.GetService<CreateInvoiceViewModel>();
+        _dialogService = App.GetService<IDialogService>();
         InitializeComponent();
         this.DataContext = ViewModel;
     }
@@ -37,13 +41,13 @@ public sealed partial class CreateInvoicePage : Page
     {
         if (ViewModel.InvoiceItems.Count == 0)
         {
-            await App.ShowMessageAsync("Thông báo", "Không có dữ liệu để tạo phiếu.");
+            await _dialogService.ShowErrorAsync("Không có dữ liệu để tạo phiếu.");
             return;
         }
 
         if (ViewModel.SelectedCustomer == null)
         {
-            await App.ShowMessageAsync("Thông báo", "Vui lòng chọn khách hàng để sinh mã phiếu.");
+            await _dialogService.ShowErrorAsync("Vui lòng chọn khách hàng để sinh mã phiếu.");
             return;
         }
 
@@ -52,8 +56,29 @@ public sealed partial class CreateInvoicePage : Page
 
     private async void SaveInvoice_Click(object sender, RoutedEventArgs e)
     {
-        await ViewModel.SaveInvoice();
-        ResetInvoice_Click(sender, e);
+        var textBox = sender as TextBox;
+        if (textBox?.DataContext is TempInvoice currentItem)
+        {
+            if (int.TryParse(textBox.Text, out int newValue))
+            {
+                if (newValue > currentItem.MaxStock)
+                {
+                    textBox.Text = currentItem.MaxStock.ToString();
+
+                    await _dialogService.ShowSuccessAsync($"Sản phẩm '{currentItem.ProductName}' chỉ còn tồn: {currentItem.MaxStock}.\nHệ thống đã tự động lấy số lượng tối đa.");
+                }
+            }
+            else if (newValue < 1)
+            {
+                textBox.Text = "1";
+            }
+        }
+
+        bool success = await ViewModel.SaveInvoice();
+        if (success)
+        {
+            ResetInvoice_Click(sender, e);
+        }
     }
 
     private async void EditInvoice_Click(object sender, RoutedEventArgs e)
@@ -89,7 +114,7 @@ public sealed partial class CreateInvoicePage : Page
 
     private async void asbCustomer_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
     {
-        if (args.SelectedItem is Core.Models.Customers customer)
+        if (args.SelectedItem is Customers customer)
         {
             ViewModel.SelectedCustomer = customer;
             txtPhoneNo.Text = customer.Phone;
@@ -97,31 +122,9 @@ public sealed partial class CreateInvoicePage : Page
         }
     }
 
-    private void AmountTextBox_BeforeTextChanging(TextBox sender, TextBoxBeforeTextChangingEventArgs args)
-    {
-        args.Cancel = args.NewText.Any(c => !char.IsDigit(c));
-    }
-
     private async void AmountTextBox_LostFocus(object sender, RoutedEventArgs e)
     {
-        var textBox = sender as TextBox;
-        if (textBox?.DataContext is TempInvoice currentItem)
-        {
-            if (int.TryParse(textBox.Text, out int newValue))
-            {
-                if (newValue > currentItem.MaxStock)
-                {
-                    textBox.Text = currentItem.MaxStock.ToString();
-
-                    await App.ShowMessageAsync("Cảnh báo kho hàng",
-                    $"Sản phẩm '{currentItem.ProductName}' chỉ còn tồn: {currentItem.MaxStock}.\nHệ thống đã tự động lấy số lượng tối đa.");
-                }
-            }
-            else if (newValue < 1)
-            {
-                textBox.Text = "1";
-            }
-        }
+        
     }
 
     protected override void OnNavigatedTo(NavigationEventArgs e)

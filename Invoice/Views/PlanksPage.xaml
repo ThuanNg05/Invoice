@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:behaviors="using:Invoice.Behaviors"
     mc:Ignorable="d">
 
 	<Page.Resources>
@@ -37,36 +38,36 @@
 
 			<StackPanel Orientation="Vertical" Spacing="10">
 				<StackPanel Orientation="Horizontal" Spacing="10">
-					<TextBox x:Name="size1" Header="Size 1" TextAlignment="Left"/>
-					<TextBox x:Name="size2" Header="Size 2" TextAlignment="Left"/>
-					<TextBox x:Name="size3" Header="Size 3" TextAlignment="Left"/>
-					<TextBox x:Name="size4" Header="Size 4" TextAlignment="Left"/>
-					<TextBox x:Name="size5" Header="Size 5" TextAlignment="Left"/>
-					<TextBox x:Name="size6" Header="Size 6" TextAlignment="Left"/>
-					<TextBox x:Name="size7" Header="Size 7" TextAlignment="Left"/>
-					<TextBox x:Name="size8" Header="Size 8" TextAlignment="Left"/>
-					<TextBox x:Name="size9" Header="Size 9" TextAlignment="Left"/>
-					<TextBox x:Name="size10" Header="Size 10" TextAlignment="Left"/>
+					<TextBox x:Name="txtSize1" Header="Size 1" TextAlignment="Left"/>
+					<TextBox x:Name="txtSize2" Header="Size 2" TextAlignment="Left"/>
+					<TextBox x:Name="txtSize3" Header="Size 3" TextAlignment="Left"/>
+					<TextBox x:Name="txtSize4" Header="Size 4" TextAlignment="Left"/>
+					<TextBox x:Name="txtSize5" Header="Size 5" TextAlignment="Left"/>
+					<TextBox x:Name="txtSize6" Header="Size 6" TextAlignment="Left"/>
+					<TextBox x:Name="txtSize7" Header="Size 7" TextAlignment="Left"/>
+					<TextBox x:Name="txtSize8" Header="Size 8" TextAlignment="Left"/>
+					<TextBox x:Name="txtSize9" Header="Size 9" TextAlignment="Left"/>
+					<TextBox x:Name="txtSize10" Header="Size 10" TextAlignment="Left"/>
 				</StackPanel>
 
 				<StackPanel Orientation="Horizontal" Spacing="10">
-					<TextBox x:Name="amount1" TextAlignment="Right" BeforeTextChanging="Amount_BeforeTextChanging"/>
-					<TextBox x:Name="amount2" TextAlignment="Right" BeforeTextChanging="Amount_BeforeTextChanging"/>
-					<TextBox x:Name="amount3" TextAlignment="Right" BeforeTextChanging="Amount_BeforeTextChanging"/>
-					<TextBox x:Name="amount4" TextAlignment="Right" BeforeTextChanging="Amount_BeforeTextChanging"/>
-					<TextBox x:Name="amount5" TextAlignment="Right" BeforeTextChanging="Amount_BeforeTextChanging"/>
-					<TextBox x:Name="amount6" TextAlignment="Right" BeforeTextChanging="Amount_BeforeTextChanging"/>
-					<TextBox x:Name="amount7" TextAlignment="Right" BeforeTextChanging="Amount_BeforeTextChanging"/>
-					<TextBox x:Name="amount8" TextAlignment="Right" BeforeTextChanging="Amount_BeforeTextChanging"/>
-					<TextBox x:Name="amount9" TextAlignment="Right" BeforeTextChanging="Amount_BeforeTextChanging"/>
-					<TextBox x:Name="amount10" TextAlignment="Right" BeforeTextChanging="Amount_BeforeTextChanging"/>
+					<TextBox x:Name="txtAmount1" TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Numeric" />
+					<TextBox x:Name="txtAmount2" TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Numeric" />
+					<TextBox x:Name="txtAmount3" TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Numeric" />
+					<TextBox x:Name="txtAmount4" TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Numeric" />
+					<TextBox x:Name="txtAmount5" TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Numeric" />
+					<TextBox x:Name="txtAmount6" TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Numeric" />
+					<TextBox x:Name="txtAmount7" TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Numeric" />
+					<TextBox x:Name="txtAmount8" TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Numeric" />
+					<TextBox x:Name="txtAmount9" TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Numeric" />
+					<TextBox x:Name="txtAmount10" TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Numeric" />
 				</StackPanel>
 			</StackPanel>
 
 
 			<StackPanel Orientation="Vertical">
 				<StackPanel Orientation="Horizontal" Spacing="10">
-					<TextBox HorizontalAlignment="Left" Header="Mã rập :" x:Name="frameNO" Width="100" BeforeTextChanging="Amount_BeforeTextChanging"/>
+					<TextBox HorizontalAlignment="Left" Header="Mã rập :" x:Name="frameNO" Width="100" behaviors:TextBoxInputBehavior.InputType="Numeric" />
 					<TextBox x:Name="txtDescribe" Header="Mô tả"
                             TextWrapping="Wrap" AcceptsReturn="True" IsSpellCheckEnabled="False" Width="300" />
 				</StackPanel>
@@ -74,29 +75,29 @@
 				<StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Spacing="10" Margin="0,10,0,0">
 					<CommandBar Background="Transparent" DefaultLabelPosition="Right">
                         <AppBarButton x:Name="btnAdd" Background="#07af00" Foreground="{ThemeResource SettingsForegroundBrush}"
-                                      Icon="Add" Label="Thêm" Click="BtnAdd_Click" ToolTipService.ToolTip="Press F1" CornerRadius="10"
-                                      IsEnabled="{x:Bind ViewModel.IsLoading, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}">
+                                      Icon="Add" x:Uid="Btn_Add" Click="BtnAdd_Click" ToolTipService.ToolTip="Press F1" CornerRadius="10"
+                                      IsEnabled="{x:Bind ViewModel.IsBusy, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}">
 							<AppBarButton.KeyboardAccelerators>
 								<KeyboardAccelerator Key="F1"/>
 							</AppBarButton.KeyboardAccelerators>
 						</AppBarButton>
                         <AppBarButton x:Name="btnDelete" Background="#ff3800" Foreground="{ThemeResource SettingsForegroundBrush}"
-                                      Icon="Delete" Label="Xoá" Click="BtnDelete_Click" ToolTipService.ToolTip="Press F2" CornerRadius="10"
-                                      IsEnabled="{x:Bind ViewModel.IsLoading, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}">
+                                      Icon="Delete" x:Uid="Btn_Delete" Click="BtnDelete_Click" ToolTipService.ToolTip="Press F2" CornerRadius="10"
+                                      IsEnabled="{x:Bind ViewModel.IsBusy, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}">
 							<AppBarButton.KeyboardAccelerators>
 								<KeyboardAccelerator Key="F2"/>
 							</AppBarButton.KeyboardAccelerators>
 						</AppBarButton>
                         <AppBarButton x:Name="btnUpdate" Background="#b48b14" Foreground="{ThemeResource SettingsForegroundBrush}"
-                                      Icon="Edit" Label="Cập nhật" Click="BtnUpdate_Click" ToolTipService.ToolTip="Press F3" CornerRadius="10"
-                                      IsEnabled="{x:Bind ViewModel.IsLoading, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}">
+                                      Icon="Edit" x:Uid="Btn_Update" Click="BtnUpdate_Click" ToolTipService.ToolTip="Press F3" CornerRadius="10"
+                                      IsEnabled="{x:Bind ViewModel.IsBusy, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}">
 							<AppBarButton.KeyboardAccelerators>
 								<KeyboardAccelerator Key="F3"/>
 							</AppBarButton.KeyboardAccelerators>
 						</AppBarButton>
                         <AppBarButton Background="#24a6d5" Icon="Refresh" Foreground="{ThemeResource SettingsForegroundBrush}"
-                                      Label="làm mới" Click="BtnReset_Click" ToolTipService.ToolTip="Press F2" CornerRadius="10"
-                                      IsEnabled="{x:Bind ViewModel.IsLoading, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}">
+                                      x:Uid="Btn_Reset" Click="BtnReset_Click" ToolTipService.ToolTip="Press F2" CornerRadius="10"
+                                      IsEnabled="{x:Bind ViewModel.IsBusy, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}">
 							<AppBarButton.KeyboardAccelerators>
 								<KeyboardAccelerator Key="F2"/>
 							</AppBarButton.KeyboardAccelerators>
@@ -131,7 +132,7 @@
 				</controls:DataGrid.Resources>
 
 				<controls:DataGrid.Columns>
-					<controls:DataGridTextColumn IsReadOnly="True" Header="Mã Rập" Binding="{Binding FrameNO}" Width="Auto">
+					<controls:DataGridTextColumn Header="Mã Rập" Binding="{Binding FrameNO}" Width="Auto">
 						<controls:DataGridTextColumn.ElementStyle>
 							<Style TargetType="TextBlock">
 								<Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -140,7 +141,7 @@
 						</controls:DataGridTextColumn.ElementStyle>
 					</controls:DataGridTextColumn>
 
-					<controls:DataGridTextColumn IsReadOnly="True" Header="Mô tả" Binding="{Binding Description}" Width="Auto">
+					<controls:DataGridTextColumn Header="Mô tả" Binding="{Binding Description}" Width="Auto">
 						<controls:DataGridTextColumn.ElementStyle>
 							<Style TargetType="TextBlock">
 								<Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -153,8 +154,8 @@
 
 			<StackPanel>
 				<ProgressRing Grid.Column="1"
-                      IsActive="{x:Bind ViewModel.IsLoading, Mode=OneWay}"
-                      Visibility="{x:Bind ViewModel.IsLoading, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                      IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
+                      Visibility="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
                       Width="60" Height="60"
                       HorizontalAlignment="Center"
                       VerticalAlignment="Center" />

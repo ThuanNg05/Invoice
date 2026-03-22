@@ -1,17 +1,15 @@
-﻿using System.Collections.ObjectModel;
-using System.Diagnostics;
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Invoice.Contracts.ViewModels;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
+using Invoice.Contracts.Services;
+using Invoice.Helpers;
 
 namespace Invoice.ViewModels;
 
-public partial class IOPlanksViewModel : ObservableRecipient, INavigationAware
+public partial class IOPlanksViewModel : ViewModelBase, INavigationAware
 {
-    [ObservableProperty]
-    private bool isLoading;
-
     private readonly IDataService _dataService;
 
     public ObservableCollection<Frames> FramesSource { get; } = new ObservableCollection<Frames>();
@@ -19,44 +17,35 @@ public partial class IOPlanksViewModel : ObservableRecipient, INavigationAware
     [ObservableProperty]
     private Frames? selectedFrame;
 
-    public IOPlanksViewModel(IDataService dataService)
+    public IOPlanksViewModel(IDataService dataService, IDialogService dialogService) : base(dialogService)
     {
         _dataService = dataService;
     }
 
-    public async void OnNavigatedTo(object parameter)
+    public void OnNavigatedTo(object parameter)
     {
-        _ = LoadDataSafeAsync();
-    }
-
-    private async Task LoadDataSafeAsync()
-    {
-        try { await LoadData(); }
-        catch (Exception ex)
-        {
-            Debug.WriteLine(ex);
-            await App.ShowMessageAsync("Lỗi", "Không thể tải dữ liệu.");
-        }
-    }
-
-    private async Task LoadData()
-    {
-        IsLoading = true;
-        FramesSource.Clear();
-        var data = await _dataService.GetFrames(forceRefresh: false);
-        foreach (var item in data)
-        {
-            FramesSource.Add(item);
-        }
-        IsLoading = false;
+        _ = LoadDataAsync();
     }
 
     public void OnNavigatedFrom()
     {
     }
 
+    private async Task LoadDataAsync()
+    {
+        await ExecuteAsync(async () =>
+        {
+            FramesSource.Clear();
+            var data = await _dataService.GetFrames(forceRefresh: false);
+            foreach (var item in data)
+            {
+                FramesSource.Add(item);
+            }
+        }, "LOAD_FAILED".GetLocalized());
+    }
+
     public async Task SaveTransaction(Frames frames, int amount)
     {
-
+        await Task.CompletedTask;
     }
 }

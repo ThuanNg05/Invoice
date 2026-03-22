@@ -43,59 +43,64 @@
                 TODO: Update item icons by updating FontIcon.Glyph properties.
                 https://docs.microsoft.com/windows/apps/design/style/segoe-fluent-icons-font#icon-list
                 -->                
-                <NavigationViewItem x:Uid="Shell_CreateInvoice" helpers:NavigationHelper.NavigateTo="Invoice.ViewModels.CreateInvoiceViewModel">
+                <NavigationViewItem Content="Hoá đơn" helpers:NavigationHelper.NavigateTo="Invoice.ViewModels.CreateInvoiceViewModel">
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE82D;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem x:Uid="Shell_Customers" helpers:NavigationHelper.NavigateTo="Invoice.ViewModels.CustomersViewModel">
+                <NavigationViewItem Content="Khách hàng" helpers:NavigationHelper.NavigateTo="Invoice.ViewModels.CustomersViewModel">
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE779;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem x:Uid="Shell_History" helpers:NavigationHelper.NavigateTo="Invoice.ViewModels.HistoryViewModel">
+                <NavigationViewItem Content="Lịch sử" helpers:NavigationHelper.NavigateTo="Invoice.ViewModels.HistoryViewModel">
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE81C;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem x:Uid="Shell_Products" helpers:NavigationHelper.NavigateTo="Invoice.ViewModels.ProductsViewModel">
+                <NavigationViewItem Content="Sản phẩm" helpers:NavigationHelper.NavigateTo="Invoice.ViewModels.ProductsViewModel">
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe7c3;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem x:Uid="Shell_DetailPrice" helpers:NavigationHelper.NavigateTo="Invoice.ViewModels.DetailPriceViewModel">
+                <NavigationViewItem Content="Giá thành phần" helpers:NavigationHelper.NavigateTo="Invoice.ViewModels.DetailPriceViewModel">
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE82D;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem x:Uid="Shell_Materials" helpers:NavigationHelper.NavigateTo="Invoice.ViewModels.MaterialsViewModel">
+                <NavigationViewItem Content="Vật tư" helpers:NavigationHelper.NavigateTo="Invoice.ViewModels.MaterialsViewModel">
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE82D;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem x:Uid="Shell_Planks" helpers:NavigationHelper.NavigateTo="Invoice.ViewModels.PlanksViewModel">
+                <NavigationViewItem Content="Ván" helpers:NavigationHelper.NavigateTo="Invoice.ViewModels.PlanksViewModel">
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE82D;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem x:Uid="Shell_DetailPlanks" helpers:NavigationHelper.NavigateTo="Invoice.ViewModels.DetailPlanksViewModel">
+                <NavigationViewItem Content="Cỡ ván" helpers:NavigationHelper.NavigateTo="Invoice.ViewModels.DetailPlanksViewModel">
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE82D;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem x:Uid="Shell_IOPlanks" helpers:NavigationHelper.NavigateTo="Invoice.ViewModels.IOPlanksViewModel">
+                <NavigationViewItem Content="Kho ván" helpers:NavigationHelper.NavigateTo="Invoice.ViewModels.IOPlanksViewModel">
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xF1CB;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem x:Uid="Shell_IOActions" helpers:NavigationHelper.NavigateTo="Invoice.ViewModels.IOActionsViewModel">
+                <NavigationViewItem Content="Xuất Nhập Kho" helpers:NavigationHelper.NavigateTo="Invoice.ViewModels.IOActionsViewModel">
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xF1CB;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem x:Uid="Shell_Reporting" helpers:NavigationHelper.NavigateTo="Invoice.ViewModels.ReportingViewModel">
+                <NavigationViewItem Content="Lịch sử kho" helpers:NavigationHelper.NavigateTo="Invoice.ViewModels.HistoryTransactionViewModel">
                     <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe7c3;"/>
+                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE81C;"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Content="Báo cáo" helpers:NavigationHelper.NavigateTo="Invoice.ViewModels.ReportingViewModel">
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE9F9;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
             </NavigationView.MenuItems>
@@ -126,5 +131,18 @@
                 <Frame x:Name="NavigationFrame" />
             </Grid>
         </NavigationView>
+
+        <!-- Global Loading Overlay -->
+        <Grid Background="{ThemeResource SystemControlBackgroundBaseLowBrush}"
+              Visibility="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+              Canvas.ZIndex="100">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="12">
+                <ProgressRing IsActive="True" Width="60" Height="60" />
+                <TextBlock Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}" 
+                           Style="{StaticResource BodyTextBlockStyle}" 
+                           HorizontalAlignment="Center"
+                           Visibility="{x:Bind ViewModel.StatusMessage, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            </StackPanel>
+        </Grid>
     </Grid>
 </Page>

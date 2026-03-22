@@ -1,63 +1,47 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-
+using CommunityToolkit.Mvvm.ComponentModel;
 using Invoice.Contracts.ViewModels;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
+using Invoice.Contracts.Services;
+using Invoice.Helpers;
 
 namespace Invoice.ViewModels;
 
-public partial class DetailPriceViewModel : ObservableRecipient, INavigationAware
+public partial class DetailPriceViewModel : ViewModelBase, INavigationAware
 {
     private readonly IDataService _dataService;
 
     [ObservableProperty]
-    private bool isLoading;
-
-    [ObservableProperty]
     private DetailPrice? _currentDetailPrice;
 
-    public DetailPriceViewModel(IDataService dataService)
+    public DetailPriceViewModel(IDataService dataService, IDialogService dialogService) : base(dialogService)
     {
         _dataService = dataService;
     }
 
-    public async void OnNavigatedTo(object parameter)
+    public void OnNavigatedTo(object parameter)
     {
-        IsLoading = true;
-        try
-        {
-            var prices = await _dataService.GetPrice();
-            CurrentDetailPrice = prices.FirstOrDefault();
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Failed to load Detail Price data. {ex.Message}");
-            await App.ShowMessageAsync("Lỗi", "Không thể tải dữ liệu giá");
-        }
-        finally
-        {
-            IsLoading = false;
-        }
+        _ = LoadDataAsync();
     }
 
     public void OnNavigatedFrom()
     {
     }
 
+    private async Task LoadDataAsync()
+    {
+        await ExecuteAsync(async () =>
+        {
+            var prices = await _dataService.GetPrice();
+            CurrentDetailPrice = prices.FirstOrDefault();
+        }, "LOAD_FAILED".GetLocalized());
+    }
+
     public async Task UpdateDetailPriceAsync(DetailPrice price)
     {
-        IsLoading = true;
-        try
+        await ExecuteAsync(async () =>
         {
             await _dataService.UpdatePrice(price);
-            await App.ShowMessageAsync("Thông báo", "Cập nhật giá thành công.");
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"Update failed: {ex.Message}");
-            await App.ShowMessageAsync("Lỗi", $"{ex.Message}");
-            return;
-        }
-        finally { IsLoading = false; }
+        }, "FAILED_UPDATE".GetLocalized());
     }
 }

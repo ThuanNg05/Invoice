@@ -1,11 +1,24 @@
-﻿namespace Invoice.Core.Models;
+using CommunityToolkit.Mvvm.ComponentModel;
 
-public class ProductSummary
+namespace Invoice.Core.Models;
+
+public partial class ProductSummary : ObservableObject
 {
-    public long ProductID { get; set; }
-    public string Name { get; set; }
-    public double BasePrice { get; set; }
-    public int PriceOdd { get; set; }
-    public int PriceEven { get; set; }
-    public int Inventory { get; set; }
+    [ObservableProperty]
+    private long productID;
+
+    [ObservableProperty]
+    private string name;
+
+    [ObservableProperty]
+    private double basePrice;
+
+    [ObservableProperty]
+    private int priceOdd;
+
+    [ObservableProperty]
+    private int priceEven;
+
+    [ObservableProperty]
+    private int inventory;
 }

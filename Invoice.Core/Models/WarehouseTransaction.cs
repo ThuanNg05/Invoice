@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Xml.Linq;
 using Newtonsoft.Json;
 using Supabase.Postgrest.Attributes;
 using Supabase.Postgrest.Models;
@@ -18,18 +17,28 @@ public class WarehouseTransaction : BaseModel, INotifyPropertyChanged
     }
 
     [PrimaryKey("transaction_id", false)]
+    [JsonProperty("transaction_id")]
     public int Id { get; set; }
 
     [Column("product_id")]
+    [JsonProperty("product_id")]
     public long ProductID { get; set; }
+
     [Column("invoice_id")]
+    [JsonProperty("invoice_id")]
     public string InvoiceID { get; set; }        
     
     [Column("date")]
+    [JsonProperty("date")]
     public DateTime CreatedDate { get; set; }
+
+    [Column("source_type")]
+    [JsonProperty("source_type")]
+    public string SourceType { get; set; }
 
     private int _amount;
     [Column("amount")]    
+    [JsonProperty("amount")]
     public int Amount
     {
         get => _amount;
@@ -38,14 +47,15 @@ public class WarehouseTransaction : BaseModel, INotifyPropertyChanged
             if (_amount != value)
             {
                 _amount = value;
-                OnPropertyChanged(); // <--- Notifies the UI
-                OnPropertyChanged(nameof(FinalChange)); // <--- Also update dependent property
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(FinalChange));
             }
         }
     }
 
     private string _actionType;
     [Column("type")]    
+    [JsonProperty("type")]
     public string ActionType
     {
         get => _actionType;
@@ -61,7 +71,12 @@ public class WarehouseTransaction : BaseModel, INotifyPropertyChanged
     }
 
     [Column("note")]
+    [JsonProperty("note")]
     public string Note { get; set; }
+
+    [Column("is_queryable")]
+    [JsonProperty("is_queryable")]
+    public int IsQueryable { get; set; } = 1;
 
     [JsonIgnore]
     public int FinalChange => ActionType == "Nhập kho" ? Amount : -Amount;

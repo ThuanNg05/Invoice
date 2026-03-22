@@ -23,7 +23,7 @@ public class ProductsChangedMessage
     {
         get;
     }
-    public string ProductId
+    public long ProductId
     {
         get;
     }
@@ -32,11 +32,11 @@ public class ProductsChangedMessage
     {
         Action = action;
         Product = product;
-        ProductId = product?.ProductID;
+        ProductId = product?.ProductID ?? 0;
     }
 
     // Constructor dùng cho trường hợp Delete chỉ có ID
-    public ProductsChangedMessage(DataAction action, string productId)
+    public ProductsChangedMessage(DataAction action, long productId)
     {
         Action = action;
         ProductId = productId;

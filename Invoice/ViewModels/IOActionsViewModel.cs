@@ -1,100 +1,102 @@
-﻿using System.Collections.ObjectModel;
-using System.Diagnostics;
-using CommunityToolkit.Mvvm.ComponentModel;
+using System.Collections.ObjectModel;
 using Invoice.Contracts.ViewModels;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
+using Invoice.Contracts.Services;
+using Invoice.Helpers;
 
 namespace Invoice.ViewModels;
 
-public partial class IOActionsViewModel : ObservableRecipient, INavigationAware
+public partial class IOActionsViewModel : ViewModelBase, INavigationAware
 {
     private readonly IDataService _dataService;
 
-    [ObservableProperty]
-    private bool isLoading;
+    private List<InventoryItem> _allItems = [];
+    public ObservableCollection<InventoryItem> SourceList { get; } = [];
+    public ObservableCollection<WarehouseTransaction> TransactionList { get; } = [];
 
-    private List<InventoryItem> _allItems = new();
-    public ObservableCollection<InventoryItem> SourceList { get; } = new();
-    public ObservableCollection<WarehouseTransaction> TransactionList { get; } = new();
-
-    public IOActionsViewModel(IDataService dataService)
+    public IOActionsViewModel(IDataService dataService, IDialogService dialogService) : base(dialogService)
     {
         _dataService = dataService;
     }
 
-    public async void OnNavigatedTo(object parameter)
+    public void OnNavigatedTo(object parameter)
     {
-        _ = LoadDataSafeAsync();
+        _ = LoadDataAsync();
     }
 
     public void OnNavigatedFrom()
     {
     }
 
-    private async Task LoadDataSafeAsync()
+    private async Task LoadDataAsync()
     {
-        try { await LoadData(); }
-        catch (Exception ex)
+        await ExecuteAsync(async () =>
         {
-            Debug.WriteLine(ex);
-            await App.ShowMessageAsync("Lỗi", "Không thể tải dữ liệu.");
-        }
-    }
-
-    private async Task LoadData()
-    {
-        SourceList.Clear();
-        _allItems.Clear();
-        var products = await _dataService.GetAllProducts();
-        foreach (var p in products)
-        {
-            _allItems.Add(new InventoryItem
+            SourceList.Clear();
+            _allItems.Clear();
+            
+            var products = await _dataService.GetAllProducts();
+            foreach (var p in products)
             {
-                ProductID = p.ProductID,
-                Name = p.Name,
-                Inventory = p.Inventory,
-                Source = "PRODUCTS"
-            });
-        }
+                _allItems.Add(new InventoryItem
+                {
+                    ProductID = p.ProductID,
+                    Name = p.Name,
+                    Inventory = p.Inventory,
+                    Source = "PRODUCTS"
+                });
+            }
 
-        var materials = await _dataService.GetMaterials();
-        foreach (var m in materials)
-        {
-            _allItems.Add(new InventoryItem
+            var materials = await _dataService.GetMaterials();
+            foreach (var m in materials)
             {
-                ProductID = m.ProductID,
-                Name = m.Name,
-                Inventory = m.Inventory,
-                Source = "MATERIALS"
-            });
-        }
+                _allItems.Add(new InventoryItem
+                {
+                    ProductID = m.ProductID,
+                    Name = m.Name,
+                    Inventory = m.Inventory,
+                    Source = "MATERIALS"
+                });
+            }
 
-        foreach (var item in _allItems) SourceList.Add(item);
+            foreach (var item in _allItems) SourceList.Add(item);
+        }, "Load data failed");
     }
 
     public async Task SaveData()
     {
-        var transactions = TransactionList.ToList();
-
-        foreach (var trans in transactions)
+        await ExecuteAsync(async () =>
         {
-            trans.CreatedDate = DateTime.Now;
-            if (string.IsNullOrEmpty(trans.InvoiceID))
+            var transactions = TransactionList.ToList();
+
+            foreach (var trans in transactions)
             {
-                trans.InvoiceID = null;
+                trans.CreatedDate = DateTime.Now;
+                if (string.IsNullOrEmpty(trans.InvoiceID))
+                {
+                    trans.InvoiceID = null;
+                }
+
+                // Tự động gán SourceType dựa trên nguồn của item gốc
+                var originalItem = _allItems.FirstOrDefault(x => x.ProductID == trans.ProductID);
+                if (originalItem != null)
+                {
+                    trans.SourceType = originalItem.Source == "PRODUCTS" ? "PRODUCT" : "MATERIAL";
+                }
+
+                await _dataService.AddWarehouseTransaction(trans);
+
+                var localItem = _allItems.FirstOrDefault(x => x.ProductID == trans.ProductID);
+                if (localItem != null)
+                {
+                    localItem.Inventory += trans.FinalChange;
+                }
             }
 
-            await _dataService.AddWarehouseTransaction(trans);
-
-            var localItem = _allItems.FirstOrDefault(x => x.ProductID == trans.ProductID);
-            if (localItem != null)
-            {
-                localItem.Inventory += trans.FinalChange;
-            }
-        }
-
-        TransactionList.Clear();
+            TransactionList.Clear();
+            await DialogService.ShowSuccessAsync("SUCCESS_SAVE".GetLocalized());
+        }, "Lỗi lưu kho");
     }
 
     public void Search(string keyword)
@@ -107,20 +109,16 @@ public partial class IOActionsViewModel : ObservableRecipient, INavigationAware
         }
         else
         {
-            var filtered = _allItems.Where(x =>
-                (x.ProductID != null && x.ProductID.Contains(keyword, StringComparison.OrdinalIgnoreCase)) ||
-                (x.Name != null && x.Name.Contains(keyword, StringComparison.OrdinalIgnoreCase))
+            var filtered = _allItems.Where(x => x.Name != null && x.Name.Contains(keyword, StringComparison.OrdinalIgnoreCase)
             );
 
             foreach (var item in filtered) SourceList.Add(item);
         }
     }
 
-    public int GetCurrentInventory(string productId)
+    public int GetCurrentInventory(long productId)
     {
         var item = _allItems.FirstOrDefault(x => x.ProductID == productId);
         return item != null ? item.Inventory : 0;
     }
-
-
 }

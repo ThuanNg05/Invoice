@@ -1,5 +1,7 @@
 ﻿using System.Text.RegularExpressions;
+using Invoice.Contracts.Services;
 using Invoice.Core.Models;
+using Invoice.Helpers;
 using Invoice.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -8,6 +10,7 @@ namespace Invoice.Views;
 
 public sealed partial class DetailPlanksPage : Page
 {
+    private readonly IDialogService _dialogService;
     public DetailPlanksViewModel ViewModel
     {
         get;
@@ -16,8 +19,9 @@ public sealed partial class DetailPlanksPage : Page
     public DetailPlanksPage()
     {
         ViewModel = App.GetService<DetailPlanksViewModel>();
+        _dialogService = App.GetService<IDialogService>();
         InitializeComponent();
-        ClearInputs();
+        btnDelete.IsEnabled = false;
     }
 
     private void ClearInputs()
@@ -25,7 +29,7 @@ public sealed partial class DetailPlanksPage : Page
         size.Text = string.Empty;
         btnAdd.IsEnabled = true;
         btnDelete.IsEnabled = false;
-        ListPlankGrid.SelectedIndex = -1;
+        ListPlankGrid.SelectedItem = -1;
         size.Focus(FocusState.Programmatic);
     }
 
@@ -33,52 +37,77 @@ public sealed partial class DetailPlanksPage : Page
     {
         if (string.IsNullOrEmpty(size.Text))
         {
-            await App.ShowMessageAsync("Thông báo", "Kích thước không được bỏ trống.");
+            await _dialogService.ShowErrorAsync("Kích thước không được bỏ trống.");
             size.Focus(FocusState.Programmatic);
             return;
         }
-        if (!IsValidSizeFormat(size.Text.Trim().ToLower()))
+        if (!IsValidSizeFormat(size.Text.ToLower()))
         {
-            await App.ShowMessageAsync("Lỗi nhập liệu", "Kích thước không đúng định dạng. Vui lòng nhập theo định dạng 'DxR' (ví dụ: 20x30).");
+            await _dialogService.ShowErrorAsync("Kích thước không đúng định dạng. Vui lòng nhập theo định dạng 'DxR' (ví dụ: 20x30).");
             size.Focus(FocusState.Programmatic);
             return;
         }
-        var newSize = new DetailPlanks
+
+        try
         {
-            sizeID = size.Text.Trim().ToLower(),
-            inventory = 0
-        };
-        await ViewModel.AddPlankAsync(newSize);
-        ClearInputs();
+            var newSize = new DetailPlanks
+            {
+                sizeID = size.Text                
+            };
+            await ViewModel.AddPlankAsync(newSize);            
+            ClearInputs();
+        }
+        catch (Exception ex)
+        {
+            await _dialogService.ShowErrorAsync("Thêm thất bại", ex);
+        }
     }
 
     private async void BtnDelete_Click(object sender, RoutedEventArgs e)
     {
         if (ListPlankGrid.SelectedItem is not DetailPlanks selected) return;
-        await ViewModel.DeletePlankAsync(selected);
-        ClearInputs();
+        if (await _dialogService.ShowConfirmAsync("Xác nhận xóa", $"Bạn có chắc muốn xóa kích thước {selected.sizeID}?", "Xóa"))
+        {
+            try
+            {
+                await ViewModel.DeletePlankAsync(selected);                
+                ClearInputs();
+            }
+            catch (Exception ex)
+            {
+                await _dialogService.ShowErrorAsync("FAILED_DELETE".GetLocalized(), ex);
+            }
+        }
     }
 
     private async void BtnUpdate_Click(object sender, RoutedEventArgs e)
     {
         if (ListPlankGrid.SelectedItem is not DetailPlanks selected) return;
-        if (!IsValidSizeFormat(size.Text))
-        {
-            await App.ShowMessageAsync("Lỗi nhập liệu", "Định dạng không đúng, VD (DxR): 30x45");
-            return;
-        }
         if (string.IsNullOrEmpty(size.Text))
         {
-            await App.ShowMessageAsync("Lỗi", "Kích thước không được bỏ trống");
+            await _dialogService.ShowErrorAsync("Kích thước không được bỏ trống");
             return;
         }
-        var tmpPlank = new DetailPlanks
+        if (!IsValidSizeFormat(size.Text))
         {
-            sizeID = size.Text.Trim().ToLower()
-        };
+            await _dialogService.ShowErrorAsync("Định dạng không đúng, VD (DxR): 30x45");
+            return;
+        }
 
-        await ViewModel.UpdatePlankAsync(tmpPlank);
-        ClearInputs();
+        try
+        {
+            var tmpPlank = new DetailPlanks
+            {
+                sizeID = size.Text.Trim().ToLower()
+            };
+
+            await ViewModel.UpdatePlankAsync(tmpPlank);            
+            ClearInputs();
+        }
+        catch (Exception ex)
+        {
+            await _dialogService.ShowErrorAsync("FAILED_UPDATE".GetLocalized(), ex);
+        }
     }
 
     private void BtnReset_Click(object sender, RoutedEventArgs e)
@@ -93,18 +122,9 @@ public sealed partial class DetailPlanksPage : Page
         btnAdd.IsEnabled = false;
         btnDelete.IsEnabled = true;
     }
-
-    // Helper function        
+    
     private bool IsValidSizeFormat(string input)
-    {
-        // Cập nhật Regex:
-        // ^            : Bắt đầu chuỗi
-        // [1-9]        : Số đầu tiên phải là 1-9 (Chặn số 0)
-        // [0-9]{0,2}   : Theo sau là tối đa 2 chữ số nữa (Tổng cộng tối đa 3 số: 1 -> 999)
-        // x            : Dấu x ở giữa
-        // [1-9][0-9]{0,2} : Logic tương tự cho số thứ 2
-        // $            : Kết thúc chuỗi
-
+    {        
         string pattern = @"^[1-9][0-9]{0,2}x[1-9][0-9]{0,2}$";
 
         return Regex.IsMatch(input, pattern);

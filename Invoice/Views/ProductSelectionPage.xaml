@@ -4,7 +4,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"        
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:behaviors="using:Invoice.Behaviors"
     Background="#272727"
     mc:Ignorable="d">
 
@@ -28,11 +29,6 @@
                 <StackPanel Orientation="Vertical" Spacing="10">
                     <TextBlock>
                         <Run Text="(*) " Foreground="Red"/>
-                        <Run Text="Mã SP:"/>
-                    </TextBlock>
-                    <TextBox x:Name="txtProductID" Width="140" HorizontalAlignment="Left" IsReadOnly="True"/>
-                    <TextBlock>
-                        <Run Text="(*) " Foreground="Red"/>
                         <Run Text="Tên SP:"/>
                     </TextBlock>
                     <TextBox x:Name="txtName" Width="300" HorizontalAlignment="Left"/>
@@ -47,7 +43,7 @@
                         <Run Text="Số lượng :"/>
                     </TextBlock>
                     <TextBox x:Name="txtAmount" Width="140" TextAlignment="Right"
-                             BeforeTextChanging="Amount_BeforeTextChanging"
+                             behaviors:TextBoxInputBehavior.InputType="Numeric"
                              TextChanged="Input_TextChanged"
                              HorizontalAlignment="Left"/>
                     <TextBlock>                                
@@ -64,13 +60,13 @@
                              TextWrapping="Wrap"/>
                 </StackPanel>
                 <CommandBar Background="Transparent" DefaultLabelPosition="Right" HorizontalAlignment="Left" Margin="-5,10,0,0">
-                    <AppBarButton x:Name="btnAdd" Background="#07af00" Icon="Add" Label="Thêm" Click="BtnAdd_Click"
+                    <AppBarButton x:Name="btnAdd" Background="#07af00" Icon="Add" x:Uid="Btn_Add" Click="BtnAdd_Click"
                                   CornerRadius="10" ToolTipService.ToolTip="Press F1">
                         <AppBarButton.KeyboardAccelerators>
                             <KeyboardAccelerator Key="F1"/>
                         </AppBarButton.KeyboardAccelerators>
                     </AppBarButton>
-                    <AppBarButton x:Name="btnReset" Background="#24a6d5" Icon="Refresh" Label="Reset" Click="BtnReset_Click"
+                    <AppBarButton x:Name="btnReset" Background="#24a6d5" Icon="Refresh" x:Uid="Btn_Reset" Click="BtnReset_Click"
                                   CornerRadius="10" ToolTipService.ToolTip="Press F2">
                         <AppBarButton.KeyboardAccelerators>
                             <KeyboardAccelerator Key="F2"/>
@@ -109,7 +105,7 @@
                         <SolidColorBrush x:Key="DataGridColumnHeaderBackgroundColor" Color="Transparent" />
                     </controls:DataGrid.Resources>
                     <controls:DataGrid.Columns>
-                        <controls:DataGridTextColumn Binding="{Binding ProductID}" Header="Mã SP" />
+                        <!--<controls:DataGridTextColumn Binding="{Binding ProductID}" Header="Mã SP" Visibility="Collapsed"/>-->
                         <controls:DataGridTextColumn Width="200" Binding="{Binding Name}" Header="Tên SP" />
                         <controls:DataGridTextColumn Binding="{Binding BasePrice}" Header="Giá Gốc">
                             <controls:DataGridTextColumn.ElementStyle>
@@ -146,8 +142,8 @@
                     </controls:DataGrid.Columns>
                 </controls:DataGrid>
                 <ProgressRing
-                      IsActive="{x:Bind ViewModel.IsLoading, Mode=OneWay}"
-                      Visibility="{x:Bind ViewModel.IsLoading, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                      IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
+                      Visibility="{x:Bind ViewModel.IsBusy, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
                       Width="60" Height="60"
                       HorizontalAlignment="Center"
                       VerticalAlignment="Center" />

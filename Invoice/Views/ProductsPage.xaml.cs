@@ -1,16 +1,18 @@
-﻿using CommunityToolkit.WinUI.UI.Controls;
+using Invoice.Contracts.Services;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
+using Invoice.Core.Helpers;
 using Invoice.Helpers;
 using Invoice.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
+using CommunityToolkit.WinUI.UI.Controls;
 
 namespace Invoice.Views;
 
 public sealed partial class ProductsPage : Page
 {
+    private readonly IDialogService _dialogService;
     private DetailPrice? _currentPriceConfig;
     private DispatcherTimer _searchDebounceTimer;
     public ProductsViewModel ViewModel
@@ -21,25 +23,23 @@ public sealed partial class ProductsPage : Page
     public ProductsPage()
     {
         ViewModel = App.GetService<ProductsViewModel>();
+        _dialogService = App.GetService<IDialogService>();
         InitializeComponent();
+        InitDebounce();
         Loaded += ProductsPage_Loaded;
         btnAdd.IsEnabled = true;
         btnUpdate.IsEnabled = false;
         btnDelete.IsEnabled = false;
-        txtProductID.IsReadOnly = false;
-        txtSearch.Focus(FocusState.Programmatic);
     }
 
     private void InitDebounce()
     {
-        _searchDebounceTimer = new DispatcherTimer
-        {
-            Interval = TimeSpan.FromMilliseconds(300)
-        };
-        _searchDebounceTimer.Tick += async (s, e) =>
+        _searchDebounceTimer = new DispatcherTimer();
+        _searchDebounceTimer.Interval = TimeSpan.FromMilliseconds(500);
+        _searchDebounceTimer.Tick += (s, e) =>
         {
             _searchDebounceTimer.Stop();
-            await ViewModel.ReloadFirstPage();
+            ViewModel.Search(txtSearch.Text);
         };
     }
 
@@ -50,168 +50,28 @@ public sealed partial class ProductsPage : Page
         _currentPriceConfig = prices.FirstOrDefault();
     }
 
-    private void ClearInputs(DependencyObject parent)
+    private void ClearInputs()
     {
-        int count = VisualTreeHelper.GetChildrenCount(parent);
-
-        for (int i = 0; i < count; i++)
-        {
-            var child = VisualTreeHelper.GetChild(parent, i);
-
-            if (child is TextBox textBox &&
-                !string.IsNullOrEmpty(textBox.Name) &&
-                textBox.Name.StartsWith("txt"))
-            {
-                textBox.Text = string.Empty;
-            }
-            ClearInputs(child);
-        }
+        StringHelper.ClearInputs(this);
         btnAdd.IsEnabled = true;
         btnUpdate.IsEnabled = false;
         btnDelete.IsEnabled = false;
-        txtProductID.IsReadOnly = false;
-        txtProductID.Focus(FocusState.Programmatic);
-    }
-
-    private void RefreshData()
-    {
-        ViewModel.Search(txtSearch.Text);
-    }
-
-    private async void BtnNew_Click(object sender, RoutedEventArgs e)
-    {
-        if (await ValidateProductInputs() == false)
-        {
-            return;
-        }
-        var product = CreateProductFromInputs();
-
-        try
-        {
-            await ViewModel.AddProductAsync(product);
-            await App.ShowMessageAsync("Thông báo", "Thêm sản phẩm thành công!");
-            BtnReset_Click(null, null);
-        }
-        catch (Exception ex)
-        {
-            await App.ShowMessageAsync("Lỗi", $"Thêm thất bại: {ex.Message}");
-        }
-    }
-
-    private double ParseDouble(string text)
-    {
-        if (string.IsNullOrWhiteSpace(text)) return 0;
-        return double.TryParse(text.Trim(), System.Globalization.NumberStyles.Any, null, out double val) ? val : 0;
-    }
-
-    private Products CreateProductFromInputs()
-    {
-        var product = new Products
-        {
-            Name = StringHelper.CleanStringSimple(txtName.Text.Trim()),
-            BasePrice = ParseDouble(txtBasePrice.Text),
-            PriceOdd = (int)ParseDouble(txtPriceOdd.Text),
-            PriceEven = (int)ParseDouble(txtPriceEven.Text),
-            PrWage = ParseDouble(txtWage.Text),
-            sKieng = ParseDouble(txtKieng.Text),
-            sNhL = ParseDouble(txtNhL.Text),
-            sNhN = ParseDouble(txtNhN.Text),
-            sG_l = ParseDouble(txtG_l.Text),
-            sG_n = ParseDouble(txtG_n.Text),
-            sDl = ParseDouble(txtDl.Text),
-            sHau = ParseDouble(txtHau.Text),
-            sLua = ParseDouble(txtLua.Text),
-            sKt = ParseDouble(txtKt.Text),
-            sOc = ParseDouble(txtOc.Text),
-            sNhom = ParseDouble(txtNhom.Text),
-            s7f = ParseDouble(txt7f.Text),
-            s2D = ParseDouble(txt2D.Text),
-            sDecal = ParseDouble(txtDecal.Text),
-            mdfOdd = ParseDouble(txtMDFodd.Text),
-            mdfEven = ParseDouble(txtMDFeven.Text),
-            hpOdd = ParseDouble(txtHPodd.Text),
-            hpEven = ParseDouble(txtHPeven.Text),
-            hoanh = ParseDouble(txtHoanh.Text),
-            lieng = ParseDouble(txtLieng.Text),
-            tg = ParseDouble(txtTG.Text)
-        };
-
-        if (long.TryParse(txtProductID.Text, out long id) && id > 0)
-        {
-            product.ProductID = id;
-        }
-
-        return product;
-    }
-
-    private async void BtnUpdate_Click(object sender, RoutedEventArgs e)
-    {
-        if (ProductGrid.SelectedItem is not ProductSummary selectedSummary) return;
-        if (await ValidateProductInputs(isUpdate: true) == false) return;
-
-        var product = CreateProductFromInputs();
-        product.ProductID = selectedSummary.ProductID; // Ensure ID is preserved for update
-
-        try
-        {
-            await ViewModel.UpdateProductAsync(product);
-            await App.ShowMessageAsync("Thông báo", "Cập nhật thành công!");
-            BtnReset_Click(null, null);
-        }
-        catch (Exception ex)
-        {
-            await App.ShowMessageAsync("Lỗi", $"Cập nhật thất bại: {ex.Message}");
-        }
-    }
-
-    private async void BtnDelete_Click(object sender, RoutedEventArgs e)
-    {
-        if (ProductGrid.SelectedItem is not ProductSummary selected) return;
-        ContentDialog deleteDialog = new()
-        {
-            Title = "Xác nhận xóa",
-            Content = $"Bạn có chắc muốn xóa sản phẩm {selected.Name} (ID: {selected.ProductID})?",
-            PrimaryButtonText = "Xóa",
-            CloseButtonText = "Hủy",
-            DefaultButton = ContentDialogButton.Close,
-            XamlRoot = this.Content.XamlRoot
-        };
-
-        var result = await deleteDialog.ShowAsync();
-        if (result == ContentDialogResult.Primary)
-        {
-            try
-            {
-                await ViewModel.DeleteProductAsync(selected.ProductID.ToString());
-                await App.ShowMessageAsync("Thông báo", "Xóa thành công!");
-                BtnReset_Click(null, null);
-            }
-            catch (Exception ex)
-            {
-                await App.ShowMessageAsync("Lỗi", $"Xóa thất bại: {ex.Message}");
-            }
-        }
-    }
-
-    private void BtnReset_Click(object sender, RoutedEventArgs e)
-    {
-        ClearInputs(this);
-        RefreshData();
+        ProductGrid.SelectedItem = null;
+        txtName.Focus(FocusState.Programmatic);
     }
 
     private async void ProductGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (ProductGrid.SelectedItem is not ProductSummary summary) return;
-        await ViewModel.LoadProductForEditingAsync(summary.ProductID.ToString());
+        await ViewModel.LoadProductForEditingAsync(summary.ProductID);
         var selected = ViewModel.SelectedProductFull;
 
         if (selected == null) return;
         btnAdd.IsEnabled = false;
         btnDelete.IsEnabled = true;
         btnUpdate.IsEnabled = true;
-        txtProductID.Text = selected.ProductID.ToString();
-        txtProductID.IsReadOnly = true;
         txtName.Text = selected.Name;
+        txtSizeID.Text = selected.SizeID ?? string.Empty;
         txtBasePrice.Text = selected.BasePrice.ToString();
         txtPriceOdd.Text = selected.PriceOdd.ToString();
         txtPriceEven.Text = selected.PriceEven.ToString();
@@ -242,98 +102,152 @@ public sealed partial class ProductsPage : Page
         btnDelete.IsEnabled = true;
     }
 
-    private void ProductGrid_LoadingRow(object sender, DataGridRowEventArgs e)
+    private Products CreateProductFromInputs()
     {
-        int index = e.Row.GetIndex();
-        if (ViewModel == null) return;
-        if (index >= ViewModel.Source.Count - 1 && !ViewModel.IsLoading)
+        string sizeIdInput = txtSizeID.Text.Trim();
+        var product = new Products
         {
-            _ = ViewModel.LoadMoreDataAsync();
+            Name = StringHelper.RemoveRedundantWhitespace(txtName.Text),
+            SizeID = string.IsNullOrEmpty(sizeIdInput) ? null : sizeIdInput,
+            BasePrice = StringHelper.ParseDouble(txtBasePrice.Text),
+            PriceOdd = (int)StringHelper.ParseDouble(txtPriceOdd.Text),
+            PriceEven = (int)StringHelper.ParseDouble(txtPriceEven.Text),
+            PrWage = StringHelper.ParseDouble(txtWage.Text),
+            sKieng = StringHelper.ParseDouble(txtKieng.Text),
+            sNhL = StringHelper.ParseDouble(txtNhL.Text),
+            sNhN = StringHelper.ParseDouble(txtNhN.Text),
+            sG_l = StringHelper.ParseDouble(txtG_l.Text),
+            sG_n = StringHelper.ParseDouble(txtG_n.Text),
+            sDl = StringHelper.ParseDouble(txtDl.Text),
+            sHau = StringHelper.ParseDouble(txtHau.Text),
+            sLua = StringHelper.ParseDouble(txtLua.Text),
+            sKt = StringHelper.ParseDouble(txtKt.Text),
+            sOc = StringHelper.ParseDouble(txtOc.Text),
+            sNhom = StringHelper.ParseDouble(txtNhom.Text),
+            s7f = StringHelper.ParseDouble(txt7f.Text),
+            s2D = StringHelper.ParseDouble(txt2D.Text),
+            sDecal = StringHelper.ParseDouble(txtDecal.Text),
+            mdfOdd = StringHelper.ParseDouble(txtMDFodd.Text),
+            mdfEven = StringHelper.ParseDouble(txtMDFeven.Text),
+            hpOdd = StringHelper.ParseDouble(txtHPodd.Text),
+            hpEven = StringHelper.ParseDouble(txtHPeven.Text),
+            hoanh = StringHelper.ParseDouble(txtHoanh.Text),
+            lieng = StringHelper.ParseDouble(txtLieng.Text),
+            tg = StringHelper.ParseDouble(txtTG.Text)
+        };
+
+        return product;
+    }
+
+    private async void BtnNew_Click(object sender, RoutedEventArgs e)
+    {
+        if (await ValidateProductInputs())
+        {
+            var product = CreateProductFromInputs();
+            await ViewModel.AddProductAsync(product);
+            ClearInputs();
         }
+    }
+
+    private async void BtnUpdate_Click(object sender, RoutedEventArgs e)
+    {
+        if (ProductGrid.SelectedItem is ProductSummary selected)
+        {
+            if (await ValidateProductInputs())
+            {
+                var product = CreateProductFromInputs();
+                product.ProductID = selected.ProductID;
+                await ViewModel.UpdateProductAsync(product);
+                ClearInputs();
+            }
+        }
+        else
+        {
+            await _dialogService.ShowErrorAsync("Vui lòng chọn sản phẩm để sửa.");
+        }
+    }
+
+    private async void BtnDelete_Click(object sender, RoutedEventArgs e)
+    {
+        if (ProductGrid.SelectedItem is ProductSummary selected)
+        {
+            if (await _dialogService.ShowConfirmAsync("Xác nhận xóa", $"Bạn có chắc muốn xóa sản phẩm {selected.Name}?", "Xác nhận"))
+            {
+                await ViewModel.DeleteProductAsync(selected.ProductID);
+                ClearInputs();
+            }
+        }
+        else
+        {
+            await _dialogService.ShowErrorAsync("Vui lòng chọn sản phẩm để xoá.");
+        }
+    }
+
+    private void BtnReset_Click(object sender, RoutedEventArgs e)
+    {
+        ClearInputs();
     }
 
     private async Task<bool> ValidateProductInputs(bool isUpdate = false)
     {
-        if (!isUpdate && string.IsNullOrWhiteSpace(txtName.Text))
+        if (string.IsNullOrWhiteSpace(txtName.Text))
         {
-            await App.ShowMessageAsync("Validation Error", "Tên sản phẩm không được bỏ trống.");
+            await _dialogService.ShowErrorAsync("Vui lòng nhập tên sản phẩm.");
             txtName.Focus(FocusState.Programmatic);
             return false;
         }
-
-        if (string.IsNullOrWhiteSpace(txtName.Text))
+        
+        string sizeId = txtSizeID.Text.Trim();
+        if (!string.IsNullOrEmpty(sizeId))
         {
-            await App.ShowMessageAsync("Validation Error", "Tên sản phẩm không được bỏ trống.");
-            txtName.Focus(FocusState.Programmatic);
-            return false;
+            var dataService = App.GetService<IDataService>();
+            var planks = await dataService.GetPlanks();
+            if (!planks.Any(p => p.sizeID == sizeId))
+            {                
+                await _dialogService.ShowErrorAsync($"Kích thước ({sizeId}) không tồn tại");
+                txtSizeID.Focus(FocusState.Programmatic);
+                return false;
+            }
         }
 
         if (!double.TryParse(txtWage.Text, out double wage) || wage <= 0)
         {
-            await App.ShowMessageAsync("Validation Error", "Tiền công phải lớn hơn 0.");
+            await _dialogService.ShowErrorAsync("Tiền công phải khác 0");
             txtWage.Focus(FocusState.Programmatic);
             return false;
         }
 
         if (string.IsNullOrWhiteSpace(txtBasePrice.Text) || string.IsNullOrWhiteSpace(txtPriceOdd.Text) || string.IsNullOrWhiteSpace(txtPriceEven.Text))
         {
-            await App.ShowMessageAsync("Validation Error", "Giá gốc, sỉ và lẻ không được bỏ trống.");
+            await _dialogService.ShowErrorAsync("Giả sỉ, lẻ và giá gốc không được để trống");
             txtBasePrice.Focus(FocusState.Programmatic);
             return false;
         }
-
-        int sCount = 0;
-
-        var sControls = new List<TextBox> {
-            txtKieng, txtNhL, txtNhN, txtG_l, txtG_n, txtDl, txtHau,
-            txtLua, txtKt, txtOc, txtNhom, txt7f, txt2D, txtDecal
-        };
-
-        foreach (var ctrl in sControls)
+        
+        if (!BusinessValidation.IsValidPriceLength(txtBasePrice.Text, txtPriceOdd.Text))
         {
-            if (double.TryParse(ctrl.Text, out double val) && val > 0)
-            {
-                sCount++;
-            }
+            await _dialogService.ShowErrorAsync("Giá lẻ không hợp lệ so với giá gốc.");
+            txtPriceOdd.Focus(FocusState.Programmatic);
+            return false;
         }
 
-        if (sCount < 3)
+        if (!BusinessValidation.IsValidPriceLength(txtBasePrice.Text, txtPriceEven.Text))
         {
-            await App.ShowMessageAsync("Validation Error", $"Bạn mới nhập {sCount} thành phần. Cần ít nhất 3 thành phần khác 0.");
+            await _dialogService.ShowErrorAsync("Giá sỉ không hợp lệ so với giá gốc.");
+            txtPriceEven.Focus(FocusState.Programmatic);
             return false;
         }
 
         return true;
     }
 
-    private void CalculateBasePrice()
+    private void ProductGrid_LoadingRow(object sender, DataGridRowEventArgs e)
     {
-        if (_currentPriceConfig == null) return;
-
-        try
+        int index = e.Row.GetIndex();
+        if (ViewModel == null) return;
+        if (index >= ViewModel.Source.Count - 1 && !ViewModel.IsBusy)
         {
-            double wage = ParseDouble(txtWage.Text);
-
-            double total = wage +
-                (ParseDouble(txtKieng.Text) * _currentPriceConfig.PrKieng) +
-                (ParseDouble(txtNhL.Text) * _currentPriceConfig.PrNhL) +
-                (ParseDouble(txtNhN.Text) * _currentPriceConfig.PrNhN) +
-                (ParseDouble(txtG_l.Text) * _currentPriceConfig.PrG_l) +
-                (ParseDouble(txtG_n.Text) * _currentPriceConfig.PrG_n) +
-                (ParseDouble(txtDl.Text) * _currentPriceConfig.PrDl) +
-                (ParseDouble(txtHau.Text) * _currentPriceConfig.PrHau) +
-                (ParseDouble(txtLua.Text) * _currentPriceConfig.PrLua) +
-                (ParseDouble(txtKt.Text) * _currentPriceConfig.PrKt) +
-                (ParseDouble(txtOc.Text) * _currentPriceConfig.PrOc) +
-                (ParseDouble(txtNhom.Text) * _currentPriceConfig.PrNhom) +
-                (ParseDouble(txt7f.Text) * _currentPriceConfig.Pr7f) +
-                (ParseDouble(txt2D.Text) * _currentPriceConfig.Pr2D) +
-                (ParseDouble(txtDecal.Text) * _currentPriceConfig.PrDecal);
-
-            txtBasePrice.Text = total.ToString("N0");
-        }
-        catch
-        {
+            _ = ViewModel.LoadMoreDataAsync();
         }
     }
 
@@ -344,18 +258,35 @@ public sealed partial class ProductsPage : Page
         _searchDebounceTimer.Start();
     }
 
-    private void inputDecimal(TextBox sender, TextBoxBeforeTextChangingEventArgs args)
-    {
-        args.Cancel = args.NewText.Any(c => !char.IsDigit(c) && c != '.');
-
-        if (!args.Cancel && args.NewText.Count(c => c == '.') > 1)
-        {
-            args.Cancel = true;
-        }
-    }
-
     private void computeBasePrice(object sender, RoutedEventArgs args)
     {
-        CalculateBasePrice();
+        //CalculateBasePrice();
+        if (_currentPriceConfig == null) return;
+
+        try
+        {
+            double wage = StringHelper.ParseDouble(txtWage.Text);
+
+            double total = wage +
+                (StringHelper.ParseDouble(txtKieng.Text) * _currentPriceConfig.PrKieng) +
+                (StringHelper.ParseDouble(txtNhL.Text) * _currentPriceConfig.PrNhL) +
+                (StringHelper.ParseDouble(txtNhN.Text) * _currentPriceConfig.PrNhN) +
+                (StringHelper.ParseDouble(txtG_l.Text) * _currentPriceConfig.PrG_l) +
+                (StringHelper.ParseDouble(txtG_n.Text) * _currentPriceConfig.PrG_n) +
+                (StringHelper.ParseDouble(txtDl.Text) * _currentPriceConfig.PrDl) +
+                (StringHelper.ParseDouble(txtHau.Text) * _currentPriceConfig.PrHau) +
+                (StringHelper.ParseDouble(txtLua.Text) * _currentPriceConfig.PrLua) +
+                (StringHelper.ParseDouble(txtKt.Text) * _currentPriceConfig.PrKt) +
+                (StringHelper.ParseDouble(txtOc.Text) * _currentPriceConfig.PrOc) +
+                (StringHelper.ParseDouble(txtNhom.Text) * _currentPriceConfig.PrNhom) +
+                (StringHelper.ParseDouble(txt7f.Text) * _currentPriceConfig.Pr7f) +
+                (StringHelper.ParseDouble(txt2D.Text) * _currentPriceConfig.Pr2D) +
+                (StringHelper.ParseDouble(txtDecal.Text) * _currentPriceConfig.PrDecal);
+
+            txtBasePrice.Text = total.ToString("N0");
+        }
+        catch
+        {
+        }
     }
 }

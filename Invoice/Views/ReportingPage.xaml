@@ -1,4 +1,4 @@
-﻿<Page
+<Page
     x:Class="Invoice.Views.ReportingPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -42,7 +42,7 @@
             </Grid.RowDefinitions>
 
             <StackPanel Orientation="Horizontal" Spacing="20" Padding="20">
-                <Button Command="{x:Bind ViewModel.ExportAndEmailCommand}" Content="Gửi Báo Cáo Email" Style="{StaticResource AccentButtonStyle}"/>
+                <Button Content="Gửi Báo Cáo Email" Command="{x:Bind ViewModel.ExportAndEmailCommand}" Style="{StaticResource AccentButtonStyle}"/>
             </StackPanel>
 
             <ScrollViewer Grid.Row="1" Padding="20">
@@ -62,9 +62,9 @@
                         </Border>
                     </StackPanel>
 
-                    <TextBlock Text="Biểu đồ đơn hàng theo tháng" Style="{StaticResource SubtitleTextBlockStyle}" FontWeight="SemiBold"/>
+                    <TextBlock Text="Biểu đồ thống kê theo tháng" Style="{StaticResource SubtitleTextBlockStyle}" FontWeight="SemiBold"/>
                     <Grid Height="300" Background="{ThemeResource LayerFillColorDefaultBrush}" CornerRadius="8" Padding="10">
-                        <lvc:CartesianChart Series="{x:Bind ViewModel.Series, Mode=OneWay}" XAxes="{x:Bind ViewModel.XAxes, Mode=OneWay}" TooltipPosition="Top"/>
+                        <lvc:CartesianChart Series="{x:Bind ViewModel.Series, Mode=OneWay}" XAxes="{x:Bind ViewModel.XAxes, Mode=OneWay}" YAxes="{x:Bind ViewModel.YAxes, Mode=OneWay}" TooltipPosition="Top"/>
                     </Grid>
 
                     <TextBlock Text="Top 10 Sản Phẩm" Style="{StaticResource SubtitleTextBlockStyle}" FontWeight="SemiBold"/>
@@ -98,15 +98,10 @@
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="15" Width="300">
                 <FontIcon Glyph="&#xE1F6;" FontSize="40" Foreground="{ThemeResource TextFillColorPrimaryBrush}"/>
                 <TextBlock Text="Khu vực hạn chế" HorizontalAlignment="Center" Style="{StaticResource PageTitleStyle}"/>
-                <PasswordBox Header="Nhập mật khẩu" Password="{x:Bind ViewModel.PasswordInput, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <PasswordBox Header="Nhập mật khẩu" PasswordChanged="OnPasswordChanged"/>
                 <TextBlock Text="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}" Foreground="{ThemeResource SystemFillColorCriticalBrush}"/>
                 <Button Content="Mở khóa" Command="{x:Bind ViewModel.UnlockCommand}" HorizontalAlignment="Stretch" Style="{StaticResource AccentButtonStyle}"/>
             </StackPanel>
-        </Grid>
-
-        <Grid Visibility="{x:Bind ViewModel.IsLoading, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" 
-			  Background="{ThemeResource SystemControlPageBackgroundMediumAltMediumBrush}">
-            <ProgressRing IsActive="True" Width="50" Height="50"/>
         </Grid>
     </Grid>
 </Page>

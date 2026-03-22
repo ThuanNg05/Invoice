@@ -1,5 +1,64 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
@@ -61,32 +120,29 @@
   <data name="AppDisplayName" xml:space="preserve">
     <value>Invoice</value>
   </data>
-	<data name="AppDescription" xml:space="preserve">
-		<value>Invoice</value>
-  	</data>
-  <data name="Shell_DataGrid.Content" xml:space="preserve">
-    <value>DataGrid</value>
+  <data name="AppDescription" xml:space="preserve">
+    <value>Invoice</value>
   </data>
   <data name="Settings_Personalization.Text" xml:space="preserve">
-    <value>Personalization</value>
+    <value>Cá nhân hoá</value>
   </data>
   <data name="Settings_Theme.Text" xml:space="preserve">
-    <value>Theme</value>
+    <value>Màu nền</value>
   </data>
   <data name="Settings_Theme_Light.Content" xml:space="preserve">
-    <value>Light</value>
+    <value>Sáng</value>
   </data>
   <data name="Settings_Theme_Dark.Content" xml:space="preserve">
-    <value>Dark</value>
+    <value>Tối</value>
   </data>
   <data name="Settings_Theme_Default.Content" xml:space="preserve">
-    <value>Default</value>
+    <value>Mặc định</value>
   </data>
   <data name="Settings_About.Text" xml:space="preserve">
     <value>About this application</value>
   </data>
   <data name="Settings_AboutDescription.Text" xml:space="preserve">
-    <value>TODO: Replace with your app description.</value>
+    <value>Phần mềm quản lý hoá đơn và kho hàng.</value>
   </data>
   <data name="SettingsPage_PrivacyTermsLink.Content" xml:space="preserve">
     <value>Privacy Statement</value>
@@ -95,9 +151,108 @@
     <value>https://YourPrivacyUrlGoesHere/</value>
   </data>
   <data name="Shell_CreateInvoice.Content" xml:space="preserve">
-    <value>CreateInvoice</value>
+    <value>Hoá đơn</value>
   </data>
   <data name="Shell_Customers.Content" xml:space="preserve">
-    <value>Customers</value>
+    <value>Khách hàng</value>
+  </data>
+  <data name="Shell_DetailPlanks.Content" xml:space="preserve">
+    <value>Cỡ ván</value>
+  </data>
+  <data name="Shell_DetailPrice.Content" xml:space="preserve">
+    <value>Giá thành phần</value>
+  </data>
+  <data name="Shell_History.Content" xml:space="preserve">
+    <value>Lịch sử</value>
+  </data>
+  <data name="Shell_IOActions.Content" xml:space="preserve">
+    <value>Xuất Nhập Kho</value>
+  </data>
+  <data name="Shell_Materials.Content" xml:space="preserve">
+    <value>Vật tư</value>
+  </data>
+  <data name="Shell_ProductSelection.Content" xml:space="preserve">
+    <value>Chọn SP</value>
+  </data>
+  <data name="Shell_Products.Content" xml:space="preserve">
+    <value>Sản phẩm</value>
+  </data>
+  <data name="Shell_Reporting.Content" xml:space="preserve">
+    <value>Báo cáo</value>
+  </data>
+  <data name="Shell_IOPlanks.Content" xml:space="preserve">
+    <value>Kho ván</value>
+  </data>
+  <data name="Shell_Planks.Content" xml:space="preserve">
+    <value>Ván</value>
+  </data>
+  <data name="Required_Field.Text" xml:space="preserve">
+    <value>(*)</value>
+  </data>
+  <data name="Settings_Storage_Title.Text" xml:space="preserve">
+    <value>Lưu trữ</value>
+  </data>
+  <data name="Settings_Storage_Folder_Label.Text" xml:space="preserve">
+    <value>Thư mục lưu hoá đơn (PDF)</value>
+  </data>
+  <data name="Settings_Storage_Btn_Select.Content" xml:space="preserve">
+    <value>Chọn thư mục</value>
+  </data>
+  <data name="Settings_Storage_Description.Text" xml:space="preserve">
+    <value>Các hoá đơn xuất ra sẽ được lưu tại đây. Nếu chưa chọn, mặc định sẽ lưu tại thư mục Documents.</value>
+  </data>
+  <data name="Settings_Error_Init" xml:space="preserve">
+    <value>Lỗi khi khởi tạo cài đặt</value>
+  </data>
+  <data name="Settings_Error_SelectFolder" xml:space="preserve">
+    <value>Lỗi khi chọn thư mục lưu trữ</value>
+  </data>
+  <data name="Btn_Save.Label" xml:space="preserve">
+    <value>Lưu</value>
+  </data>
+  <data name="Btn_Add.Label" xml:space="preserve">
+    <value>Mới</value>
+  </data>
+  <data name="Btn_Delete.Label" xml:space="preserve">
+    <value>Xoá</value>
+  </data>
+  <data name="Btn_Update.Label" xml:space="preserve">
+    <value>Sửa</value>
+  </data>
+  <data name="Btn_Reset.Label" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="FILE_NOT_FOUND" xml:space="preserve">
+    <value>Không tìm thấy tệp</value>
+  </data>
+  <data name="ERROR_PDF_SERVICE" xml:space="preserve">
+    <value>Lỗi tạo tệp PDF</value>
+  </data>
+  <data name="LOAD_FAILED" xml:space="preserve">
+    <value>Lỗi nạp dữ liệu</value>
+  </data>
+  <data name="SUCCESS_ADD" xml:space="preserve">
+    <value>Thêm thành công</value>
+  </data>
+  <data name="SUCCESS_UPDATE" xml:space="preserve">
+    <value>Cập nhật thành công</value>
+  </data>
+  <data name="FAILED_ADD" xml:space="preserve">
+    <value>Thêm thất bại</value>
+  </data>
+  <data name="FAILED_DELETE" xml:space="preserve">
+    <value>Xoá thất bại</value>
+  </data>
+  <data name="FAILED_UPDATE" xml:space="preserve">
+    <value>Cập nhật thất bại</value>
+  </data>
+  <data name="SUCCESS_DELETE" xml:space="preserve">
+    <value>Xoá thành công</value>
+  </data>
+  <data name="SUCCESS_SAVE" xml:space="preserve">
+    <value>Lưu thành công</value>
+  </data>
+  <data name="Shell_HistoryTransaction.Content" xml:space="preserve">
+    <value>Lịch sử kho</value>
   </data>
 </root>

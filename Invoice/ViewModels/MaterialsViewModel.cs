@@ -1,137 +1,109 @@
-﻿using System.Collections.ObjectModel;
-using System.Diagnostics;
-using CommunityToolkit.Mvvm.ComponentModel;
+using System.Collections.ObjectModel;
 using Invoice.Contracts.ViewModels;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
+using Invoice.Contracts.Services;
+using Invoice.Helpers;
 
 namespace Invoice.ViewModels;
 
-public partial class MaterialsViewModel : ObservableRecipient, INavigationAware
+public partial class MaterialsViewModel : ViewModelBase, INavigationAware
 {
     private readonly IDataService _dataService;
 
-    [ObservableProperty]
-    private bool isLoading;
+    public List<Materials> AllMaterials = [];
+    public ObservableCollection<Materials> MaterialsCollection { get; } = [];
 
-    public ObservableCollection<Materials> Materials { get; } = new();
-
-    public MaterialsViewModel(IDataService dataService)
+    public MaterialsViewModel(IDataService dataService, IDialogService dialogService) : base(dialogService)
     {
         _dataService = dataService;
     }
 
-    public async void OnNavigatedTo(object parameter)
+    public void OnNavigatedTo(object parameter)
     {
-        _ = LoadDataSafeAsync();
-    }
-
-    private async Task LoadDataSafeAsync()
-    {
-        try { await LoadData(); }
-        catch (Exception ex)
-        {
-            Debug.WriteLine(ex);
-            await App.ShowMessageAsync("Lỗi", "Không thể tải dữ liệu.");
-        }
-    }
-
-    private async Task LoadData()
-    {
-        IsLoading = true;
-        Materials.Clear();
-        var data = await _dataService.GetMaterials(forceRefresh: false);
-        foreach (var item in data)
-        {
-            Materials.Add(item);
-        }
-        IsLoading = false;
+        _ = LoadDataAsync();
     }
 
     public void OnNavigatedFrom()
     {
     }
 
+    private async Task LoadDataAsync()
+    {
+        await ExecuteAsync(async () =>
+        {
+            MaterialsCollection.Clear();
+            var data = await _dataService.GetMaterials(forceRefresh: false);
+            AllMaterials = data.ToList();
+            foreach (var item in AllMaterials)
+            {
+                MaterialsCollection.Add(item);
+            }
+        }, "LOAD_FAILED".GetLocalized());
+    }
+
     public async Task AddMaterialAsync(Materials material)
     {
-        if (Materials.Any(m => m.Name.Equals(material.Name, StringComparison.OrdinalIgnoreCase)))
+        if (MaterialsCollection.Any(m => m.Name.Equals(material.Name, StringComparison.OrdinalIgnoreCase)))
         {
-            Debug.WriteLine("Lỗi: Tên vật tư đã tồn tại!");
-            await App.ShowMessageAsync("Lỗi", "Tên vật tư đã tồn tại!");
+            await DialogService.ShowErrorAsync("Tên vật tư này đã tồn tại. Vui lòng nhập tên khác");
             return;
         }
-        IsLoading = true;
-        try
+
+        await ExecuteAsync(async () =>
         {
             await _dataService.AddMaterial(material);
-            Materials.Add(material);
-            await App.ShowMessageAsync("Thông báo", "Vật tư đã được thêm thành công.");
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Failed to add material: {ex.Message}");
-            await App.ShowMessageAsync("Lỗi", "Không thể thêm vật tư.");
-        }
-        finally
-        {
-            IsLoading = false;
-        }
+            MaterialsCollection.Add(material);
+            AllMaterials.Add(material);
+            await DialogService.ShowSuccessAsync("SUCESS_ADD".GetLocalized());
+        }, "Lỗi thêm vật tư");
     }
 
     public async Task DeleteMaterialAsync(Materials material)
     {
-        IsLoading = true;
-        try
+        await ExecuteAsync(async () =>
         {
             await _dataService.DeleteMaterial(material.ProductID);
-            Materials.Remove(material);
-            await App.ShowMessageAsync("Thông báo", "Vật tư đã được xóa thành công.");
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Failed to delete material: {ex.Message}");
-            await App.ShowMessageAsync("Lỗi", "Không thể xóa vật tư.");
-        }
-        finally
-        {
-            IsLoading = false;
-        }
+            MaterialsCollection.Remove(material);
+            var itemAll = AllMaterials.FirstOrDefault(m => m.ProductID == material.ProductID);
+            if (itemAll != null) AllMaterials.Remove(itemAll);
+            await DialogService.ShowSuccessAsync("SUCESS_DELETE".GetLocalized());
+        }, "Lỗi xoá vật tư");
     }
 
     public async Task UpdateMaterialAsync(Materials material)
     {
-        if (Materials.Any(m => m.Name.Equals(material.Name, StringComparison.OrdinalIgnoreCase) && m.ProductID != material.ProductID))
+        if (MaterialsCollection.Any(m => m.Name.Equals(material.Name, StringComparison.OrdinalIgnoreCase) && m.ProductID != material.ProductID))
         {
-            Debug.WriteLine("Lỗi: Tên vật tư đã tồn tại!");
-            await App.ShowMessageAsync("Lỗi", "Tên vật tư đã tồn tại!");
+            await DialogService.ShowErrorAsync("Tên vật tư này đã tồn tại. Vui lòng nhập tên khác");
             return;
         }
-        IsLoading = true;
-        try
+
+        await ExecuteAsync(async () =>
         {
             await _dataService.UpdateMaterial(material);
 
-            var itemToUpdate = Materials.FirstOrDefault(c => c.ProductID == material.ProductID);
-
+            var itemToUpdate = MaterialsCollection.FirstOrDefault(c => c.ProductID == material.ProductID);
             if (itemToUpdate != null)
             {
-                var index = Materials.IndexOf(itemToUpdate);
+                var index = MaterialsCollection.IndexOf(itemToUpdate);
                 if (index != -1)
                 {
-                    Materials.RemoveAt(index);
-                    Materials.Insert(index, material);
+                    MaterialsCollection.RemoveAt(index);
+                    MaterialsCollection.Insert(index, material);
                 }
             }
-            await App.ShowMessageAsync("Thông báo", "Vật tư đã được cập nhật thành công.");
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Failed to update material: {ex.Message}");
-            await App.ShowMessageAsync("Lỗi", "Không thể cập nhật vật tư.");
-        }
-        finally
-        {
-            IsLoading = false;
-        }
+
+            var itemInAll = AllMaterials.FirstOrDefault(c => c.ProductID == material.ProductID);
+            if (itemInAll != null)
+            {
+                var indexAll = AllMaterials.IndexOf(itemInAll);
+                if (indexAll != -1)
+                {
+                    AllMaterials[indexAll] = material;
+                }
+            }
+            await DialogService.ShowSuccessAsync("SUCESS_UPDATE".GetLocalized());
+        }, "Lỗi cập nhật vật tư");
     }
 }

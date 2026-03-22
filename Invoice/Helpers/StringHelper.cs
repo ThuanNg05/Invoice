@@ -1,17 +1,18 @@
 ﻿using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Controls;
 
 namespace Invoice.Helpers;
 
 public static class StringHelper
-{
-    public static string CleanStringSimple(string input)
+{    
+    public static string RemoveRedundantWhitespace(string input)
     {
         if (string.IsNullOrWhiteSpace(input)) return string.Empty;
-        
-        var words = input.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-        return string.Join(" ", words);
+        return Regex.Replace(input.Trim(), @"\s+", " ");
     }
 
     public static string GetNormalizedLastName(string fullName)
@@ -56,10 +57,30 @@ public static class StringHelper
     }
 
     private static readonly string[] Units = { "", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín" };
+   
+    public static double ParseDouble(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return 0;
+        return double.TryParse(text.Trim().Replace(",", ""), NumberStyles.Any, CultureInfo.InvariantCulture, out double val) ? val : 0;
+    }
 
-    /// <summary>
-    /// Converts a number to Vietnamese currency text (e.g., 10500 -> "Mười nghìn năm trăm đồng")
-    /// </summary>
+    public static void ClearInputs(DependencyObject parent)
+    {
+        int count = VisualTreeHelper.GetChildrenCount(parent);
+
+        for (int i = 0; i < count; i++)
+        {
+            var child = VisualTreeHelper.GetChild(parent, i);
+
+            if (child is TextBox textBox &&
+                !string.IsNullOrEmpty(textBox.Name))
+            {
+                textBox.Text = string.Empty;
+            }
+            ClearInputs(child);
+        }
+    }
+
     public static string NumberToTextVN(double inputNumber)
     {
         long number = (long)inputNumber; // Convert to long to handle currency as integer
