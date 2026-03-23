@@ -73,7 +73,7 @@
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE82D;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="Ván" helpers:NavigationHelper.NavigateTo="Invoice.ViewModels.PlanksViewModel">
+                <NavigationViewItem Content="Rập ván" helpers:NavigationHelper.NavigateTo="Invoice.ViewModels.PlanksViewModel">
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE82D;"/>
                     </NavigationViewItem.Icon>
@@ -81,11 +81,6 @@
                 <NavigationViewItem Content="Cỡ ván" helpers:NavigationHelper.NavigateTo="Invoice.ViewModels.DetailPlanksViewModel">
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE82D;"/>
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
-                <NavigationViewItem Content="Kho ván" helpers:NavigationHelper.NavigateTo="Invoice.ViewModels.IOPlanksViewModel">
-                    <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xF1CB;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
                 <NavigationViewItem Content="Xuất Nhập Kho" helpers:NavigationHelper.NavigateTo="Invoice.ViewModels.IOActionsViewModel">

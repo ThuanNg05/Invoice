@@ -105,6 +105,20 @@
 					</CommandBar>
 				</StackPanel>
 			</StackPanel>
+
+            <Border BorderBrush="{ThemeResource SurfaceStrokeColorDefaultBrush}" BorderThickness="1" Padding="15" CornerRadius="8" Background="{ThemeResource LayerFillColorDefaultBrush}" Margin="10,0,0,0">
+                <StackPanel Spacing="10" Width="180">
+                    <TextBlock Text="Nhập kho nhanh" FontWeight="Bold" HorizontalAlignment="Center"/>
+                    <TextBox x:Name="txtBigSheetQty" Header="Số lượng tấm lớn" behaviors:TextBoxInputBehavior.InputType="Numeric" HorizontalAlignment="Stretch"/>
+                    <ComboBox x:Name="cmbMaterial" Header="Loại ván" HorizontalAlignment="Stretch"
+                              ItemsSource="{x:Bind ViewModel.Materials, Mode=OneWay}"
+                              DisplayMemberPath="Name"
+                              SelectedValuePath="ProductID"/>
+                    <Button x:Name="btnSaveStock" Content="Xác nhận nhập" Click="BtnSaveStock_Click" HorizontalAlignment="Stretch"
+                            Background="#516dcf" Foreground="White" CornerRadius="5"
+                            IsEnabled="{x:Bind ViewModel.IsBusy, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}"/>
+                </StackPanel>
+            </Border>
 		</StackPanel>
 		<StackPanel Grid.Row="1">
 			<controls:DataGrid

@@ -14,6 +14,10 @@ public partial class PlanksViewModel : ViewModelBase, INavigationAware
 
     public ObservableCollection<Frames> Frames { get; } = new ObservableCollection<Frames>();
 
+    public ObservableCollection<DetailPlanks> Planks { get; } = new ObservableCollection<DetailPlanks>();
+
+    public ObservableCollection<Materials> Materials { get; } = new ObservableCollection<Materials>();
+
     public PlanksViewModel(IDataService dataService, IDialogService dialogService) : base(dialogService)
     {
         _dataService = dataService;
@@ -33,12 +37,35 @@ public partial class PlanksViewModel : ViewModelBase, INavigationAware
         await ExecuteAsync(async () =>
         {
             Frames.Clear();
-            var data = await _dataService.GetFrames(forceRefresh: false);
+            var data = await _dataService.GetFrames(forceRefresh: true);
             foreach (var item in data)
             {
                 Frames.Add(item);
             }
-        }, "Lỗi khi tải danh mục ván");
+
+            Planks.Clear();
+            var planks = await _dataService.GetPlanks();
+            foreach (var item in planks)
+            {
+                Planks.Add(item);
+            }
+
+            Materials.Clear();
+            var materials = await _dataService.GetMaterials();
+            foreach (var item in materials)
+            {
+                Materials.Add(item);
+            }
+        }, "Lỗi khi tải dữ liệu");
+    }
+
+    public async Task ProcessTransactionAsync(Frames frame, int amount, long materialID)
+    {
+        await ExecuteAsync(async () =>
+        {
+            await _dataService.ProcessInventoryTransaction(frame, amount, materialID);
+            await DialogService.ShowSuccessAsync("Nhập kho thành công");
+        }, "Lỗi khi nhập kho");
     }
 
     public async Task AddFrameAsync(Frames frame)
@@ -54,7 +81,7 @@ public partial class PlanksViewModel : ViewModelBase, INavigationAware
             await _dataService.AddFrame(frame);
             Frames.Add(frame);
             await DialogService.ShowSuccessAsync("SUCCESS_ADD".GetLocalized());
-        }, "Lỗi khi thêm ván");
+        }, "FAILED_ADD".GetLocalized());
     }
 
     public async Task DeleteFrameAsync(Frames frame)
@@ -84,6 +111,6 @@ public partial class PlanksViewModel : ViewModelBase, INavigationAware
                 }
             }
             await DialogService.ShowSuccessAsync("SUCCESS_UPDATE".GetLocalized());
-        }, "Lỗi khi cập nhật ván");
+        }, "FAILED_UPDATE".GetLocalized());
     }
 }

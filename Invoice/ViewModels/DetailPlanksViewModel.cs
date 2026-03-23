@@ -4,7 +4,6 @@ using Invoice.Contracts.ViewModels;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
 using Invoice.Helpers;
-using Invoice.Services;
 
 namespace Invoice.ViewModels;
 

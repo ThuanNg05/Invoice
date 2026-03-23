@@ -5,7 +5,6 @@ using Invoice.Helpers;
 using Invoice.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
 
 namespace Invoice.Views;
 
@@ -25,6 +24,7 @@ public sealed partial class PlanksPage : Page
         btnAdd.IsEnabled = true;
         btnUpdate.IsEnabled = false;
         btnDelete.IsEnabled = false;
+        btnSaveStock.IsEnabled = false;
     }
 
     private void ClearInputs()
@@ -34,8 +34,45 @@ public sealed partial class PlanksPage : Page
         btnAdd.IsEnabled = true;
         btnUpdate.IsEnabled = false;
         btnDelete.IsEnabled = false;
+        btnSaveStock.IsEnabled = false;
         PlankGrid.SelectedItem = null;
         txtSize1.Focus(FocusState.Programmatic);
+        txtBigSheetQty.Text = string.Empty;
+        cmbMaterial.SelectedIndex = -1;
+    }
+
+    private async void BtnSaveStock_Click(object sender, RoutedEventArgs e)
+    {
+        if (PlankGrid.SelectedItem is not Frames selectedFrame)
+        {
+            await _dialogService.ShowErrorAsync("Vui lòng chọn mã rập để lưu kho");
+            return;
+        }
+
+        if (string.IsNullOrEmpty(txtBigSheetQty.Text) || !int.TryParse(txtBigSheetQty.Text, out int bigQty) || bigQty <= 0)
+        {
+            await _dialogService.ShowErrorAsync("Vui lòng nhập số lượng nhập kho hợp lệ (>0)");
+            txtBigSheetQty.Focus(FocusState.Programmatic);
+            return;
+        }
+
+        if (cmbMaterial.SelectedValue is not long materialID)
+        {
+            await _dialogService.ShowErrorAsync("Vui lòng chọn loại ván.");
+            cmbMaterial.Focus(FocusState.Programmatic);
+            return;
+        }
+
+        try
+        {
+            await ViewModel.ProcessTransactionAsync(selectedFrame, bigQty, materialID);
+            txtBigSheetQty.Text = string.Empty;
+            cmbMaterial.SelectedIndex = -1;
+        }
+        catch (Exception ex)
+        {
+            await _dialogService.ShowErrorAsync("Đã có lỗi xảy ra khi lưu kho", ex);
+        }
     }
 
     private async void BtnAdd_Click(object sender, RoutedEventArgs e)
@@ -86,7 +123,7 @@ public sealed partial class PlanksPage : Page
             }
             catch (Exception ex)
             {
-                await _dialogService.ShowErrorAsync("Xóa thất bại", ex);
+                await _dialogService.ShowErrorAsync("FAILED_UPDATE".GetLocalized(), ex);
             }
         }
     }
@@ -125,7 +162,7 @@ public sealed partial class PlanksPage : Page
         }
         catch (Exception ex)
         {
-            await _dialogService.ShowErrorAsync("Cập nhật thất bại", ex);
+            await _dialogService.ShowErrorAsync("FAILED_UPDATE".GetLocalized(), ex);
         }
     }
 
@@ -169,6 +206,7 @@ public sealed partial class PlanksPage : Page
         btnAdd.IsEnabled = false;
         btnUpdate.IsEnabled = true;
         btnDelete.IsEnabled = true;
+        btnSaveStock.IsEnabled = true;
     }
 
     // Helper function
@@ -186,7 +224,7 @@ public sealed partial class PlanksPage : Page
     {
         if (frameNO.Text.Trim() == "")
         {
-            return (false, "Frame NO không được để trống.");
+            return (false, "Mã rập không được để trống.");
         }
 
         int validPairsCount = 0;
@@ -214,21 +252,28 @@ public sealed partial class PlanksPage : Page
 
                 if (!IsValidSizeFormat(sizeVal))
                 {
-                    return (false, $"Lỗi ở dòng {i}: Size '{rawSize}' không hợp lệ.\n" +
+                    return (false, $"Lỗi ở size {i}: '{rawSize}' không hợp lệ.\n" +
                                    "Yêu cầu:\n" +
                                    "- Định dạng 'RộngxCao' (VD: 50x107).\n" +
                                    "- Không bắt đầu bằng số 0.\n" +
                                    "- Tối đa 3 chữ số cho mỗi cạnh (1-999).");
                 }
-                if (!int.TryParse(amountVal, out _))
+
+                // Kiểm tra sizeID có tồn tại trong DetailPlanks hay không
+                if (!ViewModel.Planks.Any(p => p.sizeID.Equals(sizeVal, StringComparison.OrdinalIgnoreCase)))
                 {
-                    return (false, $"Lỗi ở dòng {i}: Amount phải là một số nguyên.");
+                    return (false, $"Lỗi ở size {i}: Cỡ ván '{sizeVal}' không tồn tại trong danh mục.");
                 }
+
+                //if (!int.TryParse(amountVal, out _))
+                //{
+                //    return (false, $"Lỗi ở dòng {i}: Số lượng phải là một số nguyên.");
+                //}
                 validPairsCount++;
             }
             else if (hasSize || hasAmount)
             {
-                return (false, $"Dòng số {i} chưa nhập đủ dữ liệu (Cần cả Size và Amount).");
+                return (false, $"Size {i} chưa nhập đủ dữ liệu (Cần cả Size và Số lượng).");
             }
         }
 
@@ -238,7 +283,7 @@ public sealed partial class PlanksPage : Page
         }
         else
         {
-            return (false, "Cần nhập ít nhất 2 dòng dữ liệu (Size và Amount) hợp lệ.");
+            return (false, "Cần nhập ít nhất 2 dòng dữ liệu (Size và Số lượng) hợp lệ.");
         }
     }
 
