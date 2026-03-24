@@ -1,5 +1,9 @@
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using CommunityToolkit.Mvvm.Messaging;
 using Invoice.Contracts.ViewModels;
+using Invoice.Core.Contracts;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
 using Invoice.Contracts.Services;
@@ -18,6 +22,65 @@ public partial class IOActionsViewModel : ViewModelBase, INavigationAware
     public IOActionsViewModel(IDataService dataService, IDialogService dialogService) : base(dialogService)
     {
         _dataService = dataService;
+        TransactionList.CollectionChanged += OnTransactionListChanged;
+
+        WeakReferenceMessenger.Default.Register<DatabaseChangedMessage>(this, (r, m) =>
+        {
+            if (m.EntityName == InMemoryCache.PRODUCTS || m.EntityName == InMemoryCache.MATERIALS)
+            {
+                if (App.MainWindow?.DispatcherQueue != null)
+                {
+                    App.MainWindow.DispatcherQueue.TryEnqueue(async () =>
+                    {
+                        await LoadDataAsync();
+                    });
+                }
+            }
+        });
+    }
+
+    private void OnTransactionListChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        if (e.NewItems != null)
+        {
+            foreach (WarehouseTransaction item in e.NewItems)
+                item.PropertyChanged += OnTransactionItemPropertyChanged;
+        }
+
+        if (e.OldItems != null)
+        {
+            foreach (WarehouseTransaction item in e.OldItems)
+                item.PropertyChanged -= OnTransactionItemPropertyChanged;
+        }
+
+        UpdateTemporaryInventories();
+    }
+
+    private void OnTransactionItemPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(WarehouseTransaction.Amount) || e.PropertyName == nameof(WarehouseTransaction.ActionType))
+        {
+            UpdateTemporaryInventories();
+        }
+    }
+
+    private void UpdateTemporaryInventories()
+    {
+        // Reset all to base inventory
+        foreach (var item in _allItems)
+        {
+            item.TemporaryInventory = item.Inventory;
+        }
+
+        // Apply pending changes
+        foreach (var trans in TransactionList)
+        {
+            var item = _allItems.FirstOrDefault(x => x.ProductID == trans.ProductID);
+            if (item != null)
+            {
+                item.TemporaryInventory += trans.FinalChange;
+            }
+        }
     }
 
     public void OnNavigatedTo(object parameter)
@@ -44,6 +107,7 @@ public partial class IOActionsViewModel : ViewModelBase, INavigationAware
                     ProductID = p.ProductID,
                     Name = p.Name,
                     Inventory = p.Inventory,
+                    TemporaryInventory = p.Inventory,
                     Source = "PRODUCTS"
                 });
             }
@@ -56,9 +120,12 @@ public partial class IOActionsViewModel : ViewModelBase, INavigationAware
                     ProductID = m.ProductID,
                     Name = m.Name,
                     Inventory = m.Inventory,
+                    TemporaryInventory = m.Inventory,
                     Source = "MATERIALS"
                 });
             }
+
+            UpdateTemporaryInventories(); // Apply any existing transactions if necessary (though usually empty on load)
 
             foreach (var item in _allItems) SourceList.Add(item);
         }, "Load data failed");
@@ -77,8 +144,7 @@ public partial class IOActionsViewModel : ViewModelBase, INavigationAware
                 {
                     trans.InvoiceID = null;
                 }
-
-                // Tự động gán SourceType dựa trên nguồn của item gốc
+                
                 var originalItem = _allItems.FirstOrDefault(x => x.ProductID == trans.ProductID);
                 if (originalItem != null)
                 {
@@ -91,10 +157,13 @@ public partial class IOActionsViewModel : ViewModelBase, INavigationAware
                 if (localItem != null)
                 {
                     localItem.Inventory += trans.FinalChange;
+                    localItem.TemporaryInventory = localItem.Inventory;
                 }
             }
 
             TransactionList.Clear();
+            UpdateTemporaryInventories();
+
             await DialogService.ShowSuccessAsync("SUCCESS_SAVE".GetLocalized());
         }, "Lỗi lưu kho");
     }
@@ -116,8 +185,9 @@ public partial class IOActionsViewModel : ViewModelBase, INavigationAware
         }
     }
 
-    public int GetCurrentInventory(long productId)
+    public int GetCurrentInventory(long? productId)
     {
+        if (productId == null) return 0;
         var item = _allItems.FirstOrDefault(x => x.ProductID == productId);
         return item != null ? item.Inventory : 0;
     }

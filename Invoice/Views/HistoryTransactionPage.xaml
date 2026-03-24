@@ -57,11 +57,11 @@
 			</StackPanel>
 
 			<StackPanel Spacing="4">
-				<TextBlock Text="Nguồn" Style="{ThemeResource CaptionTextBlockStyle}" FontSize="15" FontStyle="Italic" FontWeight="Bold"/>
+				<TextBlock Text="Hình thức" Style="{ThemeResource CaptionTextBlockStyle}" FontSize="15" FontStyle="Italic" FontWeight="Bold"/>
 				<ComboBox x:Name="cmbSource" 
                           ItemsSource="{x:Bind ViewModel.SourceTypes}"
                           SelectedItem="{x:Bind ViewModel.SelectedSourceType, Mode=TwoWay}"
-                          PlaceholderText="Chọn nguồn..."
+                          PlaceholderText="Chọn..."
                           Width="150" Height="32" VerticalAlignment="Bottom"/>
 			</StackPanel>
 
@@ -118,7 +118,7 @@
 					</controls:DataGridTextColumn.ElementStyle>
 				</controls:DataGridTextColumn>
 
-				<controls:DataGridTextColumn Header="Loại" Binding="{Binding TransactionType}">
+				<controls:DataGridTextColumn Header="Hình thức" Binding="{Binding TransactionType}">
 					<controls:DataGridTextColumn.ElementStyle>
 						<Style TargetType="TextBlock">
 							<Setter Property="HorizontalAlignment" Value="Stretch"/>

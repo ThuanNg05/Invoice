@@ -1,5 +1,7 @@
 using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.Messaging;
 using Invoice.Contracts.ViewModels;
+using Invoice.Core.Contracts;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
 using Invoice.Contracts.Services;
@@ -18,6 +20,20 @@ public partial class PlanksViewModel : ViewModelBase, INavigationAware
     public PlanksViewModel(IDataService dataService, IDialogService dialogService) : base(dialogService)
     {
         _dataService = dataService;
+
+        WeakReferenceMessenger.Default.Register<DatabaseChangedMessage>(this, (r, m) =>
+        {
+            if (m.EntityName == InMemoryCache.FRAMES || m.EntityName == InMemoryCache.PLANKS)
+            {
+                if (App.MainWindow?.DispatcherQueue != null)
+                {
+                    App.MainWindow.DispatcherQueue.TryEnqueue(async () =>
+                    {
+                        await LoadDataAsync();
+                    });
+                }
+            }
+        });
     }
 
     public void OnNavigatedTo(object parameter)

@@ -70,13 +70,12 @@ public sealed partial class PlanksPage : Page
             plankType = selectedItem.Content.ToString();
         }
         if (plankType == "HP") materialID = 10012;
-        if (plankType == "MDF") materialID = 10012;                
+        if (plankType == "MDF") materialID = 10013;                
 
         try
         {
             await ViewModel.ProcessTransactionAsync(selectedFrame, bigQty, materialID);
-            txtBigSheetQty.Text = string.Empty;
-            cmbMaterial.SelectedIndex = -1;
+            ClearInputs();
         }
         catch (Exception ex)
         {

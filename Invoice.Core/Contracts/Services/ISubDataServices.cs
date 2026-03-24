@@ -43,7 +43,7 @@ public interface IInvoiceService
 {
     Task<IEnumerable<Invoices>> GetAllInvoices();
     Task<IEnumerable<History>> GetInvoiceHistory(DateTime? fromDate, DateTime? toDate, long? customerID);
-    Task<IEnumerable<WarehouseHistoryItem>> GetQueryableHistory(DateTime? fromDate, DateTime? toDate, string? sourceType = null);
+    Task<IEnumerable<WarehouseHistoryItem>> GetQueryableHistory(DateTime? fromDate, DateTime? toDate, string? actionType = null);
     Task<IEnumerable<InvoiceDetail>> GetInvoiceDetails(string invoiceID);
     Task<int> GetInvoiceCountByDate(DateTime date);
     Task AddInvoice(Invoices invoice, IEnumerable<InvoiceDetail> details, IEnumerable<WarehouseTransaction> transactions);
@@ -53,9 +53,7 @@ public interface IInvoiceService
 
 public interface IInventoryService
 {
-    Task UpdateProductInventory(long productId, int amountChange);
-    Task<IEnumerable<WarehouseTransaction>> GetWarehouseTransactions();
+    Task UpdateProductInventory(long productId, int amountChange);    
     Task AddWarehouseTransaction(WarehouseTransaction transaction);
-    Task ProcessInventoryTransaction(Frames frame, int amount, long? sourcePlankId = null);
-    Task<bool> ValidateMaterialStock(long productId, int requiredAmount);
+    Task ProcessInventoryTransaction(Frames frame, int amount, long? sourcePlankId = null);    
 }

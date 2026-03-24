@@ -1,4 +1,6 @@
 using System.Diagnostics;
+using CommunityToolkit.Mvvm.Messaging;
+using Invoice.Core.Contracts;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
 using Polly;
@@ -49,18 +51,27 @@ public partial class SupabaseDataService : IDataService
             await EnsureConnectionAsync();
             await _client.Realtime.ConnectAsync();
 
-            await _client.From<Customers>().On(PostgresChangesOptions.ListenType.All, (s, c) => _cache.Invalidate(InMemoryCache.CUSTOMERS));
-            await _client.From<Materials>().On(PostgresChangesOptions.ListenType.All, (s, c) => _cache.Invalidate(InMemoryCache.MATERIALS));
-            await _client.From<Frames>().On(PostgresChangesOptions.ListenType.All, (s, c) => _cache.Invalidate(InMemoryCache.FRAMES));
-            await _client.From<DetailPlanks>().On(PostgresChangesOptions.ListenType.All, (s, c) => _cache.Invalidate(InMemoryCache.PLANKS));
-            await _client.From<DetailPrice>().On(PostgresChangesOptions.ListenType.All, (s, c) => _cache.Invalidate(InMemoryCache.PRICES));
+            await _client.From<Customers>().On(PostgresChangesOptions.ListenType.All, (s, c) => InvalidateAndBroadcast(InMemoryCache.CUSTOMERS));
+            await _client.From<Materials>().On(PostgresChangesOptions.ListenType.All, (s, c) => InvalidateAndBroadcast(InMemoryCache.MATERIALS));
+            await _client.From<Frames>().On(PostgresChangesOptions.ListenType.All, (s, c) => InvalidateAndBroadcast(InMemoryCache.FRAMES));
+            await _client.From<DetailPlanks>().On(PostgresChangesOptions.ListenType.All, (s, c) => InvalidateAndBroadcast(InMemoryCache.PLANKS));
+            await _client.From<DetailPrice>().On(PostgresChangesOptions.ListenType.All, (s, c) => InvalidateAndBroadcast(InMemoryCache.PRICES));
+            await _client.From<Products>().On(PostgresChangesOptions.ListenType.All, (s, c) => InvalidateAndBroadcast(InMemoryCache.PRODUCTS));
+            await _client.From<Invoices>().On(PostgresChangesOptions.ListenType.All, (s, c) => InvalidateAndBroadcast(InMemoryCache.INVOICES));
+            await _client.From<WarehouseTransaction>().On(PostgresChangesOptions.ListenType.All, (s, c) => InvalidateAndBroadcast(InMemoryCache.TRANSACTIONS));
             
-            Debug.WriteLine("[REALTIME] Cache Invalidation system is active.");
+            Debug.WriteLine("[REALTIME] Cache Invalidation and Refresh system is active.");
         }
         catch (Exception ex)
         {
             Debug.WriteLine($"[REALTIME CACHE ERROR] {ex.Message}");
         }
+    }
+
+    private void InvalidateAndBroadcast(string key)
+    {
+        _cache.Invalidate(key);
+        WeakReferenceMessenger.Default.Send(new DatabaseChangedMessage(key));
     }
 
     private async Task EnsureConnectionAsync()

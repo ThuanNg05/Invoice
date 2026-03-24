@@ -6,6 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:behaviors="using:Invoice.Behaviors"
+    xmlns:converters="using:Invoice.Helpers"
     mc:Ignorable="d">
     <Page.Resources>
         <ResourceDictionary>
@@ -24,6 +25,8 @@
                 <Setter Property="FontWeight" Value="Bold"/>
                 <Setter Property="HorizontalContentAlignment" Value="Center"/>
             </Style>
+
+            <converters:InventoryToColorConverter x:Key="InventoryColorConverter"/>
         </ResourceDictionary>
     </Page.Resources>
     <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
@@ -111,7 +114,6 @@
                         <SolidColorBrush x:Key="DataGridColumnHeaderBackgroundColor" Color="Transparent" />
                     </controls:DataGrid.Resources>
                     <controls:DataGrid.Columns>
-                        <!--<controls:DataGridTextColumn Binding="{Binding ProductID}" x:Uid="Materials_Grid_ProductID" Visibility="Collapsed"/>-->
                         <controls:DataGridTextColumn Width="200" Binding="{Binding Name}" Header="Tên hàng" />
                         <controls:DataGridTextColumn Binding="{Binding BasePrice}" Header="Đơn giá">
                             <controls:DataGridTextColumn.ElementStyle>
@@ -121,14 +123,19 @@
                                 </Style>
                             </controls:DataGridTextColumn.ElementStyle>
                         </controls:DataGridTextColumn>
-                        <controls:DataGridTextColumn Binding="{Binding Inventory}" Header="Tồn kho">
-                            <controls:DataGridTextColumn.ElementStyle>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
-                                    <Setter Property="TextAlignment" Value="Right"/>
-                                </Style>
-                            </controls:DataGridTextColumn.ElementStyle>
-                        </controls:DataGridTextColumn>
+                        <controls:DataGridTemplateColumn Header="Tồn kho">
+                            <controls:DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Border Background="{Binding Converter={StaticResource InventoryColorConverter}}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                        <TextBlock Text="{Binding Inventory}" 
+                                                   TextAlignment="Right" 
+                                                   VerticalAlignment="Center" 
+                                                   Padding="10,0"
+                                                   HorizontalAlignment="Stretch"/>
+                                    </Border>
+                                </DataTemplate>
+                            </controls:DataGridTemplateColumn.CellTemplate>
+                        </controls:DataGridTemplateColumn>
                         <controls:DataGridTextColumn Binding="{Binding TotalLine}" Header="Thành tiền">
                             <controls:DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">

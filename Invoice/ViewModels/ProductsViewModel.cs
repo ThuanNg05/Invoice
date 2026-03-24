@@ -28,14 +28,18 @@ public partial class ProductsViewModel : ViewModelBase, INavigationAware
     {
         _dataService = dataService;
         WeakReferenceMessenger.Default.Register<ProductsChangedMessage>(this, (r, m) => HandleDataChange(m));
-        WeakReferenceMessenger.Default.Register<InventoryChangedMessage>(this, (r, m) =>
+        
+        WeakReferenceMessenger.Default.Register<DatabaseChangedMessage>(this, (r, m) =>
         {
-            if (App.MainWindow?.DispatcherQueue != null)
+            if (m.EntityName == InMemoryCache.PRODUCTS || m.EntityName == InMemoryCache.PLANKS)
             {
-                App.MainWindow.DispatcherQueue.TryEnqueue(async () =>
+                if (App.MainWindow?.DispatcherQueue != null)
                 {
-                    await ReloadFirstPage();
-                });
+                    App.MainWindow.DispatcherQueue.TryEnqueue(async () =>
+                    {
+                        await ReloadFirstPage();
+                    });
+                }
             }
         });
     }

@@ -290,15 +290,15 @@ public partial class CreateInvoiceViewModel : ViewModelBase, IRecipient<Products
 
             var transactionList = InvoiceItems.Select(item => new WarehouseTransaction
             {
-                ProductID = item.ProductID,
                 InvoiceID = GeneratedInvoiceCode,
+                ProductID = item.ProductID,                
+                Name = item.ProductName,
                 Amount = item.Amount,
-                ActionType = "Xuất kho",
+                ActionType = "Export",
                 CreatedDate = DateTime.Now,
                 SourceType = "PRODUCT",
                 Note = $"Xuất hoá đơn {SelectedCustomer.Name}"
             }).ToList();
-
             await _dataService.AddInvoice(newInvoice, detailsList, transactionList);
 
             await GenerateOfficialPdfInternalAsync();

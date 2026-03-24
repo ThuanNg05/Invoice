@@ -15,4 +15,7 @@ public partial class InventoryItem : ObservableObject
 
     [ObservableProperty]
     private string source;
+
+    [ObservableProperty]
+    private int temporaryInventory;
 }

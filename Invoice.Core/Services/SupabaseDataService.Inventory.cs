@@ -9,8 +9,7 @@ public partial class SupabaseDataService
     public async Task UpdateProductInventory(long productId, int amountChange)
     {
         await EnsureConnectionAsync();
-        
-        // Use an atomic increment RPC to avoid race conditions
+                
         await _client.Rpc("increment_inventory", new
         {
             p_id = productId.ToString(),
@@ -22,7 +21,10 @@ public partial class SupabaseDataService
     {
         await EnsureConnectionAsync();
         await _client.From<WarehouseTransaction>().Insert(transaction);
-        await UpdateProductInventory(transaction.ProductID, transaction.FinalChange);
+        if (transaction.ProductID.HasValue)
+        {
+            await UpdateProductInventory(transaction.ProductID.Value, transaction.FinalChange);
+        }
     }
 
     public async Task<IEnumerable<WarehouseTransaction>> GetWarehouseTransactions()
@@ -70,9 +72,7 @@ public partial class SupabaseDataService
         ParseAndAccumulate(frame.size10);
 
         if (smallPlanksMap.Count > 0)
-        {
-            // Prepare data for the atomic RPC
-            // This ensures material consumption, plank production, and logging happen in ONE transaction
+        {            
             await _client.Rpc("process_frame_to_planks", new
             {
                 p_frame_no = frame.FrameNO,

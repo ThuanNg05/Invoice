@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
-using Supabase.Postgrest.Interfaces;
 using Supabase.Realtime.PostgresChanges;
 using static Supabase.Postgrest.Constants;
 

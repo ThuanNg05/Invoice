@@ -64,12 +64,12 @@ public partial class SupabaseDataService
         return [.. result.OrderByDescending(x => x.CreatedDate).ThenBy(x => x.InvoiceID)];
     }
 
-    public async Task<IEnumerable<WarehouseHistoryItem>> GetQueryableHistory(DateTime? fromDate, DateTime? toDate, string? sourceType = null)
+    public async Task<IEnumerable<WarehouseHistoryItem>> GetQueryableHistory(DateTime? fromDate, DateTime? toDate, string? actionType = null)
     {
         await EnsureConnectionAsync();
 
         var query = _client.From<WarehouseTransaction>()
-                           .Where(t => t.IsQueryable == 1);
+                           .Where(t => t.InvoiceID == null); // Only manual transactions
 
         if (fromDate.HasValue)
         {
@@ -79,9 +79,9 @@ public partial class SupabaseDataService
         {
             query = query.Filter("date", Operator.LessThanOrEqual, toDate.Value.ToString("yyyy-MM-dd"));
         }
-        if (!string.IsNullOrEmpty(sourceType))
+        if (!string.IsNullOrEmpty(actionType))
         {
-            query = query.Where(t => t.SourceType == sourceType);
+            query = query.Where(t => t.ActionType == actionType);
         }
 
         var response = await query.Order("date", Ordering.Descending).Get();
@@ -89,39 +89,44 @@ public partial class SupabaseDataService
 
         if (!transactions.Any()) return new List<WarehouseHistoryItem>();
 
-        // Lấy danh sách tên sản phẩm/nguyên liệu để map vào DTO
-        var productIds = transactions.Where(t => t.SourceType == "PRODUCT").Select(t => t.ProductID).Distinct().ToList();
-        var materialIds = transactions.Where(t => t.SourceType == "MATERIAL").Select(t => t.ProductID).Distinct().ToList();
+        // For records where Name is null (old data), we still need to fetch names
+        var missingNameTransactions = transactions.Where(t => string.IsNullOrEmpty(t.Name)).ToList();
 
         var products = new List<Products>();
         var materials = new List<Materials>();
 
-        if (productIds.Any())
+        if (missingNameTransactions.Any())
         {
-            var pResp = await _client.From<Products>().Filter("product_id", Operator.In, productIds).Get();
-            products = pResp.Models;
-        }
-        if (materialIds.Any())
-        {
-            var mResp = await _client.From<Materials>().Filter("product_id", Operator.In, materialIds).Get();
-            materials = mResp.Models;
+            var productIds = missingNameTransactions.Where(t => t.SourceType == "PRODUCT" && t.ProductID.HasValue).Select(t => t.ProductID!.Value).Distinct().ToList();
+            var materialIds = missingNameTransactions.Where(t => t.SourceType == "MATERIAL" && t.ProductID.HasValue).Select(t => t.ProductID!.Value).Distinct().ToList();
+
+            if (productIds.Any())
+            {
+                var pResp = await _client.From<Products>().Filter("product_id", Operator.In, productIds).Get();
+                products = pResp.Models;
+            }
+            if (materialIds.Any())
+            {
+                var mResp = await _client.From<Materials>().Filter("product_id", Operator.In, materialIds).Get();
+                materials = mResp.Models;
+            }
         }
 
         var result = transactions.Select(t => new WarehouseHistoryItem
         {
             Date = t.CreatedDate,
-            TransactionType = t.ActionType,
+            TransactionType = t.ActionType == "Import" ? "Nhập kho" : t.ActionType == "Export" ? "Xuất kho" : t.ActionType,
             Amount = t.Amount,
             Note = t.Note,
             SourceType = t.SourceType,
-            ProductName = t.SourceType == "PRODUCT" 
-                ? products.FirstOrDefault(p => p.ProductID == t.ProductID)?.Name ?? "N/A"
-                : materials.FirstOrDefault(m => m.ProductID == t.ProductID)?.Name ?? "N/A"
+            ProductName = !string.IsNullOrEmpty(t.Name) ? t.Name : 
+                         (t.SourceType == "PRODUCT" ? (t.ProductID > 0 ? products.FirstOrDefault(p => p.ProductID == t.ProductID)?.Name ?? "N/A" : "N/A")
+                                                   : (t.SourceType == "MATERIAL" ? (t.ProductID > 0 ? materials.FirstOrDefault(m => m.ProductID == t.ProductID)?.Name ?? "N/A" : "N/A")
+                                                                                 : "N/A"))
         });
 
         return result.ToList();
     }
-
     public async Task<IEnumerable<InvoiceDetail>> GetInvoiceDetails(string invoiceID)
     {
         await EnsureConnectionAsync();

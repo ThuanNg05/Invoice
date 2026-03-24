@@ -22,7 +22,7 @@ public class WarehouseTransaction : BaseModel, INotifyPropertyChanged
 
     [Column("product_id")]
     [JsonProperty("product_id")]
-    public long ProductID { get; set; }
+    public long? ProductID { get; set; }
 
     [Column("invoice_id")]
     [JsonProperty("invoice_id")]
@@ -72,17 +72,13 @@ public class WarehouseTransaction : BaseModel, INotifyPropertyChanged
 
     [Column("note")]
     [JsonProperty("note")]
-    public string Note { get; set; }
-
-    [Column("is_queryable")]
-    [JsonProperty("is_queryable")]
-    public int IsQueryable { get; set; } = 1;
+    public string Note { get; set; }    
 
     [JsonIgnore]
-    public int FinalChange => ActionType == "Nhập kho" ? Amount : -Amount;
+    public int FinalChange => ActionType == "Import" ? Amount : -Amount;
 
     private string _name;
-    [JsonIgnore]    
+    [Column("product_name")]    
     public string Name
     {
         get => _name;
