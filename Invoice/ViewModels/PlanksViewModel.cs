@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using CommunityToolkit.Mvvm.ComponentModel;
 using Invoice.Contracts.ViewModels;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
@@ -15,8 +14,6 @@ public partial class PlanksViewModel : ViewModelBase, INavigationAware
     public ObservableCollection<Frames> Frames { get; } = new ObservableCollection<Frames>();
 
     public ObservableCollection<DetailPlanks> Planks { get; } = new ObservableCollection<DetailPlanks>();
-
-    public ObservableCollection<Materials> Materials { get; } = new ObservableCollection<Materials>();
 
     public PlanksViewModel(IDataService dataService, IDialogService dialogService) : base(dialogService)
     {
@@ -48,13 +45,6 @@ public partial class PlanksViewModel : ViewModelBase, INavigationAware
             foreach (var item in planks)
             {
                 Planks.Add(item);
-            }
-
-            Materials.Clear();
-            var materials = await _dataService.GetMaterials();
-            foreach (var item in materials)
-            {
-                Materials.Add(item);
             }
         }, "Lỗi khi tải dữ liệu");
     }

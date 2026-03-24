@@ -38,8 +38,7 @@
                 <StackPanel Orientation="Vertical" Margin="0,0,0,10">
                     <StackPanel Orientation="Horizontal">
                         <StackPanel Margin="0,0,10,10">
-                            <TextBlock>
-                                <Run x:Uid="Required_Field" Foreground="Red"/>
+                            <TextBlock>                                
                                 <Run Text="Tên sản phẩm"/>
                             </TextBlock>
                             <TextBox x:Name="txtName" Width="300" HorizontalAlignment="Left" Margin="0,0,0,5"/>
@@ -47,8 +46,7 @@
                             <TextBox x:Name="txtSizeID" PlaceholderText="VD: 50x70" Width="300" HorizontalAlignment="Left" />
                         </StackPanel>
                         <StackPanel>
-                            <TextBlock>
-                                <Run x:Uid="Required_Field" Foreground="Red"/>
+                            <TextBlock>                                
                                 <Run Text="Tiền công"/>
                             </TextBlock>
                             <TextBox x:Name="txtWage" Width="140" HorizontalAlignment="Left" behaviors:TextBoxInputBehavior.InputType="Decimal" TextChanged="computeBasePrice"/>

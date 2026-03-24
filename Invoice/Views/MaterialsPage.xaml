@@ -37,15 +37,13 @@
                 <StackPanel Orientation="Vertical" Margin="0,0,0,10">
                     <StackPanel Orientation="Vertical" Spacing="10">
                         <StackPanel>
-                            <TextBlock>
-                                <Run Text="(*) " Foreground="Red"/>
-                                <Run Text="Tên SP:"/>
+                            <TextBlock>                                
+                                <Run Text="Tên vật tư:"/>
                             </TextBlock>
                             <TextBox x:Name="txtName" Width="300" HorizontalAlignment="Left"/>
                         </StackPanel>
                         <StackPanel HorizontalAlignment="Left">
-                            <TextBlock>                                
-                                <Run Text="(*) " Foreground="Red"/>
+                            <TextBlock>                                                                
                                 <Run Text="Giá :"/>
                             </TextBlock>
                             <TextBox x:Name="txtBasePrice" Width="140" TextAlignment="Right"

@@ -65,6 +65,12 @@ public sealed partial class CustomersPage : Page
             return;
         }
 
+        if(CmbPriceType.SelectedItem == null)
+        {
+            await _dialogService.ShowErrorAsync("Vui lòng chọn nhóm giá cho khách hàng.");
+            return;
+        }
+
         try
         {
             var newCustomer = new Customers

@@ -46,8 +46,7 @@
                 </StackPanel>
                 <!--Name-->
                 <StackPanel Spacing="5">
-                    <TextBlock>
-                        <Run x:Uid="Required_Field" Foreground="Red"/>
+                    <TextBlock>                        
                         <Run Text="Tên khách hàng"/>
                     </TextBlock>
                     <AutoSuggestBox x:Name="asbCustomer"

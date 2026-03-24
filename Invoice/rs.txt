@@ -1,0 +1,41 @@
+CREATE OR REPLACE FUNCTION process_frame_to_planks(
+    p_frame_no text,
+    p_amount int,
+    p_material_id bigint,
+    p_small_planks jsonb
+)
+RETURNS void
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_size_id text;
+    v_qty_to_add int;
+BEGIN
+    -- 1. Check and Decrement Material stock
+    IF NOT EXISTS (SELECT 1 FROM materials WHERE product_id = p_material_id AND inventory >= p_amount) THEN
+        RAISE EXCEPTION 'Insufficient stock for material ID %', p_material_id;
+    END IF;
+
+    UPDATE materials SET inventory = inventory - p_amount WHERE product_id = p_material_id;
+
+    -- 2. Log Export Transaction
+    -- p_material_id is bigint, matches product_id column
+    INSERT INTO inventorytransactions (product_id, amount, type, note, date, is_queryable)
+    VALUES (p_material_id, p_amount, 'Xuất kho', 'Cắt rập: ' || p_frame_no, NOW(), 1);
+
+    -- 3. Loop through small planks and update
+    FOR v_size_id, v_qty_to_add IN SELECT * FROM jsonb_each_text(p_small_planks)
+    LOOP
+        -- Upsert Small Plank stock in listplanks table (size_id is text)
+        INSERT INTO listplanks (size_id, inventory)
+        VALUES (v_size_id, v_qty_to_add)
+        ON CONFLICT (size_id) DO UPDATE SET inventory = listplanks.inventory + EXCLUDED.inventory;
+
+        -- Log Import Transaction
+        -- Since product_id is bigint and v_size_id is text (e.g. '50x100'), 
+        -- we set product_id to NULL and store the size in the note.
+        INSERT INTO inventorytransactions (product_id, amount, type, note, date, is_queryable)
+        VALUES (NULL, v_qty_to_add, 'Nhập kho', 'Cắt rập từ rập: ' || p_frame_no || ' (Size: ' || v_size_id || ')', NOW(), 1);
+    END LOOP;
+END;
+$$;

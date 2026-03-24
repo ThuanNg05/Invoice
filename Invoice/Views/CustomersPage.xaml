@@ -34,14 +34,12 @@
 			<ColumnDefinition Width="Auto" />
 		</Grid.ColumnDefinitions>
 		<StackPanel Grid.Column="0" Spacing="10" Margin="0,0,30,0">
-			<TextBlock>
-				<Run x:Uid="Required_Field" Foreground="Red"/>
+            <TextBlock>				
 				<Run Text="Tên khách hàng"/>
 			</TextBlock>
 			<TextBox x:Name="txtName" Width="200" HorizontalAlignment="Left" IsSpellCheckEnabled="False"/>
 
-			<TextBlock>
-				<Run x:Uid="Required_Field" Foreground="Red"/>
+            <TextBlock>				
 				<Run Text="SĐT"/>
 			</TextBlock>
 			<TextBox
@@ -50,8 +48,7 @@
                 HorizontalAlignment="Left"
                 behaviors:TextBoxInputBehavior.InputType="PhoneNumber"/>
 
-			<TextBlock>
-				<Run x:Uid="Required_Field" Foreground="Red"/>
+            <TextBlock>				
 				<Run Text="Loại giá"/>
 			</TextBlock>
             <ComboBox x:Name="CmbPriceType" Width="200" HorizontalAlignment="Left">
