@@ -258,6 +258,22 @@ public sealed partial class ProductsPage : Page
         _searchDebounceTimer.Start();
     }
 
+    private void AutoSuggestBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+    {
+        if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+        {
+            var suggestions = ViewModel.PlankSizes
+                .Where(p => p.Contains(sender.Text, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+            sender.ItemsSource = suggestions;
+        }
+    }
+
+    private void AutoSuggestBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
+    {
+        sender.Text = args.SelectedItem.ToString();
+    }
+
     private void computeBasePrice(object sender, RoutedEventArgs args)
     {
         //CalculateBasePrice();

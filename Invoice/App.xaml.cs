@@ -120,6 +120,7 @@ public partial class App : Application
             services.AddTransient<HistoryTransactionPage>();
             services.AddTransient<PlanksViewModel>();
             services.AddTransient<PlanksPage>();            
+            services.AddTransient<ReportingViewModel>();
             services.AddTransient<ReportingPage>();
             services.AddTransient<ProductsViewModel>();
             services.AddTransient<ProductsPage>();

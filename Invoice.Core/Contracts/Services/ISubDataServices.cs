@@ -17,7 +17,7 @@ public interface IProductService
     Task AddProduct(Products product);
     Task UpdateProduct(Products product);
     Task DeleteProduct(long productId);
-    Task<IEnumerable<Products>> GetAllProducts();
+    Task<IEnumerable<Products>> GetAllProducts(bool forceRefresh = false);
     Task SubscribeToProductsRealtime(Action<string, Products> onDataChanged);
     
     Task<IEnumerable<Materials>> GetMaterials(bool forceRefresh = false);

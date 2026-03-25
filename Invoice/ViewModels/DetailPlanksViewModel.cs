@@ -48,7 +48,7 @@ public partial class DetailPlanksViewModel : ViewModelBase, INavigationAware
         await ExecuteAsync(async () =>
         {
             Planks.Clear();
-            var data = await _dataService.GetPlanks();
+            var data = await _dataService.GetPlanks(forceRefresh: true);
             foreach (var item in data)
             {
                 Planks.Add(item);

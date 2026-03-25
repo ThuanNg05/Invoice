@@ -49,7 +49,7 @@ public partial class MaterialsViewModel : ViewModelBase, INavigationAware
         await ExecuteAsync(async () =>
         {
             MaterialsCollection.Clear();
-            var data = await _dataService.GetMaterials(forceRefresh: false);
+            var data = await _dataService.GetMaterials(forceRefresh: true);
             AllMaterials = data.ToList();
             foreach (var item in AllMaterials)
             {

@@ -77,6 +77,11 @@ public static class StringHelper
             {
                 textBox.Text = string.Empty;
             }
+            else if (child is AutoSuggestBox autoSuggestBox &&
+                !string.IsNullOrEmpty(autoSuggestBox.Name))
+            {
+                autoSuggestBox.Text = string.Empty;
+            }
             ClearInputs(child);
         }
     }

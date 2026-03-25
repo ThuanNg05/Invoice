@@ -89,11 +89,14 @@ public sealed partial class MaterialsPage : Page
         
         try
         {
+            decimal basePrice = decimal.TryParse(txtBasePrice.Text, out decimal price) ? price : 0;
             var tmpMaterial = new Materials
             {
                 ProductID = selected.ProductID,
                 Name = txtName.Text.Trim(),
-                BasePrice = decimal.TryParse(txtBasePrice.Text, out decimal price) ? price : 0,
+                BasePrice = basePrice,
+                Inventory = selected.Inventory,
+                TotalLine = basePrice * selected.Inventory,
                 MinAmount = int.TryParse(txtMinAmount.Text, out int minAmt) ? minAmt : 0,
             };
             await ViewModel.UpdateMaterialAsync(tmpMaterial);            

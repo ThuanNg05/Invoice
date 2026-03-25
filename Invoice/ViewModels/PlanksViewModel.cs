@@ -57,7 +57,7 @@ public partial class PlanksViewModel : ViewModelBase, INavigationAware
             }
 
             Planks.Clear();
-            var planks = await _dataService.GetPlanks();
+            var planks = await _dataService.GetPlanks(forceRefresh: true);
             foreach (var item in planks)
             {
                 Planks.Add(item);

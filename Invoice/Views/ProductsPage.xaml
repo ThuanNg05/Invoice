@@ -43,7 +43,8 @@
                             </TextBlock>
                             <TextBox x:Name="txtName" Width="300" HorizontalAlignment="Left" Margin="0,0,0,5"/>
                             <TextBlock Text="Cỡ ván"/>
-                            <TextBox x:Name="txtSizeID" PlaceholderText="VD: 50x70" Width="300" HorizontalAlignment="Left" />
+                            <AutoSuggestBox x:Name="txtSizeID" PlaceholderText="VD: 50x70" Width="300" HorizontalAlignment="Left" 
+                                            TextChanged="AutoSuggestBox_TextChanged" SuggestionChosen="AutoSuggestBox_SuggestionChosen"/>
                         </StackPanel>
                         <StackPanel>
                             <TextBlock>                                

@@ -203,7 +203,7 @@
                     <controls:DataGrid.Columns>
                         <controls:DataGridTextColumn Header="Tên SP" Binding="{Binding Name}" Width="*"/>
                         <controls:DataGridTextColumn Header="Số lượng" Binding="{Binding Amount}"/>
-                        <controls:DataGridTextColumn Header="Hình thức" Binding="{Binding ActionType}"/>
+                        <controls:DataGridTextColumn Header="Hình thức" Binding="{Binding ActionType, Converter={StaticResource ActionTypeToVietnameseConverter}}"/>
                     </controls:DataGrid.Columns>
                 </controls:DataGrid>
             </Grid>

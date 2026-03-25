@@ -38,29 +38,29 @@
 
 			<StackPanel Orientation="Vertical" Spacing="10">
 				<StackPanel Orientation="Horizontal" Spacing="10">
-					<TextBox x:Name="txtSize1" Header="Kích thước" TextAlignment="Left"/>
-					<TextBox x:Name="txtSize2" Header=" " TextAlignment="Left"/>
-					<TextBox x:Name="txtSize3" Header=" " TextAlignment="Left"/>
-					<TextBox x:Name="txtSize4" Header=" " TextAlignment="Left"/>
-					<TextBox x:Name="txtSize5" Header=" " TextAlignment="Left"/>
-					<TextBox x:Name="txtSize6" Header=" " TextAlignment="Left"/>
-					<TextBox x:Name="txtSize7" Header=" " TextAlignment="Left"/>
-					<TextBox x:Name="txtSize8" Header=" " TextAlignment="Left"/>
-					<TextBox x:Name="txtSize9" Header=" " TextAlignment="Left"/>
-					<TextBox x:Name="txtSize10" Header=" " TextAlignment="Left"/>
+                    <AutoSuggestBox x:Name="txtSize1" Header="Kích thước" TextChanged="AutoSuggestBox_TextChanged" SuggestionChosen="AutoSuggestBox_SuggestionChosen" Width="Auto"/>
+                    <AutoSuggestBox x:Name="txtSize2" Header=" " TextChanged="AutoSuggestBox_TextChanged" SuggestionChosen="AutoSuggestBox_SuggestionChosen" Width="Auto"/>
+					<AutoSuggestBox x:Name="txtSize3" Header=" " TextChanged="AutoSuggestBox_TextChanged" SuggestionChosen="AutoSuggestBox_SuggestionChosen" Width="Auto"/>
+					<AutoSuggestBox x:Name="txtSize4" Header=" " TextChanged="AutoSuggestBox_TextChanged" SuggestionChosen="AutoSuggestBox_SuggestionChosen" Width="Auto"/>
+					<AutoSuggestBox x:Name="txtSize5" Header=" " TextChanged="AutoSuggestBox_TextChanged" SuggestionChosen="AutoSuggestBox_SuggestionChosen" Width="Auto"/>
+					<AutoSuggestBox x:Name="txtSize6" Header=" " TextChanged="AutoSuggestBox_TextChanged" SuggestionChosen="AutoSuggestBox_SuggestionChosen" Width="Auto"/>
+					<AutoSuggestBox x:Name="txtSize7" Header=" " TextChanged="AutoSuggestBox_TextChanged" SuggestionChosen="AutoSuggestBox_SuggestionChosen" Width="Auto"/>
+					<AutoSuggestBox x:Name="txtSize8" Header=" " TextChanged="AutoSuggestBox_TextChanged" SuggestionChosen="AutoSuggestBox_SuggestionChosen" Width="Auto"/>
+					<AutoSuggestBox x:Name="txtSize9" Header=" " TextChanged="AutoSuggestBox_TextChanged" SuggestionChosen="AutoSuggestBox_SuggestionChosen" Width="Auto"/>
+                    <AutoSuggestBox x:Name="txtSize10" Header=" " TextChanged="AutoSuggestBox_TextChanged" SuggestionChosen="AutoSuggestBox_SuggestionChosen" Width="Auto"/>
 				</StackPanel>
 
 				<StackPanel Orientation="Horizontal" Spacing="10">
-					<TextBox x:Name="txtAmount1" Header="Số lượng" TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Numeric" />
-					<TextBox x:Name="txtAmount2" Header=" " TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Numeric" />
-					<TextBox x:Name="txtAmount3" Header=" " TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Numeric" />
-					<TextBox x:Name="txtAmount4" Header=" " TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Numeric" />
-					<TextBox x:Name="txtAmount5" Header=" " TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Numeric" />
-					<TextBox x:Name="txtAmount6" Header=" " TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Numeric" />
-					<TextBox x:Name="txtAmount7" Header=" " TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Numeric" />
-					<TextBox x:Name="txtAmount8" Header=" " TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Numeric" />
-					<TextBox x:Name="txtAmount9" Header=" " TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Numeric" />
-					<TextBox x:Name="txtAmount10" Header=" " TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Numeric" />
+                    <TextBox x:Name="txtAmount1" Header="Số lượng" TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Numeric" Width="Auto" />
+					<TextBox x:Name="txtAmount2" Header=" " TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Numeric" Width="Auto" />
+					<TextBox x:Name="txtAmount3" Header=" " TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Numeric" Width="Auto" />
+					<TextBox x:Name="txtAmount4" Header=" " TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Numeric" Width="Auto" />
+					<TextBox x:Name="txtAmount5" Header=" " TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Numeric" Width="Auto" />
+					<TextBox x:Name="txtAmount6" Header=" " TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Numeric" Width="Auto" />
+					<TextBox x:Name="txtAmount7" Header=" " TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Numeric" Width="Auto" />
+					<TextBox x:Name="txtAmount8" Header=" " TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Numeric" Width="Auto" />
+					<TextBox x:Name="txtAmount9" Header=" " TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Numeric" Width="Auto" />
+                    <TextBox x:Name="txtAmount10" Header=" " TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Numeric" Width="Auto" />
 				</StackPanel>
 			</StackPanel>
 

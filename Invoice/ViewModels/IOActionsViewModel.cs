@@ -99,7 +99,7 @@ public partial class IOActionsViewModel : ViewModelBase, INavigationAware
             SourceList.Clear();
             _allItems.Clear();
             
-            var products = await _dataService.GetAllProducts();
+            var products = await _dataService.GetAllProducts(forceRefresh: true);
             foreach (var p in products)
             {
                 _allItems.Add(new InventoryItem
@@ -112,7 +112,7 @@ public partial class IOActionsViewModel : ViewModelBase, INavigationAware
                 });
             }
 
-            var materials = await _dataService.GetMaterials();
+            var materials = await _dataService.GetMaterials(forceRefresh: true);
             foreach (var m in materials)
             {
                 _allItems.Add(new InventoryItem

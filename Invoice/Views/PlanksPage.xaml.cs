@@ -223,6 +223,23 @@ public sealed partial class PlanksPage : Page
         btnSaveStock.IsEnabled = true;
     }
 
+    private void AutoSuggestBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+    {
+        if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+        {
+            var suggestions = ViewModel.Planks
+                .Where(p => p.sizeID.Contains(sender.Text, StringComparison.OrdinalIgnoreCase))
+                .Select(p => p.sizeID)
+                .ToList();
+            sender.ItemsSource = suggestions;
+        }
+    }
+
+    private void AutoSuggestBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
+    {
+        sender.Text = args.SelectedItem.ToString();
+    }
+
     // Helper function
     private string GetSizePart(object rawInput, int index)
     {
@@ -246,7 +263,7 @@ public sealed partial class PlanksPage : Page
 
         for (int i = 1; i <= 10; i++)
         {
-            var txtSize = this.FindName($"txtSize{i}") as TextBox;
+            var txtSize = this.FindName($"txtSize{i}") as AutoSuggestBox;
             var txtAmount = this.FindName($"txtAmount{i}") as TextBox;
 
             if (txtSize == null || txtAmount == null) continue;

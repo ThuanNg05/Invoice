@@ -21,6 +21,8 @@ public partial class ProductsViewModel : ViewModelBase, INavigationAware
 
     public ObservableCollection<ProductSummary> Source { get; } = new ObservableCollection<ProductSummary>();
 
+    public ObservableCollection<string> PlankSizes { get; } = new ObservableCollection<string>();
+
     [ObservableProperty]
     private Products? _selectedProductFull;
 
@@ -52,6 +54,13 @@ public partial class ProductsViewModel : ViewModelBase, INavigationAware
             _hasMoreItems = true;
             Source.Clear();
             await InternalLoadMoreDataAsync();
+
+            PlankSizes.Clear();
+            var planks = await _dataService.GetPlanks();
+            foreach (var p in planks)
+            {
+                PlankSizes.Add(p.sizeID);
+            }
         }, "LOAD_FAILED".GetLocalized());
     }
 

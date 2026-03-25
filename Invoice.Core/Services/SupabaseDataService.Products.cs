@@ -110,14 +110,21 @@ public partial class SupabaseDataService
         await _client.From<Products>().Where(p => p.ProductID == productId).Delete();
     }
 
-    public async Task<IEnumerable<Products>> GetAllProducts()
+    public async Task<IEnumerable<Products>> GetAllProducts(bool forceRefresh = false)
     {
+        if (!forceRefresh && _cache.TryGet<List<Products>>(InMemoryCache.PRODUCTS, out var cached))
+        {
+            Debug.WriteLine("[CACHE HIT] Products");
+            return cached;
+        }
+
+        Debug.WriteLine("[CACHE MISS] Products — fetching from server");
         await EnsureConnectionAsync();
         var response = await _client.From<Products>()
                                     .Order("product_id", Ordering.Ascending).Get();
         
         var products = response.Models;
-        var planks = await GetPlanks();
+        var planks = await GetPlanks(forceRefresh);
 
         foreach (var p in products)
         {
@@ -131,6 +138,7 @@ public partial class SupabaseDataService
             }
         }
 
+        _cache.Set(InMemoryCache.PRODUCTS, products, TimeSpan.FromMinutes(5));
         return products;
     }
 
