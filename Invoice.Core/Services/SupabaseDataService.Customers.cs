@@ -17,7 +17,9 @@ public partial class SupabaseDataService
         Debug.WriteLine("[CACHE MISS] Customers — fetching from server");
         await EnsureConnectionAsync();
 
-        var response = await _client.From<Customers>().Get();
+        var response = await _client.From<Customers>()
+                                    .Where(c => c.Status == 1)
+                                    .Get();
         var sorted = response.Models.OrderBy(c => c.Name).ToList();
 
         _cache.Set(InMemoryCache.CUSTOMERS, sorted, TimeSpan.FromMinutes(5));
@@ -42,7 +44,10 @@ public partial class SupabaseDataService
     public async Task DeleteCustomer(long customerId)
     {
         await EnsureConnectionAsync();
-        await _client.From<Customers>().Where(c => c.CustomerID == customerId).Delete();
+        await _client.From<Customers>()
+                    .Where(c => c.CustomerID == customerId)
+                    .Set(c => c.Status, 0)
+                    .Update();
         _cache.Invalidate(InMemoryCache.CUSTOMERS);
     }
 
@@ -50,6 +55,33 @@ public partial class SupabaseDataService
     {
         await EnsureConnectionAsync();
         await _client.From<Customers>().Update(customer);
+        _cache.Invalidate(InMemoryCache.CUSTOMERS);
+    }
+
+    public async Task<Customers?> GetCustomerByName(string name)
+    {
+        await EnsureConnectionAsync();
+        var response = await _client.From<Customers>()
+                                    .Where(c => c.Name == name)
+                                    .Get();
+        return response.Models.FirstOrDefault();
+    }
+
+    public async Task<Customers?> GetCustomerByPhone(string phone)
+    {
+        await EnsureConnectionAsync();
+        var response = await _client.From<Customers>()
+                                    .Where(c => c.Phone == phone)
+                                    .Get();
+        return response.Models.FirstOrDefault();
+    }
+
+    public async Task HardDeleteCustomer(long customerId)
+    {
+        await EnsureConnectionAsync();
+        await _client.From<Customers>()
+                    .Where(c => c.CustomerID == customerId)
+                    .Delete();
         _cache.Invalidate(InMemoryCache.CUSTOMERS);
     }
 }

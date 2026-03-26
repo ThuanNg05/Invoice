@@ -7,11 +7,11 @@ namespace Invoice.Core.Models;
 [Table("invoice_details")]
 public class InvoiceDetail : BaseModel
 {
-    [PrimaryKey("invoice_id", true)]
+    [PrimaryKey("invoice_id", false)]
     [JsonProperty("invoice_id")]
     public string InvoiceID { get; set; }
 
-    [PrimaryKey("product_id", true)]
+    [PrimaryKey("product_id", false)]
     [JsonProperty("product_id")]
     public long ProductID { get; set; }    
 

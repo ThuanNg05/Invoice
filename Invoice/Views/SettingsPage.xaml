@@ -62,8 +62,6 @@
                 </StackPanel>
             </StackPanel>
 
-            <TextBlock Text="About this application" Style="{ThemeResource SubtitleTextBlockStyle}" />
-
             <StackPanel Margin="{StaticResource XSmallTopMargin}">
                 <TextBlock Text="{x:Bind ViewModel.VersionDescription, Mode=OneWay}" Style="{ThemeResource BodyTextBlockStyle}" Foreground="{ThemeResource SettingsForegroundBrush}" />
 

@@ -26,7 +26,8 @@ public partial class IOActionsViewModel : ViewModelBase, INavigationAware
 
         WeakReferenceMessenger.Default.Register<DatabaseChangedMessage>(this, (r, m) =>
         {
-            if (m.EntityName == InMemoryCache.PRODUCTS || m.EntityName == InMemoryCache.MATERIALS)
+            if (m.EntityName == InMemoryCache.PRODUCTS || m.EntityName == InMemoryCache.MATERIALS || 
+                m.EntityName == InMemoryCache.PLANKS || m.EntityName == InMemoryCache.TRANSACTIONS)
             {
                 if (App.MainWindow?.DispatcherQueue != null)
                 {

@@ -67,4 +67,7 @@ public class Products : BaseModel
 
     [Column("size_id")]
     public string SizeID { get; set; }
+
+    [Column("status")]
+    public int Status { get; set; } = 1;
     }

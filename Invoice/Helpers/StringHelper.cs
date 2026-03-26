@@ -15,6 +15,40 @@ public static class StringHelper
         return Regex.Replace(input.Trim(), @"\s+", " ");
     }
 
+    /// <summary>
+    /// Normalizes a Vietnamese name by trimming spaces, removing multiple internal spaces,
+    /// and converting to Title Case (capitalizing the first letter of each word).
+    /// </summary>
+    /// <param name="input">The name to normalize.</param>
+    /// <returns>A normalized string, or an empty string if the input is null or whitespace.</returns>
+    public static string NormalizeVietnameseName(string input)
+    {
+        if (string.IsNullOrWhiteSpace(input)) return string.Empty;
+
+        // 1. Trim and remove redundant spaces
+        string cleaned = RemoveRedundantWhitespace(input);
+        if (string.IsNullOrEmpty(cleaned)) return string.Empty;
+
+        // 2. Split into words
+        string[] words = cleaned.Split(' ');
+
+        // 3. Process each word to be Title Case
+        for (int i = 0; i < words.Length; i++)
+        {
+            if (words[i].Length > 0)
+            {
+                // Convert entire word to lowercase first to handle mixed case input (e.g., "NgUyễN")
+                string word = words[i].ToLower(new CultureInfo("vi-VN"));
+                
+                // Capitalize first letter
+                words[i] = char.ToUpper(word[0], new CultureInfo("vi-VN")) + word.Substring(1);
+            }
+        }
+
+        // 4. Join back with a single space
+        return string.Join(" ", words);
+    }
+
     public static string GetNormalizedLastName(string fullName)
     {
         if (string.IsNullOrWhiteSpace(fullName)) 
@@ -61,7 +95,7 @@ public static class StringHelper
     public static double ParseDouble(string text)
     {
         if (string.IsNullOrWhiteSpace(text)) return 0;
-        return double.TryParse(text.Trim().Replace(",", ""), NumberStyles.Any, CultureInfo.InvariantCulture, out double val) ? val : 0;
+        return double.TryParse(text.Trim().Replace(",", "").Replace(".", ""), NumberStyles.Any, CultureInfo.InvariantCulture, out double val) ? val : 0;
     }
 
     public static void ClearInputs(DependencyObject parent)

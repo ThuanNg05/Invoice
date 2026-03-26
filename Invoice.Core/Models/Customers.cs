@@ -30,6 +30,9 @@ public class Customers : BaseModel
         get; set;
     }
 
+    [Column("status")]
+    public int Status { get; set; } = 1;
+
     public override string ToString()
     {
         return Name;

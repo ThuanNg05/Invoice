@@ -45,11 +45,11 @@ public sealed partial class CreateInvoicePage : Page
             return;
         }
 
-        if (ViewModel.SelectedCustomer == null)
-        {
-            await _dialogService.ShowErrorAsync("Vui lòng chọn khách hàng để sinh mã phiếu.");
-            return;
-        }
+        //if (ViewModel.SelectedCustomer == null)
+        //{
+        //    await _dialogService.ShowErrorAsync("Vui lòng chọn khách hàng để sinh mã phiếu.");
+        //    return;
+        //}
 
         await ViewModel.GenerateTempPdfAsync();
     }

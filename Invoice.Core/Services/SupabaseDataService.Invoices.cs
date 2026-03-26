@@ -134,13 +134,34 @@ public partial class SupabaseDataService
         return response.Models;
     }
 
-    public async Task<int> GetInvoiceCountByDate(DateTime date)
+    public async Task<int> GetMaxInvoiceSequenceByDate(DateTime date)
     {
         await EnsureConnectionAsync();
-        string dateString = date.ToString("yyyy-MM-dd");
-        var response = await _client.From<Invoices>().Where(x => x.CreatedDate == dateString)
-            .Count(CountType.Exact);
-        return response;
+        string datePrefix = date.ToString("ddMMyyyy");
+        
+        // Fetch all IDs that START with today's date prefix to avoid collision 
+        // even if CreatedDate is inconsistent or some records have weird values.
+        var response = await _client.From<Invoices>()
+            .Select("invoice_id")
+            .Filter("invoice_id", Operator.Like, $"{datePrefix}%")
+            .Get();
+
+        if (!response.Models.Any()) return 0;
+
+        int maxSequence = 0;
+        foreach (var inv in response.Models)
+        {
+            if (string.IsNullOrEmpty(inv.InvoiceID)) continue;
+
+            // ID format: ddMMyyyy-XXXX-Name
+            var parts = inv.InvoiceID.Split('-');
+            if (parts.Length >= 2 && int.TryParse(parts[1], out int seq))
+            {
+                if (seq > maxSequence) maxSequence = seq;
+            }
+        }
+        
+        return maxSequence;
     }
 
     public async Task AddInvoice(Invoices invoice, IEnumerable<InvoiceDetail> details, IEnumerable<WarehouseTransaction> transactions)

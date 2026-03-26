@@ -11,7 +11,7 @@ public class WindowService : IWindowService
     private WindowEx? _productSelectionWindow;
     private WindowEx? _editingWindow;
 
-    public void OpenProductSelectionWindow(Customers selectedCustomer, IEnumerable<TempInvoice> currentInvoiceItems)
+    public void OpenProductSelectionWindow(Customers? selectedCustomer, IEnumerable<TempInvoice> currentInvoiceItems)
     {
         if (_productSelectionWindow != null)
         {
@@ -38,7 +38,7 @@ public class WindowService : IWindowService
 
         var navParam = new ProductSelectionNavigationParameter
         {
-            PriceGroup = selectedCustomer.PriceGroup,
+            PriceGroup = selectedCustomer?.PriceGroup ?? "Lẻ",
             CurrentInvoiceItems = currentInvoiceItems
         };
 

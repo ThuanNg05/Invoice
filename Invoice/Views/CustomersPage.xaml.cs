@@ -75,7 +75,7 @@ public sealed partial class CustomersPage : Page
         {
             var newCustomer = new Customers
             {
-                Name = StringHelper.RemoveRedundantWhitespace(txtName.Text),
+                Name = StringHelper.NormalizeVietnameseName(txtName.Text),
                 Phone = txtPhoneNo.Text,
                 PriceGroup = (CmbPriceType.SelectedItem as ComboBoxItem)?.Content.ToString()
             };
@@ -107,7 +107,7 @@ public sealed partial class CustomersPage : Page
 
             try
             {
-                selected.Name = txtName.Text;
+                selected.Name = StringHelper.NormalizeVietnameseName(txtName.Text);
                 selected.Phone = txtPhoneNo.Text;
                 selected.PriceGroup = (CmbPriceType.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "Lẻ";
                 await ViewModel.UpdateCustomerAsync(selected);                

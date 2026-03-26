@@ -7,7 +7,7 @@ namespace Invoice.Core.Models;
 [Table("invoices")]
 public class Invoices : BaseModel
 {
-    [PrimaryKey("invoice_id", true)]
+    [PrimaryKey("invoice_id", false)]
     [JsonProperty("invoice_id")]
     public string InvoiceID { get; set; }
 

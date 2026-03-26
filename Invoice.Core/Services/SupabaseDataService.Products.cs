@@ -13,7 +13,9 @@ public partial class SupabaseDataService
     {
         await EnsureConnectionAsync();
 
-        var request = _client.From<Products>().Select("product_id,name,base_price,price_odd,price_even,inventory");
+        var request = _client.From<Products>()
+                             .Select("product_id,name,base_price,price_odd,price_even,inventory")
+                             .Where(p => p.Status == 1);
         if (!string.IsNullOrEmpty(query))
         {
             request = request.Filter("name", Operator.ILike, $"%{query}%");
@@ -46,17 +48,6 @@ public partial class SupabaseDataService
         
         if (product != null) 
         {
-            if (!string.IsNullOrEmpty(product.SizeID))
-            {
-                var plankResponse = await _client.From<DetailPlanks>()
-                                             .Where(p => p.sizeID == product.SizeID)
-                                             .Get();
-                var plank = plankResponse.Models.FirstOrDefault();
-                if (plank != null)
-                {
-                    product.Inventory = plank.inventory;
-                }
-            }
             return product;
         }
 
@@ -104,10 +95,30 @@ public partial class SupabaseDataService
         await _client.From<Products>().Update(product);
     }
 
+    public async Task<Products?> GetProductByName(string name)
+    {
+        await EnsureConnectionAsync();
+        var response = await _client.From<Products>()
+                                    .Where(p => p.Name == name)
+                                    .Get();
+        return response.Models.FirstOrDefault();
+    }
+
+    public async Task HardDeleteProduct(long productId)
+    {
+        await EnsureConnectionAsync();
+        await _client.From<Products>()
+                    .Where(p => p.ProductID == productId)
+                    .Delete();
+    }
+
     public async Task DeleteProduct(long productId)
     {
         await EnsureConnectionAsync();
-        await _client.From<Products>().Where(p => p.ProductID == productId).Delete();
+        await _client.From<Products>()
+                    .Where(p => p.ProductID == productId)
+                    .Set(p => p.Status, 0)
+                    .Update();
     }
 
     public async Task<IEnumerable<Products>> GetAllProducts(bool forceRefresh = false)
@@ -121,23 +132,10 @@ public partial class SupabaseDataService
         Debug.WriteLine("[CACHE MISS] Products — fetching from server");
         await EnsureConnectionAsync();
         var response = await _client.From<Products>()
+                                    .Where(p => p.Status == 1)
                                     .Order("product_id", Ordering.Ascending).Get();
         
         var products = response.Models;
-        var planks = await GetPlanks(forceRefresh);
-
-        foreach (var p in products)
-        {
-            if (!string.IsNullOrEmpty(p.SizeID))
-            {
-                var plank = planks.FirstOrDefault(x => x.sizeID == p.SizeID);
-                if (plank != null)
-                {
-                    p.Inventory = plank.inventory;
-                }
-            }
-        }
-
         _cache.Set(InMemoryCache.PRODUCTS, products, TimeSpan.FromMinutes(5));
         return products;
     }
@@ -153,7 +151,10 @@ public partial class SupabaseDataService
                          .On(PostgresChangesOptions.ListenType.All, (sender, change) =>
                          {
                              var product = change.Model<Products>();
-                             onDataChanged?.Invoke(change.Event.ToString().ToUpper(), product);
+                             if (product != null && product.Status == 1)
+                             {
+                                 onDataChanged?.Invoke(change.Event.ToString().ToUpper(), product);
+                             }
                          });
         }
         catch (Exception ex)
@@ -174,7 +175,9 @@ public partial class SupabaseDataService
         Debug.WriteLine("[CACHE MISS] Materials — fetching from server");
         await EnsureConnectionAsync();
 
-        var response = await _client.From<Materials>().Get();
+        var response = await _client.From<Materials>()
+                                    .Where(m => m.Status == 1)
+                                    .Get();
         var sorted = response.Models.OrderBy(m => m.Name).ToList();
 
         _cache.Set(InMemoryCache.MATERIALS, sorted, TimeSpan.FromMinutes(5));
@@ -195,10 +198,31 @@ public partial class SupabaseDataService
         _cache.Invalidate(InMemoryCache.MATERIALS);
     }
 
+    public async Task<Materials?> GetMaterialByName(string name)
+    {
+        await EnsureConnectionAsync();
+        var response = await _client.From<Materials>()
+                                    .Where(m => m.Name == name)
+                                    .Get();
+        return response.Models.FirstOrDefault();
+    }
+
+    public async Task HardDeleteMaterial(long productId)
+    {
+        await EnsureConnectionAsync();
+        await _client.From<Materials>()
+                    .Where(m => m.ProductID == productId)
+                    .Delete();
+        _cache.Invalidate(InMemoryCache.MATERIALS);
+    }
+
     public async Task DeleteMaterial(long productId)
     {
         await EnsureConnectionAsync();
-        await _client.From<Materials>().Where(m => m.ProductID == productId).Delete();
+        await _client.From<Materials>()
+                    .Where(m => m.ProductID == productId)
+                    .Set(m => m.Status, 0)
+                    .Update();
         _cache.Invalidate(InMemoryCache.MATERIALS);
     }
 
@@ -269,7 +293,9 @@ public partial class SupabaseDataService
         Debug.WriteLine("[CACHE MISS] Planks — fetching from server");
         await EnsureConnectionAsync();
 
-        var response = await _client.From<DetailPlanks>().Get();
+        var response = await _client.From<DetailPlanks>()
+                                    .Where(p => p.Status == 1)
+                                    .Get();
         var sorted = response.Models.OrderBy(p => p.sizeID).ToList();
 
         _cache.Set(InMemoryCache.PLANKS, sorted, TimeSpan.FromMinutes(5));
@@ -288,12 +314,34 @@ public partial class SupabaseDataService
         _cache.Invalidate(InMemoryCache.PLANKS);
     }
 
+    public async Task<DetailPlanks?> GetPlankByName(string name)
+    {
+        await EnsureConnectionAsync();
+        var response = await _client.From<DetailPlanks>()
+                                    .Where(p => p.sizeID == name)
+                                    .Get();
+        return response.Models.FirstOrDefault();
+    }
+
+    public async Task HardDeletePlank(string plankId)
+    {
+        await EnsureConnectionAsync();
+        if (plankId == null) return;
+        await _client.From<DetailPlanks>()
+                    .Where(p => p.sizeID == plankId)
+                    .Delete();
+        _cache.Invalidate(InMemoryCache.PLANKS);
+    }
+
     public async Task DeletePlank(string plankId)
     {
         await EnsureConnectionAsync();
         if (plankId == null) return;
 
-        await _client.From<DetailPlanks>().Where(p => p.sizeID == plankId).Delete();
+        await _client.From<DetailPlanks>()
+                    .Where(p => p.sizeID == plankId)
+                    .Set(p => p.Status, 0)
+                    .Update();
         _cache.Invalidate(InMemoryCache.PLANKS);
     }
 

@@ -41,31 +41,46 @@
                     <StackPanel Orientation="Vertical" Spacing="10">
                         <StackPanel>
                             <TextBlock>                                
-                                <Run Text="Tên vật tư:"/>
+                                <Run Text="Tên vật tư"/>
                             </TextBlock>
                             <TextBox x:Name="txtName" Width="300" HorizontalAlignment="Left"/>
                         </StackPanel>
-                        <StackPanel HorizontalAlignment="Left">
-                            <TextBlock>                                                                
-                                <Run Text="Giá :"/>
-                            </TextBlock>
-                            <TextBox x:Name="txtBasePrice" Width="140" TextAlignment="Right"
-                                     behaviors:TextBoxInputBehavior.InputType="Numeric" />
+                        <StackPanel Orientation="Horizontal" Spacing="20">
+                            <StackPanel Orientation="Vertical" Spacing="10">
+                                 <StackPanel HorizontalAlignment="Left">
+                                    <TextBlock>                                                                
+                                        <Run Text="Giá"/>
+                                    </TextBlock>
+                                    <TextBox x:Name="txtBasePrice" Width="140" TextAlignment="Right"
+                                             behaviors:TextBoxInputBehavior.InputType="Decimal" />
+                                </StackPanel>
+                                <StackPanel HorizontalAlignment="Left">
+                                    <TextBlock>                                
+                                    <Run Text="Tổng tiền :"/>
+                                    </TextBlock>
+                                    <TextBox x:Name="txtTotal" Width="140" TextAlignment="Right"/>
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel Orientation="Vertical" Spacing="10">
+                                <StackPanel HorizontalAlignment="Left">
+                                    <TextBlock>                                
+                                        <Run Text="Tồn kho tối thiểu"/>
+                                    </TextBlock>
+                                    <TextBox x:Name="txtMinAmount"
+                                             behaviors:TextBoxInputBehavior.InputType="Numeric"
+                                             Width="140" TextAlignment="Right"/>
+                                </StackPanel>
+                                <StackPanel HorizontalAlignment="Left">
+                                    <TextBlock>                                
+                                        <Run Text="Đơn vị"/>
+                                    </TextBlock>
+                                    <TextBox x:Name="txtUnit"
+                                         Width="140" TextAlignment="Right"/>
+                                </StackPanel>
+                            </StackPanel>
                         </StackPanel>
-                        <StackPanel HorizontalAlignment="Left">
-                            <TextBlock>                                
-                                <Run Text="Tổng tiền :"/>
-                            </TextBlock>
-                            <TextBox x:Name="txtTotal" Width="140" TextAlignment="Right"/>
-                        </StackPanel>
-                        <StackPanel HorizontalAlignment="Left">
-                            <TextBlock>                                
-                                <Run Text="Tồn kho tối thiểu :"/>
-                            </TextBlock>
-                            <TextBox x:Name="txtMinAmount"
-                                     behaviors:TextBoxInputBehavior.InputType="Numeric"
-                                     Width="140" TextAlignment="Right"/>
-                        </StackPanel>
+                        
+                        
                     </StackPanel>
                 </StackPanel>
                 <Grid>
@@ -137,6 +152,14 @@
                             </controls:DataGridTemplateColumn.CellTemplate>
                         </controls:DataGridTemplateColumn>
                         <controls:DataGridTextColumn Binding="{Binding TotalLine}" Header="Thành tiền">
+                            <controls:DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                                    <Setter Property="TextAlignment" Value="Right"/>
+                                </Style>
+                            </controls:DataGridTextColumn.ElementStyle>
+                        </controls:DataGridTextColumn>
+                        <controls:DataGridTextColumn Binding="{Binding Unit}" Header="Đơn vị">
                             <controls:DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="HorizontalAlignment" Value="Stretch"/>

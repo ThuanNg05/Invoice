@@ -58,9 +58,27 @@ public partial class DetailPlanksViewModel : ViewModelBase, INavigationAware
 
     public async Task AddPlankAsync(DetailPlanks planks)
     {
-        if (Planks.Any(c => c.sizeID.Equals(planks.sizeID, StringComparison.OrdinalIgnoreCase)))
+        var existing = await _dataService.GetPlankByName(planks.sizeID);
+        if (existing != null)
         {
-            await DialogService.ShowErrorAsync("Trùng kích thước");
+            var result = await DialogService.ShowConfirmAsync("Thông báo", $"Cỡ ván '{planks.sizeID}' đã tồn tại trong hệ thống. Bạn có muốn phục hồi và thay thế dữ liệu mới không?");
+            if (result)
+            {
+                await ExecuteAsync(async () =>
+                {
+                    await _dataService.HardDeletePlank(existing.sizeID);
+                    await _dataService.AddPlank(planks);
+                    
+                    var currentInList = Planks.FirstOrDefault(p => p.sizeID.Equals(planks.sizeID, StringComparison.OrdinalIgnoreCase));
+                    if (currentInList != null)
+                    {
+                        Planks.Remove(currentInList);
+                    }
+
+                    Planks.Add(planks);
+                    await DialogService.ShowSuccessAsync("SUCCESS_ADD".GetLocalized());
+                }, "Lỗi khi phục hồi cỡ ván");
+            }
             return;
         }
 

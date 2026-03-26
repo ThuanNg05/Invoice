@@ -60,16 +60,73 @@ public partial class CustomersViewModel : ViewModelBase, INavigationAware
 
     public async Task AddCustomerAsync(Customers customer)
     {
-        if (CustomersCollection.Any(c => c.Name.Equals(customer.Name, StringComparison.OrdinalIgnoreCase)))
+        customer.Name = StringHelper.NormalizeVietnameseName(customer.Name);
+        // 1. Check by Name
+        var existingByName = await _dataService.GetCustomerByName(customer.Name);
+        if (existingByName != null)
         {
-            await DialogService.ShowErrorAsync("Tên khách hàng đã tồn tại!");
+            var result = await DialogService.ShowConfirmAsync("Thông báo", $"Khách hàng '{customer.Name}' đã tồn tại trong hệ thống. Bạn có muốn phục hồi và thay thế dữ liệu mới không?");
+            if (result)
+            {
+                // Check if the NEW phone conflicts with ANOTHER customer
+                if (!string.IsNullOrEmpty(customer.Phone))
+                {
+                    var existingByPhone = await _dataService.GetCustomerByPhone(customer.Phone);
+                    if (existingByPhone != null && existingByPhone.CustomerID != existingByName.CustomerID)
+                    {
+                        await DialogService.ShowErrorAsync($"Số điện thoại '{customer.Phone}' đã được sử dụng bởi khách hàng '{existingByPhone.Name}'!");
+                        return;
+                    }
+                }
+
+                await ExecuteAsync(async () =>
+                {
+                    await _dataService.HardDeleteCustomer(existingByName.CustomerID);
+                    await _dataService.AddCustomer(customer);
+                    
+                    var currentInList = CustomersCollection.FirstOrDefault(c => c.Name.Equals(customer.Name, StringComparison.OrdinalIgnoreCase));
+                    if (currentInList != null)
+                    {
+                        CustomersCollection.Remove(currentInList);
+                        AllCustomers.RemoveAll(c => c.Name.Equals(customer.Name, StringComparison.OrdinalIgnoreCase));
+                    }
+
+                    CustomersCollection.Add(customer);
+                    AllCustomers.Add(customer);
+                    await DialogService.ShowSuccessAsync("SUCCESS_ADD".GetLocalized());
+                }, "Lỗi khi phục hồi khách hàng");
+            }
             return;
         }
-        if (!string.IsNullOrEmpty(customer.Phone) &&
-            CustomersCollection.Any(c => c.Phone == customer.Phone))
+
+        // 2. Check by Phone
+        if (!string.IsNullOrEmpty(customer.Phone))
         {
-            await DialogService.ShowErrorAsync("Số điện thoại đã tồn tại!");
-            return;
+            var existingByPhone = await _dataService.GetCustomerByPhone(customer.Phone);
+            if (existingByPhone != null)
+            {
+                var result = await DialogService.ShowConfirmAsync("Thông báo", $"Số điện thoại '{customer.Phone}' đã tồn tại (Khách hàng: {existingByPhone.Name}). Bạn có muốn phục hồi khách hàng này và cập nhật thông tin mới không?");
+                if (result)
+                {
+                    await ExecuteAsync(async () =>
+                    {
+                        await _dataService.HardDeleteCustomer(existingByPhone.CustomerID);
+                        await _dataService.AddCustomer(customer);
+                        
+                        var currentInList = CustomersCollection.FirstOrDefault(c => c.Phone == customer.Phone);
+                        if (currentInList != null)
+                        {
+                            CustomersCollection.Remove(currentInList);
+                            AllCustomers.RemoveAll(c => c.Phone == customer.Phone);
+                        }
+
+                        CustomersCollection.Add(customer);
+                        AllCustomers.Add(customer);
+                        await DialogService.ShowSuccessAsync("SUCCESS_ADD".GetLocalized());
+                    }, "Lỗi khi phục hồi khách hàng");
+                }
+                return;
+            }
         }
 
         await ExecuteAsync(async () =>
@@ -95,11 +152,15 @@ public partial class CustomersViewModel : ViewModelBase, INavigationAware
 
     public async Task UpdateCustomerAsync(Customers customer)
     {
-        if (!string.IsNullOrEmpty(customer.Phone) &&
-            CustomersCollection.Any(c => c.Phone == customer.Phone && c.CustomerID != customer.CustomerID))
+        customer.Name = StringHelper.NormalizeVietnameseName(customer.Name);
+        if (!string.IsNullOrEmpty(customer.Phone))
         {
-            await DialogService.ShowErrorAsync("Số điện thoại đã tồn tại!");
-            return;
+            var existingByPhone = await _dataService.GetCustomerByPhone(customer.Phone);
+            if (existingByPhone != null && existingByPhone.CustomerID != customer.CustomerID)
+            {
+                await DialogService.ShowErrorAsync($"Số điện thoại '{customer.Phone}' đã tồn tại (Khách hàng: {existingByPhone.Name})!");
+                return;
+            }
         }
 
         await ExecuteAsync(async () =>

@@ -72,10 +72,10 @@ public sealed partial class ProductsPage : Page
         btnUpdate.IsEnabled = true;
         txtName.Text = selected.Name;
         txtSizeID.Text = selected.SizeID ?? string.Empty;
-        txtBasePrice.Text = selected.BasePrice.ToString();
-        txtPriceOdd.Text = selected.PriceOdd.ToString();
-        txtPriceEven.Text = selected.PriceEven.ToString();
-        txtWage.Text = selected.PrWage.ToString();
+        txtBasePrice.Text = selected.BasePrice.ToString("N0");
+        txtPriceOdd.Text = selected.PriceOdd.ToString("N0");
+        txtPriceEven.Text = selected.PriceEven.ToString("N0");
+        txtWage.Text = selected.PrWage.ToString("N0");
         txtKieng.Text = selected.sKieng.ToString();
         txtNhL.Text = selected.sNhL.ToString();
         txtNhN.Text = selected.sNhN.ToString();
@@ -90,13 +90,13 @@ public sealed partial class ProductsPage : Page
         txt7f.Text = selected.s7f.ToString();
         txt2D.Text = selected.s2D.ToString();
         txtDecal.Text = selected.sDecal.ToString();
-        txtMDFodd.Text = selected.mdfOdd.ToString();
-        txtMDFeven.Text = selected.mdfEven.ToString();
-        txtHPodd.Text = selected.hpOdd.ToString();
-        txtHPeven.Text = selected.hpEven.ToString();
-        txtHoanh.Text = selected.hoanh.ToString();
-        txtLieng.Text = selected.lieng.ToString();
-        txtTG.Text = selected.tg.ToString();
+        txtMDFodd.Text = selected.mdfOdd.ToString("N0");
+        txtMDFeven.Text = selected.mdfEven.ToString("N0");
+        txtHPodd.Text = selected.hpOdd.ToString("N0");
+        txtHPeven.Text = selected.hpEven.ToString("N0");
+        txtHoanh.Text = selected.hoanh.ToString("N0");
+        txtLieng.Text = selected.lieng.ToString("N0");
+        txtTG.Text = selected.tg.ToString("N0");
         btnAdd.IsEnabled = false;
         btnUpdate.IsEnabled = true;
         btnDelete.IsEnabled = true;
@@ -157,6 +157,7 @@ public sealed partial class ProductsPage : Page
             {
                 var product = CreateProductFromInputs();
                 product.ProductID = selected.ProductID;
+                product.Inventory = selected.Inventory;
                 await ViewModel.UpdateProductAsync(product);
                 ClearInputs();
             }
@@ -275,8 +276,7 @@ public sealed partial class ProductsPage : Page
     }
 
     private void computeBasePrice(object sender, RoutedEventArgs args)
-    {
-        //CalculateBasePrice();
+    {        
         if (_currentPriceConfig == null) return;
 
         try

@@ -19,8 +19,14 @@ public class Materials : BaseModel
     public int Inventory { get; set; }        
     
     [Column("total_line", ignoreOnInsert: true, ignoreOnUpdate: true)] 
-    public decimal TotalLine { get; set; }      
+    public decimal TotalLine { get; set; }
+
+    [Column("unit")]
+    public string Unit { get; set; }
 
     [Column("min_amount")]
     public int MinAmount { get; set; }        
+
+    [Column("status")]
+    public int Status { get; set; } = 1;
 }

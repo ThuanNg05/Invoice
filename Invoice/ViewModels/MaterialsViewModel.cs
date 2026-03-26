@@ -60,9 +60,29 @@ public partial class MaterialsViewModel : ViewModelBase, INavigationAware
 
     public async Task AddMaterialAsync(Materials material)
     {
-        if (MaterialsCollection.Any(m => m.Name.Equals(material.Name, StringComparison.OrdinalIgnoreCase)))
+        var existing = await _dataService.GetMaterialByName(material.Name);
+        if (existing != null)
         {
-            await DialogService.ShowErrorAsync("Tên vật tư này đã tồn tại. Vui lòng nhập tên khác");
+            var result = await DialogService.ShowConfirmAsync("Thông báo", $"Vật tư '{material.Name}' đã tồn tại trong hệ thống. Bạn có muốn phục hồi và thay thế dữ liệu mới không?");
+            if (result)
+            {
+                await ExecuteAsync(async () =>
+                {
+                    await _dataService.HardDeleteMaterial(existing.ProductID);
+                    await _dataService.AddMaterial(material);
+                    
+                    var currentInList = MaterialsCollection.FirstOrDefault(m => m.Name.Equals(material.Name, StringComparison.OrdinalIgnoreCase));
+                    if (currentInList != null)
+                    {
+                        MaterialsCollection.Remove(currentInList);
+                        AllMaterials.RemoveAll(m => m.Name.Equals(material.Name, StringComparison.OrdinalIgnoreCase));
+                    }
+
+                    MaterialsCollection.Add(material);
+                    AllMaterials.Add(material);
+                    await DialogService.ShowSuccessAsync("SUCCESS_ADD".GetLocalized());
+                }, "Lỗi khi phục hồi vật tư");
+            }
             return;
         }
 

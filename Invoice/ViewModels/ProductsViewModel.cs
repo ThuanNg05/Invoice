@@ -7,7 +7,6 @@ using Invoice.Core.Contracts;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
 using Invoice.Helpers;
-using Invoice.Services;
 
 namespace Invoice.ViewModels;
 
@@ -116,9 +115,27 @@ public partial class ProductsViewModel : ViewModelBase, INavigationAware
 
     public async Task AddProductAsync(Products p)
     {
+        var existing = await _dataService.GetProductByName(p.Name);
+        if (existing != null)
+        {
+            var result = await DialogService.ShowConfirmAsync("Thông báo", $"Sản phẩm '{p.Name}' đã tồn tại trong hệ thống. Bạn có muốn phục hồi và thay thế dữ liệu mới không?");
+            if (result)
+            {
+                await ExecuteAsync(async () =>
+                {
+                    await _dataService.HardDeleteProduct(existing.ProductID);
+                    await _dataService.AddProduct(p);
+                    await ReloadFirstPage();
+                    await DialogService.ShowSuccessAsync("SUCCESS_ADD".GetLocalized());
+                }, "Lỗi khi phục hồi sản phẩm");
+            }
+            return;
+        }
+
         await ExecuteAsync(async () =>
         {
             await _dataService.AddProduct(p);
+            await ReloadFirstPage();
             await DialogService.ShowSuccessAsync("SUCCESS_ADD".GetLocalized());
         }, "LOAD_FAILED".GetLocalized());
     }
