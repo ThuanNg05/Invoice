@@ -56,18 +56,26 @@ public sealed partial class PlanksPage : Page
             return;
         }
 
-        if (cmbMaterial.SelectedValue is not long materialID)
+        if(cmbMaterial.SelectedItem == null)
         {
             await _dialogService.ShowErrorAsync("Vui lòng chọn loại ván.");
             cmbMaterial.Focus(FocusState.Programmatic);
             return;
         }
 
+        long materialID = 0;
+        string plankType = "";
+        if (cmbMaterial.SelectedItem is ComboBoxItem selectedItem)
+        {
+            plankType = selectedItem.Content.ToString();
+        }
+        if (plankType == "HP") materialID = 10012;
+        if (plankType == "MDF") materialID = 10013;                
+
         try
         {
             await ViewModel.ProcessTransactionAsync(selectedFrame, bigQty, materialID);
-            txtBigSheetQty.Text = string.Empty;
-            cmbMaterial.SelectedIndex = -1;
+            ClearInputs();
         }
         catch (Exception ex)
         {
@@ -81,6 +89,12 @@ public sealed partial class PlanksPage : Page
         if (!validation.IsValid)
         {
             await _dialogService.ShowErrorAsync(validation.Message);
+            return;
+        }
+
+        if(ViewModel.Frames.Any(f => f.FrameNO.Equals(frameNO.Text, StringComparison.OrdinalIgnoreCase)))
+        {
+            await _dialogService.ShowErrorAsync($"Mã rập '{frameNO.Text}' đã tồn tại. Vui lòng nhập mã khác.");
             return;
         }
 
@@ -209,6 +223,23 @@ public sealed partial class PlanksPage : Page
         btnSaveStock.IsEnabled = true;
     }
 
+    private void AutoSuggestBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+    {
+        if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+        {
+            var suggestions = ViewModel.Planks
+                .Where(p => p.sizeID.Contains(sender.Text, StringComparison.OrdinalIgnoreCase))
+                .Select(p => p.sizeID)
+                .ToList();
+            sender.ItemsSource = suggestions;
+        }
+    }
+
+    private void AutoSuggestBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
+    {
+        sender.Text = args.SelectedItem.ToString();
+    }
+
     // Helper function
     private string GetSizePart(object rawInput, int index)
     {
@@ -228,10 +259,11 @@ public sealed partial class PlanksPage : Page
         }
 
         int validPairsCount = 0;
+        var seenSizes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
         for (int i = 1; i <= 10; i++)
         {
-            var txtSize = this.FindName($"txtSize{i}") as TextBox;
+            var txtSize = this.FindName($"txtSize{i}") as AutoSuggestBox;
             var txtAmount = this.FindName($"txtAmount{i}") as TextBox;
 
             if (txtSize == null || txtAmount == null) continue;
@@ -259,16 +291,18 @@ public sealed partial class PlanksPage : Page
                                    "- Tối đa 3 chữ số cho mỗi cạnh (1-999).");
                 }
 
-                // Kiểm tra sizeID có tồn tại trong DetailPlanks hay không
+                if (seenSizes.Contains(sizeVal))
+                {
+                    return (false, $"Kích thước '{sizeVal}' đã bị trùng lặp.");
+                }
+
+                seenSizes.Add(sizeVal);
+
                 if (!ViewModel.Planks.Any(p => p.sizeID.Equals(sizeVal, StringComparison.OrdinalIgnoreCase)))
                 {
                     return (false, $"Lỗi ở size {i}: Cỡ ván '{sizeVal}' không tồn tại trong danh mục.");
                 }
-
-                //if (!int.TryParse(amountVal, out _))
-                //{
-                //    return (false, $"Lỗi ở dòng {i}: Số lượng phải là một số nguyên.");
-                //}
+               
                 validPairsCount++;
             }
             else if (hasSize || hasAmount)

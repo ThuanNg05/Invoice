@@ -1,7 +1,9 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using Invoice.Contracts.ViewModels;
+using Invoice.Core.Contracts;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
 using Invoice.Contracts.Services;
@@ -15,7 +17,7 @@ public partial class HistoryTransactionViewModel : ViewModelBase, INavigationAwa
 
     public ObservableCollection<WarehouseHistoryItem> Source { get; } = new ObservableCollection<WarehouseHistoryItem>();
 
-    public List<string> SourceTypes { get; } = new() { "Sản phẩm", "Nguyên liệu" };
+    public List<string> SourceTypes { get; } = new() { "Xuất kho", "Nhập kho" };
 
     [ObservableProperty]
     private string? _selectedSourceType; // Mặc định null (không chọn)
@@ -32,6 +34,20 @@ public partial class HistoryTransactionViewModel : ViewModelBase, INavigationAwa
         StartDate = null;
         EndDate = null;
         _selectedSourceType = null;
+
+        WeakReferenceMessenger.Default.Register<DatabaseChangedMessage>(this, (r, m) =>
+        {
+            if (m.EntityName == InMemoryCache.TRANSACTIONS)
+            {
+                if (App.MainWindow?.DispatcherQueue != null)
+                {
+                    App.MainWindow.DispatcherQueue.TryEnqueue(async () =>
+                    {
+                        await SearchInvoice();
+                    });
+                }
+            }
+        });
     }
 
     public async void OnNavigatedTo(object parameter)
@@ -52,11 +68,11 @@ public partial class HistoryTransactionViewModel : ViewModelBase, INavigationAwa
             DateTime? from = StartDate?.DateTime;
             DateTime? to = EndDate?.DateTime;
             
-            string? sourceTypeFilter = null;
-            if (SelectedSourceType == "Sản phẩm") sourceTypeFilter = "PRODUCT";
-            else if (SelectedSourceType == "Nguyên liệu") sourceTypeFilter = "MATERIAL";
+            string? typeFilter = null;
+            if (SelectedSourceType == "Nhập kho") typeFilter = "Import";
+            else if (SelectedSourceType == "Xuất kho") typeFilter = "Export";
 
-            var historyData = await _dataService.GetQueryableHistory(from, to, sourceTypeFilter);
+            var historyData = await _dataService.GetQueryableHistory(from, to, typeFilter);
 
             foreach (var item in historyData)
             {

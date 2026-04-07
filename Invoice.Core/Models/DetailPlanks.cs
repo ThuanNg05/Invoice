@@ -15,4 +15,7 @@ public class DetailPlanks : BaseModel
     {
         get; set;
     }
-}
+
+    [Column("status")]
+    public int Status { get; set; } = 1;
+    }

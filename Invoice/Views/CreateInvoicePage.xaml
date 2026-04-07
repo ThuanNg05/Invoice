@@ -46,8 +46,7 @@
                 </StackPanel>
                 <!--Name-->
                 <StackPanel Spacing="5">
-                    <TextBlock>
-                        <Run x:Uid="Required_Field" Foreground="Red"/>
+                    <TextBlock>                        
                         <Run Text="Tên khách hàng"/>
                     </TextBlock>
                     <AutoSuggestBox x:Name="asbCustomer"
@@ -168,8 +167,7 @@
                             <DataTemplate>
                                 <TextBox Text="{Binding Amount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource IntToStringConverter}}"
                                          InputScope="Number" 
-                                         behaviors:TextBoxInputBehavior.InputType="Numeric"
-                                         LostFocus="AmountTextBox_LostFocus"/>
+                                         behaviors:TextBoxInputBehavior.InputType="Numeric"/>
                             </DataTemplate>
                         </controls:DataGridTemplateColumn.CellEditingTemplate>
                     </controls:DataGridTemplateColumn>

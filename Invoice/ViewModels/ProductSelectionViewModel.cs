@@ -27,6 +27,17 @@ public partial class ProductSelectionViewModel : ViewModelBase, INavigationAware
         _dataService = dataService;
         _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
         WeakReferenceMessenger.Default.Register<ProductsSelectedMessage>(this);
+
+        WeakReferenceMessenger.Default.Register<DatabaseChangedMessage>(this, (r, m) =>
+        {
+            if (m.EntityName == InMemoryCache.PRODUCTS || m.EntityName == InMemoryCache.PLANKS)
+            {
+                _dispatcherQueue.TryEnqueue(async () =>
+                {
+                    await ReloadFirstPage();
+                });
+            }
+        });
     }
 
     public async void FilterData(string query)

@@ -57,9 +57,10 @@ public sealed partial class MaterialsPage : Page
             var material = new Materials
             {
                 Name = txtName.Text.Trim(),
-                BasePrice = decimal.TryParse(txtBasePrice.Text.Trim(), out decimal price) ? price : 0,
+                BasePrice = decimal.TryParse(txtBasePrice.Text.Trim().Replace(".", ""), out decimal price) ? price : 0,
                 Inventory = 0,
-                MinAmount = int.TryParse(txtMinAmount.Text.Trim(), out int minAmt) ? minAmt : 0
+                MinAmount = int.TryParse(txtMinAmount.Text.Trim(), out int minAmt) ? minAmt : 0,
+                Unit = txtUnit.Text.Trim()
             };
 
             await ViewModel.AddMaterialAsync(material);            
@@ -89,12 +90,16 @@ public sealed partial class MaterialsPage : Page
         
         try
         {
+            decimal basePrice = decimal.TryParse(txtBasePrice.Text.Trim().Replace(".", ""), out decimal price) ? price : 0;
             var tmpMaterial = new Materials
             {
                 ProductID = selected.ProductID,
                 Name = txtName.Text.Trim(),
-                BasePrice = decimal.TryParse(txtBasePrice.Text, out decimal price) ? price : 0,
+                BasePrice = basePrice,
+                Inventory = selected.Inventory,
+                TotalLine = basePrice * selected.Inventory,
                 MinAmount = int.TryParse(txtMinAmount.Text, out int minAmt) ? minAmt : 0,
+                Unit = txtUnit.Text.Trim()
             };
             await ViewModel.UpdateMaterialAsync(tmpMaterial);            
             ClearInputs();
@@ -131,9 +136,10 @@ public sealed partial class MaterialsPage : Page
     {
         if (MaterialGrid.SelectedItem is not Materials selected) return;        
         txtName.Text = selected.Name;
-        txtBasePrice.Text = selected.BasePrice.ToString();
+        txtBasePrice.Text = selected.BasePrice.ToString("N0");
         txtMinAmount.Text = selected.MinAmount.ToString();
-        txtTotal.Text = (selected.BasePrice * selected.Inventory).ToString();
+        txtTotal.Text = (selected.BasePrice * selected.Inventory).ToString("N0");
+        txtUnit.Text = selected.Unit;
 
         btnDelete.IsEnabled = true;
         btnUpdate.IsEnabled = true;

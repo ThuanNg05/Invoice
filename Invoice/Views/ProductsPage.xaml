@@ -6,6 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:behaviors="using:Invoice.Behaviors"
+    xmlns:converters="using:Invoice.Helpers"
     mc:Ignorable="d">
 
     <Page.Resources>
@@ -25,6 +26,8 @@
                 <Setter Property="FontWeight" Value="Bold"/>
                 <Setter Property="HorizontalContentAlignment" Value="Center"/>
             </Style>
+
+            <converters:InventoryToColorConverter x:Key="InventoryColorConverter"/>
         </ResourceDictionary>
     </Page.Resources>
     <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
@@ -38,34 +41,33 @@
                 <StackPanel Orientation="Vertical" Margin="0,0,0,10">
                     <StackPanel Orientation="Horizontal">
                         <StackPanel Margin="0,0,10,10">
-                            <TextBlock>
-                                <Run x:Uid="Required_Field" Foreground="Red"/>
+                            <TextBlock>                                
                                 <Run Text="Tên sản phẩm"/>
                             </TextBlock>
                             <TextBox x:Name="txtName" Width="300" HorizontalAlignment="Left" Margin="0,0,0,5"/>
                             <TextBlock Text="Cỡ ván"/>
-                            <TextBox x:Name="txtSizeID" PlaceholderText="VD: 50x70" Width="300" HorizontalAlignment="Left" />
+                            <AutoSuggestBox x:Name="txtSizeID" PlaceholderText="VD: 50x70" Width="300" HorizontalAlignment="Left" 
+                                            TextChanged="AutoSuggestBox_TextChanged" SuggestionChosen="AutoSuggestBox_SuggestionChosen"/>
                         </StackPanel>
                         <StackPanel>
-                            <TextBlock>
-                                <Run x:Uid="Required_Field" Foreground="Red"/>
+                            <TextBlock>                                
                                 <Run Text="Tiền công"/>
                             </TextBlock>
-                            <TextBox x:Name="txtWage" Width="140" HorizontalAlignment="Left" behaviors:TextBoxInputBehavior.InputType="Decimal" TextChanged="computeBasePrice"/>
+                            <TextBox x:Name="txtWage" Width="140" HorizontalAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Decimal" TextChanged="computeBasePrice"/>
                         </StackPanel>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,0,0,10">
                         <StackPanel>
                             <TextBlock Text="Giá gốc"/>
-                            <TextBox x:Name="txtBasePrice" Width="140" TextAlignment="Right"/>
+                            <TextBox x:Name="txtBasePrice" Width="140" TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Decimal"/>
                         </StackPanel>
                         <StackPanel>
                             <TextBlock Text="Giá lẻ"/>
-                            <TextBox x:Name="txtPriceOdd" Width="150" TextAlignment="Right" />
+                            <TextBox x:Name="txtPriceOdd" Width="150" TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Decimal"/>
                         </StackPanel>
                         <StackPanel>
                             <TextBlock Text="Giá sỉ"/>
-                            <TextBox x:Name="txtPriceEven" Width="140" TextAlignment="Right" />
+                            <TextBox x:Name="txtPriceEven" Width="140" TextAlignment="Right" behaviors:TextBoxInputBehavior.InputType="Decimal"/>
                         </StackPanel>
                     </StackPanel>
                 </StackPanel>
@@ -181,7 +183,6 @@
                         <SolidColorBrush x:Key="DataGridColumnHeaderBackgroundColor" Color="Transparent" />
                     </controls:DataGrid.Resources>
                     <controls:DataGrid.Columns>
-                        <!--<controls:DataGridTextColumn Header="Mã SP" Binding="{Binding ProductID}" Visibility="Collapsed" />-->
                         <controls:DataGridTextColumn Header="Tên SP" Width="200" Binding="{Binding Name}" />
                         <controls:DataGridTextColumn Header="Giá gốc" Binding="{Binding BasePrice}">
                             <controls:DataGridTextColumn.ElementStyle>
@@ -207,6 +208,19 @@
                                 </Style>
                             </controls:DataGridTextColumn.ElementStyle>
                         </controls:DataGridTextColumn>
+                        <controls:DataGridTemplateColumn Header="Tồn kho">
+                            <controls:DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Border Background="{Binding Converter={StaticResource InventoryColorConverter}}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                        <TextBlock Text="{Binding Inventory}" 
+                                                   TextAlignment="Right" 
+                                                   VerticalAlignment="Center" 
+                                                   Padding="10,0"
+                                                   HorizontalAlignment="Stretch"/>
+                                    </Border>
+                                </DataTemplate>
+                            </controls:DataGridTemplateColumn.CellTemplate>
+                        </controls:DataGridTemplateColumn>
                     </controls:DataGrid.Columns>
                 </controls:DataGrid>
             </StackPanel>

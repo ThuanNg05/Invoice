@@ -25,8 +25,7 @@ public class PageService : IPageService
         Configure<MaterialsViewModel, MaterialsPage>();
         Configure<ProductSelectionViewModel, ProductSelectionPage>();
         Configure<ProductsViewModel, ProductsPage>();
-        Configure<ReportingViewModel, ReportingPage>();
-        Configure<IOPlanksViewModel, IOPlanksPage>();
+        Configure<ReportingViewModel, ReportingPage>();        
         Configure<PlanksViewModel, PlanksPage>();
         Configure<HistoryTransactionViewModel, HistoryTransactionPage>();
     }

@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
-using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Messaging;
 using Invoice.Contracts.ViewModels;
+using Invoice.Core.Contracts;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
 using Invoice.Contracts.Services;
@@ -16,11 +17,23 @@ public partial class PlanksViewModel : ViewModelBase, INavigationAware
 
     public ObservableCollection<DetailPlanks> Planks { get; } = new ObservableCollection<DetailPlanks>();
 
-    public ObservableCollection<Materials> Materials { get; } = new ObservableCollection<Materials>();
-
     public PlanksViewModel(IDataService dataService, IDialogService dialogService) : base(dialogService)
     {
         _dataService = dataService;
+
+        WeakReferenceMessenger.Default.Register<DatabaseChangedMessage>(this, (r, m) =>
+        {
+            if (m.EntityName == InMemoryCache.FRAMES || m.EntityName == InMemoryCache.PLANKS)
+            {
+                if (App.MainWindow?.DispatcherQueue != null)
+                {
+                    App.MainWindow.DispatcherQueue.TryEnqueue(async () =>
+                    {
+                        await LoadDataAsync();
+                    });
+                }
+            }
+        });
     }
 
     public void OnNavigatedTo(object parameter)
@@ -44,17 +57,10 @@ public partial class PlanksViewModel : ViewModelBase, INavigationAware
             }
 
             Planks.Clear();
-            var planks = await _dataService.GetPlanks();
+            var planks = await _dataService.GetPlanks(forceRefresh: true);
             foreach (var item in planks)
             {
                 Planks.Add(item);
-            }
-
-            Materials.Clear();
-            var materials = await _dataService.GetMaterials();
-            foreach (var item in materials)
-            {
-                Materials.Add(item);
             }
         }, "Lỗi khi tải dữ liệu");
     }

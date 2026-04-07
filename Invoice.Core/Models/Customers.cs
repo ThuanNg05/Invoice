@@ -7,7 +7,7 @@ namespace Invoice.Core.Models;
 public class Customers : BaseModel
 {
     [PrimaryKey("customer_id")]
-    public int CustomerID
+    public long CustomerID
     {
         get; set;
     }
@@ -29,6 +29,9 @@ public class Customers : BaseModel
     {
         get; set;
     }
+
+    [Column("status")]
+    public int Status { get; set; } = 1;
 
     public override string ToString()
     {

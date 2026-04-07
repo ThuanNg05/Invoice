@@ -54,8 +54,13 @@ public sealed partial class IOActionsPage : Page
             await _dialogService.ShowErrorAsync("Vui lòng chọn sản phẩm từ danh sách.");
             return;
         }
+        
+        var strComboValue = cmbType.SelectedValue?.ToString();        
+        
+        string actionType = strComboValue == "Xuất kho" ? "Export"
+                  : strComboValue == "Nhập kho" ? "Import"
+                  : string.Empty;
 
-        var actionType = cmbType.SelectedValue.ToString();
         int currentInventory = selectedSourceItem.Inventory;
         int amount = int.Parse(txtAmount.Text);
 
@@ -64,11 +69,11 @@ public sealed partial class IOActionsPage : Page
 
         if (existingTransaction != null)
         {            
-            if(await _dialogService.ShowConfirmAsync("Sản phẩm trùng lặp", $"Sản phẩm '{selectedSourceItem.Name}' với hình thức '{actionType}' đã có trong danh sách chờ.\nBạn có muốn cộng dồn số lượng không?", "Đồng ý"))
+            if(await _dialogService.ShowConfirmAsync("Sản phẩm trùng lặp", $"Sản phẩm '{selectedSourceItem.Name}' với hình thức '{strComboValue}' đã có trong danh sách chờ.\nBạn có muốn cộng dồn số lượng không?", "Đồng ý"))
             {
                 int totalAmount = existingTransaction.Amount + amount;
 
-                if (actionType == "Xuất kho" && totalAmount > currentInventory)
+                if (actionType == "Export" && totalAmount > currentInventory)
                 {
                     await _dialogService.ShowErrorAsync($"Không thể cộng dồn. Tổng số lượng xuất kho ({totalAmount}) vượt quá tồn kho hiện tại ({currentInventory}).");
                     return;
@@ -79,7 +84,7 @@ public sealed partial class IOActionsPage : Page
         }
         else
         {
-            if (actionType == "Xuất kho" && amount > currentInventory)
+            if (actionType == "Export" && amount > currentInventory)
             {                
                 await _dialogService.ShowErrorAsync($"Không thể thêm. Số lượng xuất kho ({amount}) vượt quá tồn kho hiện tại ({currentInventory}).");
                 return;
@@ -111,9 +116,13 @@ public sealed partial class IOActionsPage : Page
                 return;
             }
 
-            string actionType = cmbType.SelectedValue.ToString();
+            string strComboValue = cmbType.SelectedValue.ToString();
+            string actionType = strComboValue == "Xuất kho" ? "Export"
+                              : strComboValue == "Nhập kho" ? "Import"
+                              : string.Empty;
+
             int currentInventory = ViewModel.GetCurrentInventory(selectedItem.ProductID);
-            if (actionType == "Xuất kho" && newAmount > currentInventory)
+            if (actionType == "Export" && newAmount > currentInventory)
             {
                 await _dialogService.ShowErrorAsync($"Không thể cập nhật. Số lượng xuất kho ({newAmount}) vượt quá tồn kho hiện tại ({currentInventory}).");
                 return;
@@ -179,7 +188,7 @@ public sealed partial class IOActionsPage : Page
         {            
             txtName.Text = selected.Name ?? "";
             txtAmount.Text = selected.Amount.ToString();
-            cmbType.SelectedItem = selected.ActionType;
+            cmbType.SelectedItem = selected.ActionType == "Export" ? "Xuất kho" : selected.ActionType == "Import" ? "Nhập kho" : selected.ActionType;
 
             txtInventory.Text = ViewModel.GetCurrentInventory(selected.ProductID).ToString();
 

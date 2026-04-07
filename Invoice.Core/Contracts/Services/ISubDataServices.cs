@@ -8,6 +8,9 @@ public interface ICustomerService
     Task AddCustomer(Customers customer);
     Task DeleteCustomer(long customerId);
     Task UpdateCustomer(Customers customer);
+    Task<Customers?> GetCustomerByName(string name);
+    Task<Customers?> GetCustomerByPhone(string phone);
+    Task HardDeleteCustomer(long customerId);
 }
 
 public interface IProductService
@@ -17,13 +20,17 @@ public interface IProductService
     Task AddProduct(Products product);
     Task UpdateProduct(Products product);
     Task DeleteProduct(long productId);
-    Task<IEnumerable<Products>> GetAllProducts();
+    Task<IEnumerable<Products>> GetAllProducts(bool forceRefresh = false);
     Task SubscribeToProductsRealtime(Action<string, Products> onDataChanged);
+    Task<Products?> GetProductByName(string name);
+    Task HardDeleteProduct(long productId);
     
     Task<IEnumerable<Materials>> GetMaterials(bool forceRefresh = false);
     Task AddMaterial(Materials material);
     Task DeleteMaterial(long productId);
     Task UpdateMaterial(Materials material);
+    Task<Materials?> GetMaterialByName(string name);
+    Task HardDeleteMaterial(long productId);
 
     Task<IEnumerable<Frames>> GetFrames(bool forceRefresh = false);
     Task AddFrame(Frames plank);
@@ -34,6 +41,8 @@ public interface IProductService
     Task AddPlank(DetailPlanks plank);
     Task DeletePlank(string plankId);
     Task UpdatePlank(DetailPlanks plank);
+    Task<DetailPlanks?> GetPlankByName(string name);
+    Task HardDeletePlank(string plankId);
 
     Task<IEnumerable<DetailPrice>> GetPrice();
     Task UpdatePrice(DetailPrice prices);
@@ -43,9 +52,9 @@ public interface IInvoiceService
 {
     Task<IEnumerable<Invoices>> GetAllInvoices();
     Task<IEnumerable<History>> GetInvoiceHistory(DateTime? fromDate, DateTime? toDate, long? customerID);
-    Task<IEnumerable<WarehouseHistoryItem>> GetQueryableHistory(DateTime? fromDate, DateTime? toDate, string? sourceType = null);
+    Task<IEnumerable<WarehouseHistoryItem>> GetQueryableHistory(DateTime? fromDate, DateTime? toDate, string? actionType = null);
     Task<IEnumerable<InvoiceDetail>> GetInvoiceDetails(string invoiceID);
-    Task<int> GetInvoiceCountByDate(DateTime date);
+    Task<int> GetMaxInvoiceSequenceByDate(DateTime date);
     Task AddInvoice(Invoices invoice, IEnumerable<InvoiceDetail> details, IEnumerable<WarehouseTransaction> transactions);
     Task DeleteInvoiceAndRevertInventory(string invoiceId);
     Task<string> GetDashboardData(int year);
@@ -53,9 +62,7 @@ public interface IInvoiceService
 
 public interface IInventoryService
 {
-    Task UpdateProductInventory(long productId, int amountChange);
-    Task<IEnumerable<WarehouseTransaction>> GetWarehouseTransactions();
+    Task UpdateProductInventory(long productId, int amountChange);    
     Task AddWarehouseTransaction(WarehouseTransaction transaction);
-    Task ProcessInventoryTransaction(Frames frame, int amount, long? sourcePlankId = null);
-    Task<bool> ValidateMaterialStock(long productId, int requiredAmount);
+    Task ProcessInventoryTransaction(Frames frame, int amount, long? sourcePlankId = null);    
 }

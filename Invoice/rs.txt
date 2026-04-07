@@ -1,0 +1,266 @@
+Bạn hãy thực hiện **phân tích và đề xuất giải pháp trước**, **chưa code vội** nếu còn vướng ràng buộc database.
+Ngữ cảnh chính vẫn là feature tạo hóa đơn cho **2 loại khách** trong project hiện tại, tập trung quanh `GenerateCodeAsync` tại file:
+
+* `@Invoice/ViewModels/CreateInvoiceViewModel.cs`
+
+---
+
+# Ngữ cảnh mới cực kỳ quan trọng (Database / Supabase)
+
+Hiện tại trong thiết kế database (Supabase), bảng **`invoices`** đang có **ràng buộc với `customer_id`** (khả năng cao là `NOT NULL` hoặc FK bắt buộc), và điều này đang **gây trở ngại trực tiếp** khi tạo hóa đơn cho:
+
+* **Khách Lẻ / khách vãng lai / không có trong danh sách khách hàng**
+
+Tôi cần bạn **đề xuất các giải pháp khả thi**, ưu tiên:
+
+* **ít ảnh hưởng nhất đến logic nghiệp vụ hiện tại**
+* **ít thay đổi nhất ở codebase hiện tại**
+* **không phá vỡ flow đang chạy ổn cho khách hàng cố định**
+* **an toàn với dữ liệu cũ**
+
+---
+
+# Mục tiêu chính
+
+Tôi muốn hỗ trợ 2 luồng tạo hóa đơn:
+
+1. **Khách Lẻ (vãng lai)**
+2. **Khách hàng cố định (có trong danh sách)**
+
+Và vẫn phải giữ các yêu cầu nghiệp vụ trước đó:
+
+* Trước khi tạo hóa đơn mới / chọn sản phẩm:
+
+  * hiển thị **`ContentDialog`**
+  * cho user chọn:
+
+    * **1 - Khách Lẻ**
+    * **2 - Chọn Khách**
+* Nếu là **Khách Lẻ**:
+
+  * không bắt buộc chọn customer từ danh sách
+  * trong quy tắc tạo mã hóa đơn:
+
+    * `namePart = "KhachLe"`
+  * lưu theo ngữ cảnh thư mục:
+
+    * `[Thư mục đã chỉ định]/Khách Hàng/Khách Lẻ`
+* Nếu là **Chọn Khách**:
+
+  * giữ nguyên flow hiện tại
+  * vẫn dùng customer thật từ danh sách
+
+---
+
+# Nhiệm vụ bạn phải làm (theo đúng thứ tự)
+
+## 1) Phân tích ràng buộc database hiện tại
+
+Hãy phân tích các trường hợp có thể đang xảy ra ở bảng `invoices`:
+
+* `customer_id` là `NOT NULL`
+* `customer_id` là foreign key bắt buộc tới bảng `customers`
+* Có thể đang có logic insert/update phụ thuộc `customer_id`
+* Có thể có query join hoặc filter ở các màn hình khác đang ngầm giả định `customer_id` luôn tồn tại
+
+**Không được tự khẳng định nếu chưa thấy schema thực tế**.
+Nếu chưa có schema đầy đủ, hãy ghi rõ:
+
+* **“Cần xác nhận schema thực tế trước khi chốt phương án cuối cùng”**
+
+---
+
+## 2) Đề xuất ít nhất 3 phương án khả thi, ưu tiên ít ảnh hưởng
+
+Hãy đưa ra **ít nhất 3 phương án**, sắp xếp theo thứ tự từ:
+
+* **ít ảnh hưởng nhất**
+* đến **thay đổi schema rõ rệt hơn**
+
+Mỗi phương án phải có đủ:
+
+### Với mỗi phương án, trình bày:
+
+* **Ý tưởng**
+* **Ưu điểm**
+* **Nhược điểm**
+* **Mức độ ảnh hưởng đến code hiện tại** (Low / Medium / High)
+* **Mức độ ảnh hưởng đến database hiện tại** (Low / Medium / High)
+* **Rủi ro với dữ liệu cũ**
+* **Khả năng tương thích với flow hiện tại**
+* **Khuyến nghị có nên dùng hay không**
+
+---
+
+# Các phương án bạn PHẢI cân nhắc (bắt buộc phải đánh giá)
+
+## Phương án A — Tạo 1 bản ghi customer mặc định cho “Khách Lẻ”
+
+Ví dụ:
+
+* tạo 1 record customer cố định:
+
+  * Name = `Khách Lẻ`
+  * code nội bộ tùy hệ thống
+* tất cả hóa đơn vãng lai sẽ trỏ về đúng record này qua `customer_id`
+
+### Hãy đánh giá kỹ:
+
+* Đây có phải là phương án **ít phá vỡ nhất** không?
+* Có phù hợp với logic hiện tại vốn đang phụ thuộc `customer_id` không?
+* Có ảnh hưởng gì đến:
+
+  * lịch sử hóa đơn
+  * báo cáo theo khách hàng
+  * tìm kiếm / lọc khách hàng
+  * thống kê doanh thu theo customer
+
+---
+
+## Phương án B — Cho phép `customer_id` nullable trong `invoices`
+
+* sửa schema để `customer_id` được phép null
+* hóa đơn khách lẻ sẽ insert `customer_id = null`
+
+### Hãy đánh giá kỹ:
+
+* Cần thay đổi gì ở:
+
+  * insert logic
+  * query join
+  * UI hiển thị customer name
+  * filter/report
+* Những màn hình nào có nguy cơ bị null reference / join fail / mapping lỗi?
+* Đây có thực sự là “ít ảnh hưởng” hay không nếu hệ thống đang mặc định `customer_id` luôn có giá trị?
+
+---
+
+## Phương án C — Dùng customer_id đặc biệt hoặc customer type flag
+
+Ví dụ:
+
+* thêm cờ:
+
+  * `customer_type = 'Retail' | 'Registered'`
+* hoặc dùng 1 quy ước đặc biệt để phân biệt guest customer
+
+### Hãy đánh giá:
+
+* Có đáng để thêm cột mới không?
+* Có làm phức tạp logic hiện tại quá mức không?
+* Khi nào phương án này tốt hơn A hoặc B?
+
+---
+
+# Điều kiện lựa chọn phương án tối ưu
+
+Hãy chốt **1 phương án được khuyến nghị nhất** theo tiêu chí:
+
+* ít ảnh hưởng nhất đến code hiện tại
+* ít rủi ro nhất với logic đang chạy
+* dễ triển khai nhanh trong project hiện tại
+* ít phá vỡ các query/report/history hiện có
+* phù hợp với luồng `GenerateCodeAsync` hiện tại
+
+> Nếu bạn cho rằng **Phương án A (record mặc định “Khách Lẻ”)** là tối ưu nhất trong bối cảnh này, hãy nói rõ lý do kỹ thuật.
+
+---
+
+# Sau khi chốt phương án, mới được đề xuất hướng sửa code
+
+Sau phần phân tích database, hãy đề xuất **hướng triển khai code tối thiểu** cho project:
+
+## Chỉ tập trung vào:
+
+* `@Invoice/ViewModels/CreateInvoiceViewModel.cs`
+
+## Và chỉ được phép:
+
+* mô tả **cần sửa gì**
+* **chưa code đầy đủ** nếu còn thiếu schema xác nhận
+
+Nếu bắt buộc phải sửa thêm file khác:
+
+* **DỪNG LẠI**
+* liệt kê:
+
+  * file cần sửa
+  * lý do
+  * phạm vi sửa
+* **không code tiếp cho đến khi tôi xác nhận**
+
+---
+
+# Output format bắt buộc
+
+## A. Phân tích ràng buộc database hiện tại
+
+* Nêu các khả năng về `customer_id`
+* Chỉ ra vì sao nó cản trở flow Khách Lẻ
+* schema:
+    create table public.invoices (
+      invoice_id text not null,
+      customer_id bigint null,
+      created_date date null default CURRENT_DATE,
+      total bigint null default 0,
+      constraint invoices_pkey primary key (invoice_id),
+      constraint invoices_customer_id_fkey foreign KEY (customer_id) references customers (customer_id) on delete set null
+    ) TABLESPACE pg_default;
+
+* Nếu thiếu schema:
+
+  * ghi rõ **“Cần xác nhận schema thực tế trước khi chốt phương án cuối cùng”**
+
+## B. So sánh các phương án khả thi
+
+Lập bảng hoặc bullet rõ ràng cho:
+
+* Phương án A: record customer mặc định “Khách Lẻ”
+* Phương án B: `customer_id` nullable
+* Phương án C: thêm `customer_type` / flag / special handling
+
+Mỗi phương án phải có:
+
+* Ý tưởng
+* Ưu điểm
+* Nhược điểm
+* Ảnh hưởng code
+* Ảnh hưởng DB
+* Rủi ro dữ liệu cũ
+* Khuyến nghị
+
+## C. Phương án khuyến nghị nhất
+
+* Chọn 1 phương án
+* Giải thích vì sao
+* Nêu rõ vì sao nó **ít ảnh hưởng nhất đến nghiệp vụ hiện tại**
+
+## D. Hướng chỉnh code tối thiểu trong project
+
+* Chỉ ra ở `GenerateCodeAsync` cần thay đổi gì
+* Cần thêm state/flag gì cho Khách Lẻ vs Khách chọn
+* Cách xử lý `namePart = "KhachLe"`
+* Cách map thư mục:
+
+  * `[Thư mục đã chỉ định]/Khách Hàng/Khách Lẻ`
+
+## E. Điểm cần xác nhận trước khi code
+
+Liệt kê rõ các thông tin còn thiếu như:
+
+* schema thực tế bảng `invoices`
+* constraint thật sự của `customer_id`
+* bảng `customers` hiện tại
+* các query đang join invoices -> customers
+* nơi đang lưu folder path / export path
+
+---
+
+# Lưu ý cực kỳ quan trọng
+
+* **Không được tự ý sửa code ngay nếu chưa chốt được phương án DB**
+* **Không suy đoán schema như một sự thật**
+* **Ưu tiên giải pháp ít ảnh hưởng nhất đến logic hiện tại**
+* **Không refactor lan rộng**
+* **Không thay đổi các tệp không liên quan**
+* Nếu thiếu context, hãy dừng và nêu rõ phần cần xác nhận

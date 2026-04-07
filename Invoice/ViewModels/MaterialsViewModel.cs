@@ -1,5 +1,7 @@
 using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.Messaging;
 using Invoice.Contracts.ViewModels;
+using Invoice.Core.Contracts;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
 using Invoice.Contracts.Services;
@@ -17,6 +19,20 @@ public partial class MaterialsViewModel : ViewModelBase, INavigationAware
     public MaterialsViewModel(IDataService dataService, IDialogService dialogService) : base(dialogService)
     {
         _dataService = dataService;
+
+        WeakReferenceMessenger.Default.Register<DatabaseChangedMessage>(this, (r, m) =>
+        {
+            if (m.EntityName == InMemoryCache.MATERIALS)
+            {
+                if (App.MainWindow?.DispatcherQueue != null)
+                {
+                    App.MainWindow.DispatcherQueue.TryEnqueue(async () =>
+                    {
+                        await LoadDataAsync();
+                    });
+                }
+            }
+        });
     }
 
     public void OnNavigatedTo(object parameter)
@@ -33,7 +49,7 @@ public partial class MaterialsViewModel : ViewModelBase, INavigationAware
         await ExecuteAsync(async () =>
         {
             MaterialsCollection.Clear();
-            var data = await _dataService.GetMaterials(forceRefresh: false);
+            var data = await _dataService.GetMaterials(forceRefresh: true);
             AllMaterials = data.ToList();
             foreach (var item in AllMaterials)
             {
@@ -44,9 +60,29 @@ public partial class MaterialsViewModel : ViewModelBase, INavigationAware
 
     public async Task AddMaterialAsync(Materials material)
     {
-        if (MaterialsCollection.Any(m => m.Name.Equals(material.Name, StringComparison.OrdinalIgnoreCase)))
+        var existing = await _dataService.GetMaterialByName(material.Name);
+        if (existing != null)
         {
-            await DialogService.ShowErrorAsync("Tên vật tư này đã tồn tại. Vui lòng nhập tên khác");
+            var result = await DialogService.ShowConfirmAsync("Thông báo", $"Vật tư '{material.Name}' đã tồn tại trong hệ thống. Bạn có muốn phục hồi và thay thế dữ liệu mới không?");
+            if (result)
+            {
+                await ExecuteAsync(async () =>
+                {
+                    await _dataService.HardDeleteMaterial(existing.ProductID);
+                    await _dataService.AddMaterial(material);
+                    
+                    var currentInList = MaterialsCollection.FirstOrDefault(m => m.Name.Equals(material.Name, StringComparison.OrdinalIgnoreCase));
+                    if (currentInList != null)
+                    {
+                        MaterialsCollection.Remove(currentInList);
+                        AllMaterials.RemoveAll(m => m.Name.Equals(material.Name, StringComparison.OrdinalIgnoreCase));
+                    }
+
+                    MaterialsCollection.Add(material);
+                    AllMaterials.Add(material);
+                    await DialogService.ShowSuccessAsync("SUCCESS_ADD".GetLocalized());
+                }, "Lỗi khi phục hồi vật tư");
+            }
             return;
         }
 

@@ -1,6 +1,8 @@
 using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.Messaging;
 using Invoice.Contracts.Services;
 using Invoice.Contracts.ViewModels;
+using Invoice.Core.Contracts;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Models;
 using Invoice.Helpers;
@@ -16,6 +18,20 @@ public partial class DetailPlanksViewModel : ViewModelBase, INavigationAware
     public DetailPlanksViewModel(IDataService dataService, IDialogService dialogService) : base(dialogService)
     {
         _dataService = dataService;
+
+        WeakReferenceMessenger.Default.Register<DatabaseChangedMessage>(this, (r, m) =>
+        {
+            if (m.EntityName == InMemoryCache.PLANKS)
+            {
+                if (App.MainWindow?.DispatcherQueue != null)
+                {
+                    App.MainWindow.DispatcherQueue.TryEnqueue(async () =>
+                    {
+                        await LoadDataAsync();
+                    });
+                }
+            }
+        });
     }
 
     public void OnNavigatedTo(object parameter)
@@ -32,7 +48,7 @@ public partial class DetailPlanksViewModel : ViewModelBase, INavigationAware
         await ExecuteAsync(async () =>
         {
             Planks.Clear();
-            var data = await _dataService.GetPlanks();
+            var data = await _dataService.GetPlanks(forceRefresh: true);
             foreach (var item in data)
             {
                 Planks.Add(item);
@@ -42,9 +58,27 @@ public partial class DetailPlanksViewModel : ViewModelBase, INavigationAware
 
     public async Task AddPlankAsync(DetailPlanks planks)
     {
-        if (Planks.Any(c => c.sizeID.Equals(planks.sizeID, StringComparison.OrdinalIgnoreCase)))
+        var existing = await _dataService.GetPlankByName(planks.sizeID);
+        if (existing != null)
         {
-            await DialogService.ShowErrorAsync("Trùng kích thước");
+            var result = await DialogService.ShowConfirmAsync("Thông báo", $"Cỡ ván '{planks.sizeID}' đã tồn tại trong hệ thống. Bạn có muốn phục hồi và thay thế dữ liệu mới không?");
+            if (result)
+            {
+                await ExecuteAsync(async () =>
+                {
+                    await _dataService.HardDeletePlank(existing.sizeID);
+                    await _dataService.AddPlank(planks);
+                    
+                    var currentInList = Planks.FirstOrDefault(p => p.sizeID.Equals(planks.sizeID, StringComparison.OrdinalIgnoreCase));
+                    if (currentInList != null)
+                    {
+                        Planks.Remove(currentInList);
+                    }
+
+                    Planks.Add(planks);
+                    await DialogService.ShowSuccessAsync("SUCCESS_ADD".GetLocalized());
+                }, "Lỗi khi phục hồi cỡ ván");
+            }
             return;
         }
 

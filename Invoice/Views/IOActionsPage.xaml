@@ -38,7 +38,10 @@
         </Grid.RowDefinitions>
 
         <Border Grid.Row="0" Margin="0,0,695,0"
-                BorderBrush="{ThemeResource SurfaceStrokeColorDefaultBrush}" BorderThickness="1" Padding="15" CornerRadius="8" Background="{ThemeResource LayerFillColorDefaultBrush}">
+                BorderBrush="{ThemeResource SurfaceStrokeColorDefaultBrush}"
+                BorderThickness="1" Padding="15" CornerRadius="8"
+                HorizontalAlignment="Center"
+                Background="{ThemeResource LayerFillColorDefaultBrush}">
             <Grid ColumnSpacing="20" RowSpacing="15">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="300"/>
@@ -72,7 +75,7 @@
                 </ComboBox>
 
 
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0" Spacing="10" Grid.ColumnSpan="3" Grid.Row="2">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0" Spacing="10" Grid.ColumnSpan="3" Grid.Row="2">
                     <AppBarButton x:Name="btnAdd" Label="Thêm" Background="#07af00"
                                   IsEnabled="{x:Bind ViewModel.IsBusy, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}"
                                   CornerRadius="10" Icon="Add" Foreground="{ThemeResource SettingsForegroundBrush}"
@@ -165,6 +168,7 @@
                     <controls:DataGrid.Columns>
                         <controls:DataGridTextColumn Header="Tên SP" Binding="{Binding Name}" Width="*"/>
                         <controls:DataGridTextColumn Header="Tồn kho" Binding="{Binding Inventory}"/>
+                        <controls:DataGridTextColumn Header="Tạm tính" Binding="{Binding TemporaryInventory}"/>
                     </controls:DataGrid.Columns>
                 </controls:DataGrid>
             </Grid>
@@ -199,7 +203,7 @@
                     <controls:DataGrid.Columns>
                         <controls:DataGridTextColumn Header="Tên SP" Binding="{Binding Name}" Width="*"/>
                         <controls:DataGridTextColumn Header="Số lượng" Binding="{Binding Amount}"/>
-                        <controls:DataGridTextColumn Header="Hình thức" Binding="{Binding ActionType}"/>
+                        <controls:DataGridTextColumn Header="Hình thức" Binding="{Binding ActionType, Converter={StaticResource ActionTypeToVietnameseConverter}}"/>
                     </controls:DataGrid.Columns>
                 </controls:DataGrid>
             </Grid>

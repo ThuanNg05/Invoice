@@ -1,22 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Invoice.Core.Contracts.Services;
+﻿namespace Invoice.Core.Contracts.Services;
 
 /// <summary>
 /// Thread-safe in-memory cache dùng cho session hiện tại.
 /// Không persist qua app restart — phù hợp với local desktop app.
 /// </summary>
-internal sealed class InMemoryCache
+public sealed class InMemoryCache
 {
     public const string CUSTOMERS = "customers";
     public const string MATERIALS = "materials";
     public const string FRAMES = "frames";
     public const string PLANKS = "planks";
     public const string PRICES = "prices";
+    public const string PRODUCTS = "products";
+    public const string INVOICES = "invoices";
+    public const string TRANSACTIONS = "transactions";
 
     private readonly Dictionary<string, object> _store = new();
     private readonly object _lock = new();

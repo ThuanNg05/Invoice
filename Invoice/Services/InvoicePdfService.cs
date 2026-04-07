@@ -140,7 +140,7 @@ public class InvoicePdfService
                 int totalAmount = items.Sum(x => x.Amount);
                 footer.Cell().ColumnSpan(3).Border(1).Padding(5).AlignRight().Text("Tổng Cộng:");
                 footer.Cell().Border(1).Padding(5).AlignCenter().Text(totalAmount.ToString("N0")).Bold().FontSize(12);
-                footer.Cell().Border(1).Padding(2).AlignRight().Text(grandTotal.ToString("N0")).Bold().FontSize(12);
+                footer.Cell().Border(1).Padding(5).AlignRight().Text(grandTotal.ToString("N0")).Bold().FontSize(12);
                 footer.Cell().Border(1);
                 footer.Cell().ColumnSpan(6).Border(1).Padding(5).Text($"Bằng chữ: {StringHelper.NumberToTextVN(grandTotal)}").Italic().FontSize(14).FontFamily("Times New Roman");
             });

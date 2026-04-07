@@ -32,6 +32,7 @@
             <helpers:DoubleToStringConverter x:Key="DoubleToStringConverter" />
             <helpers:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
             <helpers:IntToStringConverter x:Key="IntToStringConverter" />
+            <helpers:ActionTypeToVietnameseConverter x:Key="ActionTypeToVietnameseConverter" />
             
         </ResourceDictionary>
     </Application.Resources>
