@@ -17,6 +17,7 @@ public class WarehouseTransaction : BaseModel, INotifyPropertyChanged
     }
 
     [PrimaryKey("transaction_id", false)]
+    [Column("transaction_id")]
     [JsonProperty("transaction_id")]
     public int Id { get; set; }
 
@@ -79,6 +80,7 @@ public class WarehouseTransaction : BaseModel, INotifyPropertyChanged
 
     private string _name;
     [Column("product_name")]    
+    [JsonProperty("product_name")]
     public string Name
     {
         get => _name;

@@ -140,7 +140,14 @@ public partial class CreateInvoiceViewModel : ViewModelBase, IRecipient<Products
     {
         if (!IsEditing)
         {
-            _ = GenerateCodeAsync();
+            if (value != null)
+            {
+                _ = GenerateCodeAsync();
+            }
+            else
+            {
+                GeneratedInvoiceCode = string.Empty;
+            }
         }
     }
 
@@ -149,16 +156,60 @@ public partial class CreateInvoiceViewModel : ViewModelBase, IRecipient<Products
         CloseProductSelectionWindow();
         CloseEditInvoiceWindow();
         InvoiceItems.Clear();
-        SelectedCustomer = null;
         IsEditing = false;
+        SelectedCustomer = null;
         GeneratedInvoiceCode = string.Empty;
-        _grandTotal = 0;
-        RecalculateGrandTotal();
+        GrandTotal = 0;        
     }
 
     public async Task GenerateOfficialPdfAsync()
-    {        
-        await ExecuteAsync(GenerateOfficialPdfInternalAsync, "ERROR_PDF_SERVICE".GetLocalized());
+    {
+        CloseProductSelectionWindow();
+        //await ExecuteAsync(GenerateOfficialPdfInternalAsync, "ERROR_PDF_SERVICE".GetLocalized());
+        string? rootFolderPath;
+        try
+        {
+            rootFolderPath = await _localSettingsService.ReadSettingAsync<string>("InvoiceStoragePath");
+        }
+        catch
+        {
+            rootFolderPath = null;
+        }
+
+        if (string.IsNullOrEmpty(rootFolderPath) || !Directory.Exists(rootFolderPath))
+        {
+            rootFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+        }
+
+        string customerName = SelectedCustomer?.Name ?? "Khách Lẻ";
+        string customerPhone = SelectedCustomer?.Phone ?? string.Empty;
+
+        string safeCustomerName = RemoveInvalidFilePathCharacters(customerName);
+        string customerFolderPath = Path.Combine(rootFolderPath, "Khách Hàng", safeCustomerName);
+
+        if (!Directory.Exists(customerFolderPath))
+        {
+            Directory.CreateDirectory(customerFolderPath);
+        }
+
+        string fileName = $"{GeneratedInvoiceCode}.pdf";
+        string finalFilePath = Path.Combine(customerFolderPath, fileName);
+
+        await _pdfService.GenerateOfficialAsync(InvoiceItems, customerName, customerPhone, GeneratedInvoiceCode, DateTime.Now, finalFilePath);
+
+        if (File.Exists(finalFilePath))
+        {
+            var p = new Process();
+            p.StartInfo = new ProcessStartInfo(finalFilePath)
+            {
+                UseShellExecute = true
+            };
+            p.Start();
+        }
+        else
+        {
+            await DialogService.ShowErrorAsync("FILE_NOTE_FOUND".GetLocalized());
+        }
     }
 
     private async Task GenerateOfficialPdfInternalAsync()
@@ -211,8 +262,26 @@ public partial class CreateInvoiceViewModel : ViewModelBase, IRecipient<Products
 
     public async Task GenerateTempPdfAsync()
     {
-        CloseProductSelectionWindow();        
-        await ExecuteAsync(GenerateTempPdfInternalAsync, "ERROR_PDF_SERVICE".GetLocalized());
+        CloseProductSelectionWindow();
+        //await ExecuteAsync(GenerateTempPdfInternalAsync, "ERROR_PDF_SERVICE".GetLocalized());
+        string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+        string filePath = Path.Combine(desktopPath, "TEMP.pdf");
+
+        await _pdfService.GenerateTempAsync(InvoiceItems, filePath);
+
+        if (File.Exists(filePath))
+        {
+            var p = new Process();
+            p.StartInfo = new ProcessStartInfo(filePath)
+            {
+                UseShellExecute = true
+            };
+            p.Start();
+        }
+        else
+        {
+            await DialogService.ShowErrorAsync("FILE_NOTE_FOUND".GetLocalized());
+        }
     }
 
     private async Task GenerateTempPdfInternalAsync()
@@ -250,13 +319,7 @@ public partial class CreateInvoiceViewModel : ViewModelBase, IRecipient<Products
         if (string.IsNullOrEmpty(GeneratedInvoiceCode))
         {
             await GenerateCodeAsync();
-        }
-
-        if (string.IsNullOrEmpty(GeneratedInvoiceCode))
-        {
-            await DialogService.ShowErrorAsync("Không thể tạo mã hoá đơn. Vui lòng thử lại.");
-            return false;
-        }
+        }        
 
         if (!InvoiceItems.Any())
         {
@@ -306,7 +369,7 @@ public partial class CreateInvoiceViewModel : ViewModelBase, IRecipient<Products
             }).ToList();
             await _dataService.AddInvoice(newInvoice, detailsList, transactionList);
 
-            await GenerateOfficialPdfInternalAsync();
+            await GenerateOfficialPdfAsync();
 
             App.MainWindow.Activate();
 

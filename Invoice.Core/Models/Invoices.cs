@@ -8,12 +8,13 @@ namespace Invoice.Core.Models;
 public class Invoices : BaseModel
 {
     [PrimaryKey("invoice_id", false)]
+    [Column("invoice_id")]
     [JsonProperty("invoice_id")]
     public string InvoiceID { get; set; }
 
     [Column("customer_id")]
     [JsonProperty("customer_id")]
-    public int? CustomerID { get; set; }
+    public long? CustomerID { get; set; }
 
     [Column("created_date")]
     [JsonProperty("created_date")]

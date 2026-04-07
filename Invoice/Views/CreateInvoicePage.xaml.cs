@@ -31,10 +31,10 @@ public sealed partial class CreateInvoicePage : Page
 
     private void ResetInvoice_Click(object sender, RoutedEventArgs e)
     {
-        ViewModel.ResetInvoice();
         asbCustomer.Text = string.Empty;
         txtPhoneNo.Text = string.Empty;
         txtTypePrice.Text = string.Empty;
+        ViewModel.ResetInvoice();
     }
 
     private async void CopyInvoice_Click(object sender, RoutedEventArgs e)
@@ -43,13 +43,7 @@ public sealed partial class CreateInvoicePage : Page
         {
             await _dialogService.ShowErrorAsync("Không có dữ liệu để tạo phiếu.");
             return;
-        }
-
-        //if (ViewModel.SelectedCustomer == null)
-        //{
-        //    await _dialogService.ShowErrorAsync("Vui lòng chọn khách hàng để sinh mã phiếu.");
-        //    return;
-        //}
+        }        
 
         await ViewModel.GenerateTempPdfAsync();
     }
@@ -120,12 +114,7 @@ public sealed partial class CreateInvoicePage : Page
             txtPhoneNo.Text = customer.Phone;
             txtTypePrice.Text = customer.PriceGroup;
         }
-    }
-
-    private async void AmountTextBox_LostFocus(object sender, RoutedEventArgs e)
-    {
-        
-    }
+    }   
 
     protected override void OnNavigatedTo(NavigationEventArgs e)
     {
