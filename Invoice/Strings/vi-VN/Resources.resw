@@ -163,7 +163,7 @@
     <value>Giá thành phần</value>
   </data>
   <data name="Shell_History.Content" xml:space="preserve">
-    <value>Lịch sử</value>
+    <value>Lịch sử đơn hàng</value>
   </data>
   <data name="Shell_IOActions.Content" xml:space="preserve">
     <value>Xuất Nhập Kho</value>

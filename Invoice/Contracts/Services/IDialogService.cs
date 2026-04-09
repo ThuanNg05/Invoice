@@ -6,4 +6,5 @@ public interface IDialogService
     Task ShowSuccessAsync(string content);
     Task ShowErrorAsync(string content, Exception? ex = null);
     Task<bool> ShowConfirmAsync(string title, string content, string? primaryButton = null);
+    Task<bool?> ShowTwoOptionsAsync(string title, string content, string option1, string option2);
 }

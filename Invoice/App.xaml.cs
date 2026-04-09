@@ -45,6 +45,7 @@ public partial class App : Application
     }
 
     public static WindowEx MainWindow { get; } = new MainWindow();
+    private SplashScreen splash_screen;
 
     public static UIElement? AppTitlebar { get; set; }
 
@@ -177,11 +178,19 @@ public partial class App : Application
     protected async override void OnLaunched(LaunchActivatedEventArgs args)
     {
         try
-        {                        
-            // ApplicationLanguages.PrimaryLanguageOverride = "vi-VN"; // Causes crash in WinUI 3
+        {                                    
             base.OnLaunched(args);                       
 
-            System.Diagnostics.Debug.WriteLine("Activating services...");
+            System.Diagnostics.Debug.WriteLine("Activating services...");            
+            splash_screen = new SplashScreen();            
+            splash_screen.CenterOnScreen(620,300);            
+            splash_screen.Activate();
+            await Task.Delay(3000);
+            MainWindow.CenterOnScreen();
+            MainWindow.Activate();
+            await Task.Delay(1000);
+            splash_screen.Close();
+
             await App.GetService<IActivationService>().ActivateAsync(args);
             System.Diagnostics.Debug.WriteLine("Services activated.");
             
@@ -194,4 +203,7 @@ public partial class App : Application
             await GetService<IDialogService>().ShowMessageAsync("Lỗi khởi động", $"Có lỗi xảy ra khi khởi động ứng dụng: {ex.Message}");
         }
     }
+  
+    
+
 }

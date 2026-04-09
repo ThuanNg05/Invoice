@@ -162,8 +162,7 @@ public sealed partial class CustomersPage : Page
         else
         {
             CustomerGrid.ItemsSource = ViewModel.AllCustomers
-                .Where(c => c.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
-                            c.Phone.Contains(searchText));
+                .Where(c => c.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase));
         }
     }
 }

@@ -21,4 +21,7 @@ public partial class ProductSummary : ObservableObject
 
     [ObservableProperty]
     private int inventory;
+
+    [ObservableProperty]
+    private int originalInventory;
 }

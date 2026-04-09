@@ -84,10 +84,7 @@
                                     <ComboBoxItem Content="MDF"/>
                                 </ComboBox>
                             </StackPanel>
-                        </StackPanel>
-                        <Button x:Name="btnSaveStock" Content="Lưu kho" Click="BtnSaveStock_Click" HorizontalAlignment="Stretch"
-								Background="#516dcf" Foreground="White" CornerRadius="5"
-								IsEnabled="{x:Bind ViewModel.IsBusy, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}"/>
+                        </StackPanel>                        
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="20">
                             <CommandBar Background="Transparent" DefaultLabelPosition="Right">
                                 <AppBarButton x:Name="btnAdd" Background="#07af00" Foreground="{ThemeResource SettingsForegroundBrush}"
@@ -112,10 +109,17 @@
                                     </AppBarButton.KeyboardAccelerators>
                                 </AppBarButton>
                                 <AppBarButton Background="#24a6d5" Icon="Refresh" Foreground="{ThemeResource SettingsForegroundBrush}"
-								  x:Uid="Btn_Reset" Click="BtnReset_Click" ToolTipService.ToolTip="Press F2" CornerRadius="10"
+								  x:Uid="Btn_Reset" Click="BtnReset_Click" ToolTipService.ToolTip="Press F5" CornerRadius="10"
 								  IsEnabled="{x:Bind ViewModel.IsBusy, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}">
                                     <AppBarButton.KeyboardAccelerators>
-                                        <KeyboardAccelerator Key="F2"/>
+                                        <KeyboardAccelerator Key="F5"/>
+                                    </AppBarButton.KeyboardAccelerators>
+                                </AppBarButton>
+                                <AppBarButton x:Name="btnSaveStock" Label="Lưu kho" Background="#516dcf" Foreground="{ThemeResource SettingsForegroundBrush}"
+                                      Icon="Save" Click="BtnSaveStock_Click" ToolTipService.ToolTip="Press F4" CornerRadius="10"
+                                      IsEnabled="{x:Bind ViewModel.IsBusy, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}">
+                                    <AppBarButton.KeyboardAccelerators>
+                                        <KeyboardAccelerator Key="F4"/>
                                     </AppBarButton.KeyboardAccelerators>
                                 </AppBarButton>
                             </CommandBar>

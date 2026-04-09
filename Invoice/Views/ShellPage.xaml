@@ -53,7 +53,7 @@
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE779;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="Lịch sử" helpers:NavigationHelper.NavigateTo="Invoice.ViewModels.HistoryViewModel">
+                <NavigationViewItem Content="Lịch sử đơn hàng" helpers:NavigationHelper.NavigateTo="Invoice.ViewModels.HistoryViewModel">
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE81C;"/>
                     </NavigationViewItem.Icon>

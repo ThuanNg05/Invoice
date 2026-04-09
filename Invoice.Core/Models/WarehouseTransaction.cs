@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 using Supabase.Postgrest.Attributes;
@@ -17,9 +18,7 @@ public class WarehouseTransaction : BaseModel, INotifyPropertyChanged
     }
 
     [PrimaryKey("transaction_id", false)]
-    [Column("transaction_id")]
-    [JsonProperty("transaction_id")]
-    public int Id { get; set; }
+    public long Id { get; set; }
 
     [Column("product_id")]
     [JsonProperty("product_id")]
@@ -76,7 +75,7 @@ public class WarehouseTransaction : BaseModel, INotifyPropertyChanged
     public string Note { get; set; }    
 
     [JsonIgnore]
-    public int FinalChange => ActionType == "Import" ? Amount : -Amount;
+    public int FinalChange => ActionType == "Import" ? Math.Abs(Amount) : -Math.Abs(Amount);
 
     private string _name;
     [Column("product_name")]    

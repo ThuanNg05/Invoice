@@ -22,6 +22,25 @@ public sealed partial class CreateInvoicePage : Page
         _dialogService = App.GetService<IDialogService>();
         InitializeComponent();
         this.DataContext = ViewModel;
+
+        ViewModel.PropertyChanged += (s, e) =>
+        {
+            if (e.PropertyName == nameof(ViewModel.SelectedCustomer))
+            {
+                if (ViewModel.SelectedCustomer != null)
+                {
+                    asbCustomer.Text = ViewModel.SelectedCustomer.Name;
+                    txtPhoneNo.Text = ViewModel.SelectedCustomer.Phone;
+                    txtTypePrice.Text = ViewModel.SelectedCustomer.PriceGroup;
+                }
+                else
+                {
+                    asbCustomer.Text = string.Empty;
+                    txtPhoneNo.Text = string.Empty;
+                    txtTypePrice.Text = string.Empty;
+                }
+            }
+        };
     }
 
     private async void BtnAddProduct_Click(object sender, RoutedEventArgs e)

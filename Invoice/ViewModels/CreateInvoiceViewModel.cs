@@ -33,6 +33,8 @@ public partial class CreateInvoiceViewModel : ViewModelBase, IRecipient<Products
     [ObservableProperty]
     private bool _isEditing = false;
 
+    private bool _isWalkIn = false;
+
     private string _originalInvoiceId = string.Empty;
 
     public CreateInvoiceViewModel(
@@ -138,6 +140,11 @@ public partial class CreateInvoiceViewModel : ViewModelBase, IRecipient<Products
 
     partial void OnSelectedCustomerChanged(Customers? value)
     {
+        if (value != null)
+        {
+            _isWalkIn = false;
+        }
+
         if (!IsEditing)
         {
             if (value != null)
@@ -157,6 +164,7 @@ public partial class CreateInvoiceViewModel : ViewModelBase, IRecipient<Products
         CloseEditInvoiceWindow();
         InvoiceItems.Clear();
         IsEditing = false;
+        _isWalkIn = false;
         SelectedCustomer = null;
         GeneratedInvoiceCode = string.Empty;
         GrandTotal = 0;        
@@ -164,56 +172,7 @@ public partial class CreateInvoiceViewModel : ViewModelBase, IRecipient<Products
 
     public async Task GenerateOfficialPdfAsync()
     {
-        CloseProductSelectionWindow();
-        //await ExecuteAsync(GenerateOfficialPdfInternalAsync, "ERROR_PDF_SERVICE".GetLocalized());
-        string? rootFolderPath;
-        try
-        {
-            rootFolderPath = await _localSettingsService.ReadSettingAsync<string>("InvoiceStoragePath");
-        }
-        catch
-        {
-            rootFolderPath = null;
-        }
-
-        if (string.IsNullOrEmpty(rootFolderPath) || !Directory.Exists(rootFolderPath))
-        {
-            rootFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-        }
-
-        string customerName = SelectedCustomer?.Name ?? "Khách Lẻ";
-        string customerPhone = SelectedCustomer?.Phone ?? string.Empty;
-
-        string safeCustomerName = RemoveInvalidFilePathCharacters(customerName);
-        string customerFolderPath = Path.Combine(rootFolderPath, "Khách Hàng", safeCustomerName);
-
-        if (!Directory.Exists(customerFolderPath))
-        {
-            Directory.CreateDirectory(customerFolderPath);
-        }
-
-        string fileName = $"{GeneratedInvoiceCode}.pdf";
-        string finalFilePath = Path.Combine(customerFolderPath, fileName);
-
-        await _pdfService.GenerateOfficialAsync(InvoiceItems, customerName, customerPhone, GeneratedInvoiceCode, DateTime.Now, finalFilePath);
-
-        if (File.Exists(finalFilePath))
-        {
-            var p = new Process();
-            p.StartInfo = new ProcessStartInfo(finalFilePath)
-            {
-                UseShellExecute = true
-            };
-            p.Start();
-        }
-        else
-        {
-            await DialogService.ShowErrorAsync("FILE_NOTE_FOUND".GetLocalized());
-        }
-    }
-
-    private async Task GenerateOfficialPdfInternalAsync()
-    {
+        CloseProductSelectionWindow();        
         string? rootFolderPath;
         try
         {
@@ -262,8 +221,7 @@ public partial class CreateInvoiceViewModel : ViewModelBase, IRecipient<Products
 
     public async Task GenerateTempPdfAsync()
     {
-        CloseProductSelectionWindow();
-        //await ExecuteAsync(GenerateTempPdfInternalAsync, "ERROR_PDF_SERVICE".GetLocalized());
+        CloseProductSelectionWindow();        
         string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         string filePath = Path.Combine(desktopPath, "TEMP.pdf");
 
@@ -282,33 +240,36 @@ public partial class CreateInvoiceViewModel : ViewModelBase, IRecipient<Products
         {
             await DialogService.ShowErrorAsync("FILE_NOTE_FOUND".GetLocalized());
         }
-    }
-
-    private async Task GenerateTempPdfInternalAsync()
-    {
-        string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-        string filePath = Path.Combine(desktopPath, "TEMP.pdf");
-
-        await _pdfService.GenerateTempAsync(InvoiceItems, filePath);
-
-        if (File.Exists(filePath))
-        {
-            var p = new Process();
-            p.StartInfo = new ProcessStartInfo(filePath)
-            {
-                UseShellExecute = true
-            };
-            p.Start();
-        }
-        else
-        {
-            await DialogService.ShowErrorAsync("FILE_NOTE_FOUND".GetLocalized());
-        }
-    }
+    }   
 
     public async Task OpenProductSelection()
     {
-        _windowService.OpenProductSelectionWindow(SelectedCustomer, InvoiceItems);
+        if (SelectedCustomer == null && !_isWalkIn)
+        {
+            var result = await DialogService.ShowTwoOptionsAsync("Chọn loại khách", "Vui lòng chọn loại khách hàng trước khi chọn sản phẩm:", "Khách Lẻ", "Khách cố định");
+
+            if (result == true) // Khách Lẻ
+            {
+                _isWalkIn = true;
+                var walkInCustomer = Customers.FirstOrDefault(c => c.Name == "Khách Lẻ");
+                if (walkInCustomer != null)
+                {
+                    SelectedCustomer = walkInCustomer;
+                }
+            }
+            else if (result == false) // Khách cố định
+            {
+                await DialogService.ShowMessageAsync("Thông báo", "Vui lòng nhập và chọn khách hàng cố định.");
+                return;
+            }
+            else // Cancel
+            {
+                return;
+            }
+        }
+
+        Customers? customerToPass = SelectedCustomer;
+        _windowService.OpenProductSelectionWindow(customerToPass, InvoiceItems);
         await Task.CompletedTask;
     }
 
@@ -361,7 +322,7 @@ public partial class CreateInvoiceViewModel : ViewModelBase, IRecipient<Products
                 InvoiceID = GeneratedInvoiceCode,
                 ProductID = item.ProductID,                
                 Name = item.ProductName,
-                Amount = item.Amount,
+                Amount = -item.Amount, // Negative for export so stock decreases
                 ActionType = "Export",
                 CreatedDate = DateTime.Now,
                 SourceType = "PRODUCT",
@@ -408,7 +369,8 @@ public partial class CreateInvoiceViewModel : ViewModelBase, IRecipient<Products
             
             if (customerName == "Khách Lẻ")
             {
-                SelectedCustomer = null;
+                SelectedCustomer = Customers.FirstOrDefault(x => x.Name == "Khách Lẻ");
+                _isWalkIn = true;
             }
             else
             {

@@ -12,11 +12,13 @@
 	<ImplicitUsings>enable</ImplicitUsings>
 	<Nullable>enable</Nullable>
 	<UseWinUI>true</UseWinUI>
-    <EnableMsixTooling>true</EnableMsixTooling>	
+    <EnableMsixTooling>true</EnableMsixTooling>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>	
     <!--<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>-->
     <!--<RepositoryUrl>https://github.com/ThuanNg05/Invoice</RepositoryUrl>-->
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="SplashScreen.xaml" />
     <None Remove="Styles\FontSizes.xaml" />
     <None Remove="Styles\TextBlock.xaml" />
     <None Remove="Styles\Thickness.xaml" />
@@ -49,6 +51,9 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="SplashScreen.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Styles\FontSizes.xaml" />
     <Page Update="Styles\TextBlock.xaml" />
     <Page Update="Styles\Thickness.xaml" />

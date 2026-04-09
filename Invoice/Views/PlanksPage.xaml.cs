@@ -31,6 +31,7 @@ public sealed partial class PlanksPage : Page
     {        
         StringHelper.ClearInputs(this);
         frameNO.Text = string.Empty;
+        frameNO.IsEnabled = true;
         btnAdd.IsEnabled = true;
         btnUpdate.IsEnabled = false;
         btnDelete.IsEnabled = false;

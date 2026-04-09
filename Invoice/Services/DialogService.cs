@@ -62,4 +62,26 @@ public class DialogService : IDialogService
         var result = await dialog.ShowAsync();
         return result == ContentDialogResult.Primary;
     }
+
+    public async Task<bool?> ShowTwoOptionsAsync(string title, string content, string option1, string option2)
+    {
+        var xamlRoot = GetXamlRoot();
+        if (xamlRoot == null) return null;
+
+        var dialog = new ContentDialog
+        {
+            Title = title,
+            Content = content,
+            PrimaryButtonText = option1,
+            SecondaryButtonText = option2,
+            CloseButtonText = "Huỷ",
+            DefaultButton = ContentDialogButton.Primary,
+            XamlRoot = xamlRoot
+        };
+
+        var result = await dialog.ShowAsync();
+        if (result == ContentDialogResult.Primary) return true;
+        if (result == ContentDialogResult.Secondary) return false;
+        return null;
+    }
 }

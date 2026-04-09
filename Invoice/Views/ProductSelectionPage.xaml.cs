@@ -19,7 +19,6 @@ public sealed partial class ProductSelectionPage : Page
         get;
     }
     private string _priceGroup = string.Empty;
-    private int _currentInventory = 0;
 
     public ProductSelectionPage()
     {
@@ -62,9 +61,9 @@ public sealed partial class ProductSelectionPage : Page
             }
         }
 
-        if (amount > _currentInventory)
+        if (amount > summary.Inventory)
         {
-            await _dialogService.ShowErrorAsync($"Số lượng nhập ({amount}) vượt quá tồn kho hiện tại ({_currentInventory}).");
+            await _dialogService.ShowErrorAsync($"Số lượng nhập ({amount}) vượt quá tồn kho hiện tại ({summary.Inventory}).");
             return;
         }
 
@@ -96,7 +95,6 @@ public sealed partial class ProductSelectionPage : Page
         ProductGrid.SelectedItem = null;
         txtTotal.Text = "0";
         txtName.IsReadOnly = false;
-        _currentInventory = 0;
 
         btnAdd.IsEnabled = false;
         txtSearch.Focus(FocusState.Programmatic);
@@ -113,7 +111,6 @@ public sealed partial class ProductSelectionPage : Page
 
             if (fullProduct != null)
             {
-                _currentInventory = summary.Inventory;
                 txtName.IsReadOnly = true;
 
                 string group = _priceGroup.Trim();
@@ -168,7 +165,7 @@ public sealed partial class ProductSelectionPage : Page
         CalculateTotal();
     }
 
-    protected override async void OnNavigatedTo(NavigationEventArgs e)
+    protected override void OnNavigatedTo(NavigationEventArgs e)
     {
         base.OnNavigatedTo(e);
         if (e.Parameter is ProductSelectionNavigationParameter param)
@@ -180,9 +177,6 @@ public sealed partial class ProductSelectionPage : Page
             _priceGroup = group;
         }
 
-        if (ViewModel.Source.Count == 0)
-        {
-            await ViewModel.ReloadFirstPage();
-        }
+        ViewModel.OnNavigatedTo(e.Parameter);
     }
 }

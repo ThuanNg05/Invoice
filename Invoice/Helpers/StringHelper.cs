@@ -51,14 +51,12 @@ public static class StringHelper
 
     public static string GetNormalizedLastName(string fullName)
     {
-        if (string.IsNullOrWhiteSpace(fullName)) 
-            return "KhachLe"; // Default if name is empty
-
-        // 1. Get the last part of the name (split by whitespace)
+        if (string.IsNullOrWhiteSpace(fullName) || fullName.Equals("Khách Lẻ", StringComparison.OrdinalIgnoreCase)) 
+            return "KhachLe";
+        
         var parts = fullName.Trim().Split(' ');
         var lastName = parts.Last();
 
-        // 2. Remove Vietnamese diacritics
         return RemoveDiacritics(lastName);
     }
 

@@ -1,4 +1,6 @@
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Invoice.Contracts.ViewModels;
@@ -79,6 +81,8 @@ public partial class ProductSelectionViewModel : ViewModelBase, INavigationAware
 
         foreach (var item in list)
         {
+            item.OriginalInventory = item.Inventory;
+
             // Subtract pending quantities from temp invoice
             if (_navParam?.CurrentInvoiceItems != null)
             {
@@ -99,29 +103,100 @@ public partial class ProductSelectionViewModel : ViewModelBase, INavigationAware
         return await _dataService.GetProductById(productId);
     }
 
+    private void SubscribeToInvoiceChanges()
+    {
+        if (_navParam?.CurrentInvoiceItems is INotifyCollectionChanged observable)
+        {
+            observable.CollectionChanged += OnInvoiceItemsChanged;
+        }
+
+        if (_navParam?.CurrentInvoiceItems != null)
+        {
+            foreach (var item in _navParam.CurrentInvoiceItems)
+            {
+                item.PropertyChanged += OnInvoiceItemPropertyChanged;
+            }
+        }
+    }
+
+    private void UnsubscribeFromInvoiceChanges()
+    {
+        if (_navParam?.CurrentInvoiceItems is INotifyCollectionChanged observable)
+        {
+            observable.CollectionChanged -= OnInvoiceItemsChanged;
+        }
+
+        if (_navParam?.CurrentInvoiceItems != null)
+        {
+            foreach (var item in _navParam.CurrentInvoiceItems)
+            {
+                item.PropertyChanged -= OnInvoiceItemPropertyChanged;
+            }
+        }
+    }
+
+    private void OnInvoiceItemsChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        if (e.NewItems != null)
+        {
+            foreach (TempInvoice item in e.NewItems)
+            {
+                item.PropertyChanged += OnInvoiceItemPropertyChanged;
+                UpdateInventoryForProduct(item.ProductID);
+            }
+        }
+
+        if (e.OldItems != null)
+        {
+            foreach (TempInvoice item in e.OldItems)
+            {
+                item.PropertyChanged -= OnInvoiceItemPropertyChanged;
+                UpdateInventoryForProduct(item.ProductID);
+            }
+        }
+    }
+
+    private void OnInvoiceItemPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (sender is TempInvoice item && (e.PropertyName == nameof(TempInvoice.Amount)))
+        {
+            UpdateInventoryForProduct(item.ProductID);
+        }
+    }
+
+    private void UpdateInventoryForProduct(long productId)
+    {
+        _dispatcherQueue.TryEnqueue(() =>
+        {
+            var summary = Source.FirstOrDefault(x => x.ProductID == productId);
+            if (summary != null && _navParam?.CurrentInvoiceItems != null)
+            {
+                var pendingAmount = _navParam.CurrentInvoiceItems
+                    .Where(x => x.ProductID == productId)
+                    .Sum(x => x.Amount);
+                summary.Inventory = summary.OriginalInventory - pendingAmount;
+            }
+        });
+    }
+
     public async void OnNavigatedTo(object parameter)
     {
         if (parameter is ProductSelectionNavigationParameter navParam)
         {
             _navParam = navParam;
+            SubscribeToInvoiceChanges();
         }
         await ReloadFirstPage();
     }
 
     public void OnNavigatedFrom()
     {
+        UnsubscribeFromInvoiceChanges();
         WeakReferenceMessenger.Default.Unregister<ProductsSelectedMessage>(this);
     }
 
     public void Receive(ProductsSelectedMessage message)
     {
-        _dispatcherQueue.TryEnqueue(() =>
-        {
-            var item = Source.FirstOrDefault(x => x.ProductID == message.Product.ProductID);
-            if (item != null)
-            {
-                item.Inventory -= message.Amount;
-            }
-        });
+        UpdateInventoryForProduct(message.Product.ProductID);
     }
 }
