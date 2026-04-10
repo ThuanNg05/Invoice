@@ -13,7 +13,18 @@
 	<Nullable>enable</Nullable>
 	<UseWinUI>true</UseWinUI>
     <EnableMsixTooling>true</EnableMsixTooling>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>	
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GenerateAppInstallerFile>True</GenerateAppInstallerFile>
+    <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
+    <PackageCertificateThumbprint>4B9B6AAF78F79E4049C4F8A7E32C64AB23C7AB9C</PackageCertificateThumbprint>
+    <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
+    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+    <AppxPackageDir>C:\Users\nguye\Downloads\AppPackage\</AppxPackageDir>
+    <GenerateTestArtifacts>True</GenerateTestArtifacts>
+    <AppxBundle>Always</AppxBundle>
+    <AppxBundlePlatforms>x64</AppxBundlePlatforms>
+    <AppInstallerUri>C:\App</AppInstallerUri>
+	<WindowsPackageType>None</WindowsPackageType>
     <!--<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>-->
     <!--<RepositoryUrl>https://github.com/ThuanNg05/Invoice</RepositoryUrl>-->
   </PropertyGroup>

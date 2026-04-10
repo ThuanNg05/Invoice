@@ -12,14 +12,14 @@
 
   <Identity
     Name="d9fac502-9fbf-4c1f-9beb-e2cb952ecf51"
-    Publisher="CN=nguye"
+    Publisher="CN=InvoiceApp"
     Version="1.0.0.0" />
     
   <mp:PhoneIdentity PhoneProductId="d9fac502-9fbf-4c1f-9beb-e2cb952ecf51" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
     
   <Properties>
     <DisplayName>Invoice</DisplayName>
-    <PublisherDisplayName>nguye</PublisherDisplayName>
+    <PublisherDisplayName>ThuanNguyen</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 

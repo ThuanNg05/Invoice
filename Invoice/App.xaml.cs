@@ -99,6 +99,7 @@ public partial class App : Application
             services.AddSingleton<INavigationService, NavigationService>();
             services.AddSingleton<IWindowService, WindowService>();
             services.AddSingleton<IDialogService, DialogService>();
+            services.AddSingleton<IUpdateService, UpdateService>();
 
             // Core Services            
             services.AddSingleton<SupabaseDataService>();
@@ -193,6 +194,12 @@ public partial class App : Application
 
             await App.GetService<IActivationService>().ActivateAsync(args);
             System.Diagnostics.Debug.WriteLine("Services activated.");
+
+            _ = Task.Run(async () =>
+            {
+                await Task.Delay(2000); // Wait a bit after UI is ready
+                await App.GetService<IUpdateService>().CheckForUpdatesAsync();
+            });
             
         }
         catch (Exception ex)
