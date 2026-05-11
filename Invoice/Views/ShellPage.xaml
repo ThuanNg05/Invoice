@@ -34,7 +34,7 @@
             IsSettingsVisible="True"
             ExpandedModeThresholdWidth="1280"
             DisplayModeChanged="NavigationViewControl_DisplayModeChanged"
-            Header="{x:Bind ((ContentControl)ViewModel.Selected).Content, Mode=OneWay}">
+            Header="{x:Bind GetHeader(ViewModel.Selected), Mode=OneWay}">
             <NavigationView.MenuItems>
                 <!--
                 TODO: Update item titles by updating <x:Uid>.Content entries in Strings/en-us/Resources.resw.
@@ -110,7 +110,7 @@
             </NavigationView.HeaderTemplate>
             <i:Interaction.Behaviors>
                 <behaviors:NavigationViewHeaderBehavior
-                    DefaultHeader="{x:Bind ((ContentControl)ViewModel.Selected).Content, Mode=OneWay}">
+                    DefaultHeader="{x:Bind GetHeader(ViewModel.Selected), Mode=OneWay}">
                     <behaviors:NavigationViewHeaderBehavior.DefaultHeaderTemplate>
                         <DataTemplate>
                             <Grid>

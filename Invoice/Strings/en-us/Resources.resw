@@ -235,7 +235,7 @@
     <value>Add succesfull</value>
   </data>
   <data name="SUCCESS_UPDATE" xml:space="preserve">
-    <value>Delete succesfull</value>
+    <value>Update succesfull</value>
   </data>
   <data name="FAILED_ADD" xml:space="preserve">
     <value>Add failed</value>
@@ -247,7 +247,7 @@
     <value>Update failed</value>
   </data>
   <data name="SUCCESS_DELETE" xml:space="preserve">
-    <value>Update succesfull</value>
+    <value>Delete succesfull</value>
   </data>
   <data name="SUCCESS_SAVE" xml:space="preserve">
     <value>Save succesfull</value>

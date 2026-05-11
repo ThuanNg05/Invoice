@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>Invoice</RootNamespace>
     <ApplicationIcon>Assets/WindowIcon.ico</ApplicationIcon>
@@ -12,7 +12,7 @@
 	<ImplicitUsings>enable</ImplicitUsings>
 	<Nullable>enable</Nullable>
 	<UseWinUI>true</UseWinUI>
-    <EnableMsixTooling>true</EnableMsixTooling>
+    <EnableMsixTooling>false</EnableMsixTooling>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <GenerateAppInstallerFile>True</GenerateAppInstallerFile>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
@@ -25,10 +25,9 @@
     <AppxBundlePlatforms>x64</AppxBundlePlatforms>
     <AppInstallerUri>C:\App</AppInstallerUri>
 	<WindowsPackageType>None</WindowsPackageType>
-    <!--<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>-->
-    <!--<RepositoryUrl>https://github.com/ThuanNg05/Invoice</RepositoryUrl>-->
-  </PropertyGroup>
-  <ItemGroup>
+	<!--<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>-->
+	<!--<RepositoryUrl>https://github.com/ThuanNg05/Invoice</RepositoryUrl>-->
+	</PropertyGroup>  <ItemGroup>
     <None Remove="SplashScreen.xaml" />
     <None Remove="Styles\FontSizes.xaml" />
     <None Remove="Styles\TextBlock.xaml" />
@@ -40,17 +39,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.1" />
     <PackageReference Include="CommunityToolkit.WinUI.UI.Controls.DataGrid" Version="7.1.2" />
-    <PackageReference Include="CSharpMarkup.WinUI.LiveChartsCore.SkiaSharpView" Version="3.1.2" />
-    <PackageReference Include="MailKit" Version="4.15.1" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.5" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.260317003" />
+    <PackageReference Include="CSharpMarkup.WinUI.LiveChartsCore.SkiaSharpView" Version="4.0.7" />
+    <PackageReference Include="MailKit" Version="4.16.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.7" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="3.0.1" />
-    <PackageReference Include="MimeKit" Version="4.15.1" />
-    <PackageReference Include="QuestPDF" Version="2026.2.4" />
-    <PackageReference Include="Supabase" Version="1.1.1" />
-    <PackageReference Include="System.Text.Json" Version="10.0.5" />
+    <PackageReference Include="MimeKit" Version="4.16.0" />
+    <PackageReference Include="QuestPDF" Version="2026.5.0" />
+    <PackageReference Include="System.Text.Json" Version="10.0.7" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.0.1" />
     <PackageReference Include="WinUIEx" Version="2.9.0" />
   </ItemGroup>
 

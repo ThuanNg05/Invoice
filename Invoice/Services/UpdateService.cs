@@ -2,7 +2,6 @@ using System.Net.Http.Json;
 using System.Reflection;
 using System.Text.Json.Serialization;
 using Invoice.Contracts.Services;
-using Microsoft.UI.Xaml.Controls;
 
 namespace Invoice.Services;
 

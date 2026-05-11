@@ -2,9 +2,6 @@ using System.Runtime.InteropServices;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Media;
-using Windows.Devices.Display;
-using Windows.Devices.Enumeration;
 using WinRT.Interop;
 
 namespace Invoice;
@@ -51,24 +48,22 @@ public sealed partial class SplashScreen : Window
 
     public async Task SetWindowPositionToCenter()
     {
-        var hwd = WinRT.Interop.WindowNative.GetWindowHandle(this);
+        var hwd = WindowNative.GetWindowHandle(this);
         WindowId windowId = Win32Interop.GetWindowIdFromWindow(hwd);
-        AppWindow appWindow = AppWindow.GetFromWindowId(windowId);        
+        AppWindow appWindow = AppWindow.GetFromWindowId(windowId);
 
-        var displayList = await DeviceInformation.FindAllAsync(DisplayMonitor.GetDeviceSelector());
-        if (!displayList.Any())
+        if (appWindow != null)
         {
-            return;
+            var displayArea = DisplayArea.GetFromWindowId(windowId, DisplayAreaFallback.Primary);
+            if (displayArea != null)
+            {
+                var centeredPosition = appWindow.Position;
+                centeredPosition.X = (displayArea.WorkArea.Width - appWindow.Size.Width) / 2;
+                centeredPosition.Y = (displayArea.WorkArea.Height - appWindow.Size.Height) / 2;
+                appWindow.Move(centeredPosition);
+            }
         }
 
-        var monitorInfo = await DisplayMonitor.FromIdAsync(displayList[0].Id);
-
-        var Height = monitorInfo.NativeResolutionInRawPixels.Height;
-        var Width = monitorInfo.NativeResolutionInRawPixels.Width;
-
-        var CenteredPosition = appWindow.Position;
-        CenteredPosition.X = (Width - appWindow.Size.Width) / 2;
-        CenteredPosition.Y = (Height - appWindow.Size.Height) / 2;
-        appWindow.Move(CenteredPosition);        
+        await Task.CompletedTask;
     }
 }

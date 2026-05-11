@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <RootNamespace>Invoice.Core</RootNamespace>
     <Platforms>x64</Platforms>    
     <ImplicitUsings>enable</ImplicitUsings>
@@ -8,10 +8,6 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-    <PackageReference Include="Dapper" Version="2.1.72" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.5" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-    <PackageReference Include="Npgsql" Version="10.0.2" />
     <PackageReference Include="Polly" Version="8.6.6" />
     <PackageReference Include="Supabase" Version="1.1.1" />
   </ItemGroup>

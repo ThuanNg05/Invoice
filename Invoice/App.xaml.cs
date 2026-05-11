@@ -1,4 +1,5 @@
-﻿using Invoice.Activation;
+﻿using System.Diagnostics;
+using Invoice.Activation;
 using Invoice.Contracts.Services;
 using Invoice.Core.Contracts.Services;
 using Invoice.Core.Services;
@@ -44,18 +45,43 @@ public partial class App : Application
         return service;
     }
 
-    public static WindowEx MainWindow { get; } = new MainWindow();
+    public static WindowEx MainWindow { get; private set; }
     private SplashScreen splash_screen;
 
     public static UIElement? AppTitlebar { get; set; }
 
     public App()
     {
-        System.Diagnostics.Debug.WriteLine("App Constructor started.");
+        UnhandledException += App_UnhandledException;
+
+        try
+        {
+            InitializeComponent();
+        }
+        catch (Exception ex)
+        {
+            LogFatalError("InitializeComponent failed", ex);
+            throw;
+        }
+
+        try
+        {
+            var logPath = Path.Combine(AppContext.BaseDirectory, "debug_log.txt");
+            Trace.Listeners.Add(new TextWriterTraceListener(logPath));
+            Trace.AutoFlush = true;
+            Debug.WriteLine($"=== Application Started at {DateTime.Now} ===");
+        }
+        catch { /* Fallback if logging fails */ }
         QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
-        InitializeComponent();
-        
-        System.Diagnostics.Debug.WriteLine("Building Host...");          
+
+        //ApplicationLanguages.PrimaryLanguageOverride = "vi-VN";
+        //var culture = new System.Globalization.CultureInfo("vi-VN");
+        //System.Globalization.CultureInfo.DefaultThreadCurrentCulture = culture;
+        //System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = culture;
+        //Thread.CurrentThread.CurrentCulture = culture;
+        //Thread.CurrentThread.CurrentUICulture = culture;
+
+        Debug.WriteLine("Building Host...");          
         Host = Microsoft.Extensions.Hosting.Host.
         CreateDefaultBuilder().
         UseContentRoot(AppContext.BaseDirectory).
@@ -152,27 +178,30 @@ public partial class App : Application
             // Configuration
             services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));
         }).
-        Build();
+        Build();        
+    }
 
-        System.Diagnostics.Debug.WriteLine("Host built successfully.");
-            
-        UnhandledException += App_UnhandledException;        
+    private void LogFatalError(string context, Exception ex)
+    {
+        var logPath = Path.Combine(AppContext.BaseDirectory, "fatal_error.txt");
+        File.AppendAllText(logPath, $"{DateTime.Now} FATAL ERROR in {context}: {ex.Message}\n{ex}\n\n");
     }
 
     private async void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
     {
-        var error = $"UNHANDLED EXCEPTION: {e.Message}\nDETAILS: {e.Exception}";
-        System.Diagnostics.Debug.WriteLine(error);
-        System.Diagnostics.Trace.WriteLine(error);
-        e.Handled = true;
+        var error = $"{DateTime.Now} UNHANDLED EXCEPTION: {e.Message}\nDETAILS: {e.Exception}";
+        Debug.WriteLine(error);
+        Trace.WriteLine(error);
+        LogFatalError("UnhandledException", e.Exception);
+        e.Handled = true;       
 
-        try
+        if (Host != null)
         {
-            await GetService<IDialogService>().ShowMessageAsync("Lỗi hệ thống", $"Đã xảy ra lỗi không mong muốn: {e.Message}");
-        }
-        catch
-        {
-            // Fallback if dialog cannot be shown
+            try
+            {
+                await GetService<IDialogService>().ShowMessageAsync("Lỗi hệ thống", $"Đã xảy ra lỗi không mong muốn: {e.Message}");
+            }
+            catch { }
         }
     }
 
@@ -180,20 +209,31 @@ public partial class App : Application
     {
         try
         {                                    
-            base.OnLaunched(args);                       
+            base.OnLaunched(args);
+            //ApplicationLanguages.PrimaryLanguageOverride = "vi-VN";
+            //var culture = new System.Globalization.CultureInfo("vi-VN");
+            //System.Globalization.CultureInfo.DefaultThreadCurrentCulture = culture;
+            //System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = culture;
+            //Thread.CurrentThread.CurrentCulture = culture;
+            //Thread.CurrentThread.CurrentUICulture = culture;
 
-            System.Diagnostics.Debug.WriteLine("Activating services...");            
+            Debug.WriteLine("Activating services...");            
             splash_screen = new SplashScreen();            
-            splash_screen.CenterOnScreen(620,300);            
             splash_screen.Activate();
-            await Task.Delay(3000);
+            await splash_screen.SetWindowPositionToCenter();
+
+            MainWindow = new MainWindow();
+
+            // ActivationService will set MainWindow.Content and call MainWindow.Activate()
+            await App.GetService<IActivationService>().ActivateAsync(args);
+            
+            // Keep splash screen for a minimum time to ensure smooth transition
+            await Task.Delay(2000);
+            
             MainWindow.CenterOnScreen();
-            MainWindow.Activate();
-            await Task.Delay(1000);
             splash_screen.Close();
 
-            await App.GetService<IActivationService>().ActivateAsync(args);
-            System.Diagnostics.Debug.WriteLine("Services activated.");
+            Debug.WriteLine("Services activated.");
 
             _ = Task.Run(async () =>
             {
@@ -205,8 +245,8 @@ public partial class App : Application
         catch (Exception ex)
         {
             var error = $"LAUNCH ERROR: {ex.Message}\nSTACKTRACE: {ex.StackTrace}";
-            System.Diagnostics.Debug.WriteLine(error);
-            System.Diagnostics.Trace.WriteLine(error);
+            Debug.WriteLine(error);
+            Trace.WriteLine(error);
             await GetService<IDialogService>().ShowMessageAsync("Lỗi khởi động", $"Có lỗi xảy ra khi khởi động ứng dụng: {ex.Message}");
         }
     }

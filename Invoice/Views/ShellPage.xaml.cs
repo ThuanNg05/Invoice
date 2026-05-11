@@ -35,12 +35,31 @@ public sealed partial class ShellPage : Page
         AppTitleBarText.Text = "AppDisplayName".GetLocalized();
     }
 
+    private object? GetHeader(object selected)
+    {
+        if (selected is ContentControl cc)
+        {
+            return cc.Content;
+        }
+
+        return null;
+    }
+
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
         TitleBarHelper.UpdateTitleBar(RequestedTheme);
 
         KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.Left, VirtualKeyModifiers.Menu));
         KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.GoBack));
+
+        if (Content is FrameworkElement root)
+        {
+            root.ActualThemeChanged += (s, args) =>
+            {
+                TitleBarHelper.UpdateTitleBar(root.ActualTheme);
+                TitleBarHelper.ApplySystemThemeToCaptionButtons();
+            };
+        }
     }
 
     private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
