@@ -63,13 +63,13 @@
                              TextWrapping="Wrap"/>
                 </StackPanel>
                 <CommandBar Background="Transparent" DefaultLabelPosition="Right" HorizontalAlignment="Left" Margin="-5,10,0,0">
-                    <AppBarButton x:Name="btnAdd" Background="#07af00" Icon="Add" x:Uid="Btn_Add" Click="BtnAdd_Click"
+                    <AppBarButton x:Name="btnAdd" Background="#07af00" Icon="Add" Label="Thêm" Click="BtnAdd_Click"
                                   CornerRadius="10" ToolTipService.ToolTip="Press F1">
                         <AppBarButton.KeyboardAccelerators>
                             <KeyboardAccelerator Key="F1"/>
                         </AppBarButton.KeyboardAccelerators>
                     </AppBarButton>
-                    <AppBarButton x:Name="btnReset" Background="#24a6d5" Icon="Refresh" x:Uid="Btn_Reset" Click="BtnReset_Click"
+                    <AppBarButton x:Name="btnReset" Background="#24a6d5" Icon="Refresh" Label="Đặt lại" Click="BtnReset_Click"
                                   CornerRadius="10" ToolTipService.ToolTip="Press F2">
                         <AppBarButton.KeyboardAccelerators>
                             <KeyboardAccelerator Key="F2"/>

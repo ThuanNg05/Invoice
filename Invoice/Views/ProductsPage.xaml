@@ -28,6 +28,49 @@
             </Style>
 
             <converters:InventoryToColorConverter x:Key="InventoryColorConverter"/>
+
+            <!-- Method 3: Custom AppBarButton Style to swap Icon and Label -->
+            <Style x:Key="RightIconAppBarButtonStyle" TargetType="AppBarButton">
+                <Setter Property="Height" Value="40"/>
+                <Setter Property="Width" Value="120"/>
+                <Setter Property="HorizontalAlignment" Value="Left"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="AppBarButton">
+                            <Grid x:Name="Root" Background="{TemplateBinding Background}" CornerRadius="{TemplateBinding CornerRadius}">
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal" />
+                                        <VisualState x:Name="PointerOver">
+                                            <VisualState.Setters>
+                                                <Setter Target="Root.Opacity" Value="0.8"/>
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Pressed">
+                                            <VisualState.Setters>
+                                                <Setter Target="Root.Opacity" Value="0.6"/>
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Disabled">
+                                            <VisualState.Setters>
+                                                <Setter Target="Root.Opacity" Value="0.5"/>
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                                <StackPanel Orientation="Horizontal" Padding="12,0" HorizontalAlignment="Center" Spacing="8">
+                                    <TextBlock Text="{TemplateBinding Label}" 
+                                               VerticalAlignment="Center" 
+                                               Foreground="{TemplateBinding Foreground}"/>
+                                    <Viewbox Width="16" Height="16" VerticalAlignment="Center">
+                                        <ContentPresenter x:Name="IconContent" Content="{TemplateBinding Icon}" Foreground="{TemplateBinding Foreground}"/>
+                                    </Viewbox>
+                                </StackPanel>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
         </ResourceDictionary>
     </Page.Resources>
     <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
@@ -73,12 +116,13 @@
                 </StackPanel>
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <StackPanel Orientation="Vertical" Margin="0,0,10,0" Grid.Column="0">
                         <CommandBar Background="Transparent" DefaultLabelPosition="Right">
-                            <AppBarButton x:Name="btnAdd" x:Uid="Btn_Add" Background="#07af00" Foreground="{ThemeResource SettingsForegroundBrush}"
+                            <AppBarButton x:Name="btnAdd" Label="Thêm" Background="#07af00" Foreground="{ThemeResource SettingsForegroundBrush}"
+                                          Style="{StaticResource RightIconAppBarButtonStyle}"
                                           CornerRadius="10" Icon="Add" Click="BtnNew_Click" ToolTipService.ToolTip="Press F1"
                                           IsEnabled="{x:Bind ViewModel.IsBusy, Converter={StaticResource BoolToNegationConverter}, Mode=OneWay}">
                                 <AppBarButton.KeyboardAccelerators>
@@ -87,7 +131,8 @@
                             </AppBarButton>
                         </CommandBar>
                         <CommandBar Background="Transparent" DefaultLabelPosition="Right">
-                            <AppBarButton x:Name="btnUpdate" x:Uid="Btn_Update" Background="#b48b14" Foreground="{ThemeResource SettingsForegroundBrush}"
+                            <AppBarButton x:Name="btnUpdate" Label="Cập nhật" Background="#b48b14" Foreground="{ThemeResource SettingsForegroundBrush}"
+                                          Style="{StaticResource RightIconAppBarButtonStyle}"
                                           CornerRadius="10" Icon="Edit" Click="BtnUpdate_Click" ToolTipService.ToolTip="Press F2">
                                 <AppBarButton.KeyboardAccelerators>
                                     <KeyboardAccelerator Key="F2"/>
@@ -95,7 +140,8 @@
                             </AppBarButton>
                         </CommandBar>
                         <CommandBar Background="Transparent" DefaultLabelPosition="Right">
-                            <AppBarButton x:Name="btnDelete" x:Uid="Btn_Delete" Background="#ff3800" Foreground="{ThemeResource SettingsForegroundBrush}"
+                            <AppBarButton x:Name="btnDelete" Label="Xóa" Background="#ff3800" Foreground="{ThemeResource SettingsForegroundBrush}"
+                                          Style="{StaticResource RightIconAppBarButtonStyle}"
                                           CornerRadius="10" Icon="Delete" Click="BtnDelete_Click" ToolTipService.ToolTip="Press F3">
                                 <AppBarButton.KeyboardAccelerators>
                                     <KeyboardAccelerator Key="F3"/>
@@ -103,7 +149,8 @@
                             </AppBarButton>
                         </CommandBar>
                         <CommandBar Background="Transparent" DefaultLabelPosition="Right">
-                            <AppBarButton x:Name="btnReset" x:Uid="Btn_Reset" Background="#24a6d5" Foreground="{ThemeResource SettingsForegroundBrush}"
+                            <AppBarButton x:Name="btnReset" Label="Đặt lại" Background="#24a6d5" Foreground="{ThemeResource SettingsForegroundBrush}"
+                                          Style="{StaticResource RightIconAppBarButtonStyle}"
                                           CornerRadius="10" Icon="Refresh" Click="BtnReset_Click" ToolTipService.ToolTip="Press F5">
                                 <AppBarButton.KeyboardAccelerators>
                                     <KeyboardAccelerator Key="F5"/>

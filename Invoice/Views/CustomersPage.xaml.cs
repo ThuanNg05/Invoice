@@ -115,7 +115,7 @@ public sealed partial class CustomersPage : Page
             }
             catch (Exception ex)
             {
-                await _dialogService.ShowErrorAsync("FAILED_UPDATE".GetLocalized(), ex);
+                await _dialogService.ShowErrorAsync("Cập nhật thất bại", ex);
             }
         }
         else
@@ -137,7 +137,7 @@ public sealed partial class CustomersPage : Page
                 }
                 catch (Exception ex)
                 {
-                    await _dialogService.ShowErrorAsync("FAILED_DELETE".GetLocalized(), ex);
+                    await _dialogService.ShowErrorAsync("Xóa thất bại", ex);
                 }
             }
         }

@@ -53,7 +53,7 @@ public partial class DetailPlanksViewModel : ViewModelBase, INavigationAware
             {
                 Planks.Add(item);
             }
-        }, "LOAD_FAILED".GetLocalized());
+        }, "Lỗi nạp dữ liệu");
     }
 
     public async Task AddPlankAsync(DetailPlanks planks)
@@ -76,7 +76,7 @@ public partial class DetailPlanksViewModel : ViewModelBase, INavigationAware
                     }
 
                     Planks.Add(planks);
-                    await DialogService.ShowSuccessAsync("SUCCESS_ADD".GetLocalized());
+                    await DialogService.ShowSuccessAsync("Thêm thành công");
                 }, "Lỗi khi phục hồi cỡ ván");
             }
             return;
@@ -86,7 +86,7 @@ public partial class DetailPlanksViewModel : ViewModelBase, INavigationAware
         {
             await _dataService.AddPlank(planks);
             Planks.Add(planks);
-            await DialogService.ShowSuccessAsync("SUCCESS_ADD".GetLocalized());
+            await DialogService.ShowSuccessAsync("Thêm thành công");
         }, "Lỗi thêm cỡ ván");
     }
 
@@ -96,7 +96,7 @@ public partial class DetailPlanksViewModel : ViewModelBase, INavigationAware
         {
             await _dataService.DeletePlank(planks.sizeID);
             Planks.Remove(planks);
-            await DialogService.ShowSuccessAsync("SUCCESS_DELETE".GetLocalized());
+            await DialogService.ShowSuccessAsync("Xóa thành công");
         }, "Lỗi xoá ván");
     }
 
@@ -105,7 +105,7 @@ public partial class DetailPlanksViewModel : ViewModelBase, INavigationAware
         await ExecuteAsync(async () =>
         {
             await _dataService.UpdatePlank(planks);
-            await DialogService.ShowSuccessAsync("SUCCESS_UPDATE".GetLocalized());
+            await DialogService.ShowSuccessAsync("Cập nhật thành công");
         }, "Lỗi cập nhật ván");
     }
 }

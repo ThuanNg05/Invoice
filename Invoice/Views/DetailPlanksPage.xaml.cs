@@ -75,7 +75,7 @@ public sealed partial class DetailPlanksPage : Page
             }
             catch (Exception ex)
             {
-                await _dialogService.ShowErrorAsync("FAILED_DELETE".GetLocalized(), ex);
+                await _dialogService.ShowErrorAsync("Xóa thất bại", ex);
             }
         }
     }
@@ -106,7 +106,7 @@ public sealed partial class DetailPlanksPage : Page
         }
         catch (Exception ex)
         {
-            await _dialogService.ShowErrorAsync("FAILED_UPDATE".GetLocalized(), ex);
+            await _dialogService.ShowErrorAsync("Cập nhật thất bại", ex);
         }
     }
 

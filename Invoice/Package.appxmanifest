@@ -13,7 +13,7 @@
   <Identity
     Name="d9fac502-9fbf-4c1f-9beb-e2cb952ecf51"
     Publisher="CN=InvoiceApp"
-    Version="1.0.0.0" />
+    Version="1.0.2.0" />
     
   <mp:PhoneIdentity PhoneProductId="d9fac502-9fbf-4c1f-9beb-e2cb952ecf51" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
     

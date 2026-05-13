@@ -60,7 +60,7 @@ public partial class ProductsViewModel : ViewModelBase, INavigationAware
             {
                 PlankSizes.Add(p.sizeID);
             }
-        }, "LOAD_FAILED".GetLocalized());
+        }, "Lỗi nạp dữ liệu");
     }
 
     public async Task LoadMoreDataAsync()
@@ -70,7 +70,7 @@ public partial class ProductsViewModel : ViewModelBase, INavigationAware
         await ExecuteAsync(async () =>
         {
             await InternalLoadMoreDataAsync();
-        }, "LOAD_FAILED".GetLocalized());
+        }, "Lỗi nạp dữ liệu");
     }
 
     private async Task InternalLoadMoreDataAsync()
@@ -95,7 +95,7 @@ public partial class ProductsViewModel : ViewModelBase, INavigationAware
         await ExecuteAsync(async () =>
         {
             SelectedProductFull = await _dataService.GetProductById(productId);
-        }, "LOAD_FAILED".GetLocalized());
+        }, "Lỗi nạp dữ liệu");
     }
 
     public async void OnNavigatedTo(object parameter)
@@ -126,7 +126,7 @@ public partial class ProductsViewModel : ViewModelBase, INavigationAware
                     await _dataService.HardDeleteProduct(existing.ProductID);
                     await _dataService.AddProduct(p);
                     await ReloadFirstPage();
-                    await DialogService.ShowSuccessAsync("SUCCESS_ADD".GetLocalized());
+                    await DialogService.ShowSuccessAsync("Thêm thành công");
                 }, "Lỗi khi phục hồi sản phẩm");
             }
             return;
@@ -136,8 +136,8 @@ public partial class ProductsViewModel : ViewModelBase, INavigationAware
         {
             await _dataService.AddProduct(p);
             await ReloadFirstPage();
-            await DialogService.ShowSuccessAsync("SUCCESS_ADD".GetLocalized());
-        }, "LOAD_FAILED".GetLocalized());
+            await DialogService.ShowSuccessAsync("Thêm thành công");
+        }, "Lỗi nạp dữ liệu");
     }
 
     public async Task UpdateProductAsync(Products p)
@@ -146,8 +146,8 @@ public partial class ProductsViewModel : ViewModelBase, INavigationAware
         {
             await _dataService.UpdateProduct(p);
             WeakReferenceMessenger.Default.Send(new ProductsChangedMessage(DataAction.Update, p));
-            await DialogService.ShowSuccessAsync("SUCCESS_UPDATE".GetLocalized());
-        }, "FAILED_UPDATE".GetLocalized());
+            await DialogService.ShowSuccessAsync("Cập nhật thành công");
+        }, "Cập nhật thất bại");
     }
 
     public async Task DeleteProductAsync(long id)
@@ -156,8 +156,8 @@ public partial class ProductsViewModel : ViewModelBase, INavigationAware
         {
             await _dataService.DeleteProduct(id);
             WeakReferenceMessenger.Default.Send(new ProductsChangedMessage(DataAction.Delete, id));
-            await DialogService.ShowSuccessAsync("SUCCESS_DELETE".GetLocalized());
-        }, "FAILED_DELETE".GetLocalized());
+            await DialogService.ShowSuccessAsync("Xóa thành công");
+        }, "Xóa thất bại");
     }
 
     private void HandleDataChange(ProductsChangedMessage message)

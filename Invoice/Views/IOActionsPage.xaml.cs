@@ -133,7 +133,7 @@ public sealed partial class IOActionsPage : Page
             selectedItem.Name = txtName.Text;
 
             ClearInput();
-            await _dialogService.ShowSuccessAsync("SUCCESS_UPDATE".GetLocalized());
+            await _dialogService.ShowSuccessAsync("Cập nhật thành công");
         }
     }
     private async void BtnDelete_Click(object sender, RoutedEventArgs e)

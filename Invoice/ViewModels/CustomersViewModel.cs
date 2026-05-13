@@ -93,7 +93,7 @@ public partial class CustomersViewModel : ViewModelBase, INavigationAware
 
                     CustomersCollection.Add(customer);
                     AllCustomers.Add(customer);
-                    await DialogService.ShowSuccessAsync("SUCCESS_ADD".GetLocalized());
+                    await DialogService.ShowSuccessAsync("Thêm thành công");
                 }, "Lỗi khi phục hồi khách hàng");
             }
             return;
@@ -122,7 +122,7 @@ public partial class CustomersViewModel : ViewModelBase, INavigationAware
 
                         CustomersCollection.Add(customer);
                         AllCustomers.Add(customer);
-                        await DialogService.ShowSuccessAsync("SUCCESS_ADD".GetLocalized());
+                        await DialogService.ShowSuccessAsync("Thêm thành công");
                     }, "Lỗi khi phục hồi khách hàng");
                 }
                 return;
@@ -134,7 +134,7 @@ public partial class CustomersViewModel : ViewModelBase, INavigationAware
             await _dataService.AddCustomer(customer);
             CustomersCollection.Add(customer);
             AllCustomers.Add(customer);
-            await DialogService.ShowSuccessAsync("SUCCESS_ADD".GetLocalized());
+            await DialogService.ShowSuccessAsync("Thêm thành công");
         }, "Lỗi khi thêm khách hàng");
     }
 
@@ -146,7 +146,7 @@ public partial class CustomersViewModel : ViewModelBase, INavigationAware
             CustomersCollection.Remove(customers);
             var itemInAll = AllCustomers.FirstOrDefault(c => c.CustomerID == customers.CustomerID);
             if (itemInAll != null) AllCustomers.Remove(itemInAll);
-            await DialogService.ShowSuccessAsync("SUCCESS_DELETE".GetLocalized());
+            await DialogService.ShowSuccessAsync("Xóa thành công");
         }, "Lỗi khi xóa khách hàng");
     }
 
@@ -187,7 +187,7 @@ public partial class CustomersViewModel : ViewModelBase, INavigationAware
                     AllCustomers[indexAll] = customer;
                 }
             }
-            await DialogService.ShowSuccessAsync("SUCCESS_UPDATE".GetLocalized());
+            await DialogService.ShowSuccessAsync("Cập nhật thành công");
         }, "Lỗi khi cập nhật khách hàng");
     }
 }

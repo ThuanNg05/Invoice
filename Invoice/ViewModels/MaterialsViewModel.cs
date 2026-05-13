@@ -55,7 +55,7 @@ public partial class MaterialsViewModel : ViewModelBase, INavigationAware
             {
                 MaterialsCollection.Add(item);
             }
-        }, "LOAD_FAILED".GetLocalized());
+        }, "Lỗi nạp dữ liệu");
     }
 
     public async Task AddMaterialAsync(Materials material)
@@ -80,7 +80,7 @@ public partial class MaterialsViewModel : ViewModelBase, INavigationAware
 
                     MaterialsCollection.Add(material);
                     AllMaterials.Add(material);
-                    await DialogService.ShowSuccessAsync("SUCCESS_ADD".GetLocalized());
+                    await DialogService.ShowSuccessAsync("Thêm thành công");
                 }, "Lỗi khi phục hồi vật tư");
             }
             return;
@@ -91,7 +91,7 @@ public partial class MaterialsViewModel : ViewModelBase, INavigationAware
             await _dataService.AddMaterial(material);
             MaterialsCollection.Add(material);
             AllMaterials.Add(material);
-            await DialogService.ShowSuccessAsync("SUCCESS_ADD".GetLocalized());
+            await DialogService.ShowSuccessAsync("Thêm thành công");
         }, "Lỗi thêm vật tư");
     }
 
@@ -103,7 +103,7 @@ public partial class MaterialsViewModel : ViewModelBase, INavigationAware
             MaterialsCollection.Remove(material);
             var itemAll = AllMaterials.FirstOrDefault(m => m.ProductID == material.ProductID);
             if (itemAll != null) AllMaterials.Remove(itemAll);
-            await DialogService.ShowSuccessAsync("SUCCESS_DELETE".GetLocalized());
+            await DialogService.ShowSuccessAsync("Xóa thành công");
         }, "Lỗi xoá vật tư");
     }
 
@@ -139,7 +139,7 @@ public partial class MaterialsViewModel : ViewModelBase, INavigationAware
                     AllMaterials[indexAll] = material;
                 }
             }
-            await DialogService.ShowSuccessAsync("SUCCESS_UPDATE".GetLocalized());
+            await DialogService.ShowSuccessAsync("Cập nhật thành công");
         }, "Lỗi cập nhật vật tư");
     }
 }

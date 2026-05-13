@@ -165,7 +165,7 @@ public partial class IOActionsViewModel : ViewModelBase, INavigationAware
             TransactionList.Clear();
             UpdateTemporaryInventories();
 
-            await DialogService.ShowSuccessAsync("SUCCESS_SAVE".GetLocalized());
+            await DialogService.ShowSuccessAsync("Lưu thành công");
         }, "Lỗi lưu kho");
     }
 

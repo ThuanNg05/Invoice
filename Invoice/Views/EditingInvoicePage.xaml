@@ -65,7 +65,7 @@
                             <KeyboardAccelerator Key="F1"/>
                         </AppBarButton.KeyboardAccelerators>
                     </AppBarButton>
-                    <AppBarButton x:Uid="Btn_Reset" Background="#24a6d5" Icon="Refresh" Command="{x:Bind ViewModel.ResetCommand}" ToolTipService.ToolTip="Press F2" CornerRadius="10">
+                    <AppBarButton Label="Đặt lại" Background="#24a6d5" Icon="Refresh" Command="{x:Bind ViewModel.ResetCommand}" ToolTipService.ToolTip="Press F2" CornerRadius="10">
                         <AppBarButton.KeyboardAccelerators>
                             <KeyboardAccelerator Key="F2"/>
                         </AppBarButton.KeyboardAccelerators>

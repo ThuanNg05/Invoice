@@ -121,7 +121,7 @@ public partial class ReportingViewModel : ViewModelBase
                     LabelsPaint = new SolidColorPaint(labelColor)
                 }
             };
-        }, "LOAD_FAILED".GetLocalized());
+        }, "Lỗi nạp dữ liệu");
     }
 
     [RelayCommand]

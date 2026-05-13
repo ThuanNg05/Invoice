@@ -86,8 +86,8 @@ public partial class PlanksViewModel : ViewModelBase, INavigationAware
         {
             await _dataService.AddFrame(frame);
             Frames.Add(frame);
-            await DialogService.ShowSuccessAsync("SUCCESS_ADD".GetLocalized());
-        }, "FAILED_ADD".GetLocalized());
+            await DialogService.ShowSuccessAsync("Thêm thành công");
+        }, "Thêm thất bại");
     }
 
     public async Task DeleteFrameAsync(Frames frame)
@@ -96,7 +96,7 @@ public partial class PlanksViewModel : ViewModelBase, INavigationAware
         {
             await _dataService.DeleteFrame(frame.FrameID);
             Frames.Remove(frame);
-            await DialogService.ShowSuccessAsync("SUCCESS_DELETE".GetLocalized());
+            await DialogService.ShowSuccessAsync("Xóa thành công");
         }, "Lỗi khi xóa ván");
     }
 
@@ -116,7 +116,7 @@ public partial class PlanksViewModel : ViewModelBase, INavigationAware
                     Frames.Insert(index, frame);
                 }
             }
-            await DialogService.ShowSuccessAsync("SUCCESS_UPDATE".GetLocalized());
-        }, "FAILED_UPDATE".GetLocalized());
+            await DialogService.ShowSuccessAsync("Cập nhật thành công");
+        }, "Cập nhật thất bại");
     }
 }

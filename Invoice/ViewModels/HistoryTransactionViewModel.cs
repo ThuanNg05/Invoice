@@ -78,7 +78,7 @@ public partial class HistoryTransactionViewModel : ViewModelBase, INavigationAwa
             {
                 Source.Add(item);
             }
-        }, "LOAD_FAILED".GetLocalized());
+        }, "Lỗi nạp dữ liệu");
     }
 
     [RelayCommand]

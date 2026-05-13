@@ -68,7 +68,7 @@ public sealed partial class MaterialsPage : Page
         }
         catch (Exception ex)
         {
-            await _dialogService.ShowErrorAsync("FAILED_ADD".GetLocalized(), ex);
+            await _dialogService.ShowErrorAsync("Thêm thất bại", ex);
         }
     }
 
@@ -106,7 +106,7 @@ public sealed partial class MaterialsPage : Page
         }
         catch (Exception ex)
         {
-            await _dialogService.ShowErrorAsync("FAILED_UPDATE".GetLocalized(), ex);
+            await _dialogService.ShowErrorAsync("Cập nhật thất bại", ex);
         }
     }
 
@@ -122,7 +122,7 @@ public sealed partial class MaterialsPage : Page
             }
             catch (Exception ex)
             {
-                await _dialogService.ShowErrorAsync("FAILED_DELETE".GetLocalized(), ex);
+                await _dialogService.ShowErrorAsync("Xóa thất bại", ex);
             }
         }
     }

@@ -135,7 +135,7 @@ public partial class CreateInvoiceViewModel : ViewModelBase, IRecipient<Products
             {
                 Customers.Add(item);
             }
-        }, "LOAD_FAILED".GetLocalized());
+        }, "Lỗi nạp dữ liệu");
     }
 
     partial void OnSelectedCustomerChanged(Customers? value)
@@ -215,7 +215,7 @@ public partial class CreateInvoiceViewModel : ViewModelBase, IRecipient<Products
         }
         else
         {
-            await DialogService.ShowErrorAsync("FILE_NOTE_FOUND".GetLocalized());
+            await DialogService.ShowErrorAsync("Không tìm thấy tệp");
         }
     }
 
@@ -238,7 +238,7 @@ public partial class CreateInvoiceViewModel : ViewModelBase, IRecipient<Products
         }
         else
         {
-            await DialogService.ShowErrorAsync("FILE_NOTE_FOUND".GetLocalized());
+            await DialogService.ShowErrorAsync("Không tìm thấy tệp");
         }
     }   
 
@@ -402,7 +402,7 @@ public partial class CreateInvoiceViewModel : ViewModelBase, IRecipient<Products
             }
 
             RecalculateGrandTotal();
-        }, "LOAD_FAILED".GetLocalized());
+        }, "Lỗi nạp dữ liệu");
     }
 
     public void AddInvoiceItem(TempInvoice newItem)

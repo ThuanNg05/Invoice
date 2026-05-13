@@ -138,7 +138,7 @@ public sealed partial class PlanksPage : Page
             }
             catch (Exception ex)
             {
-                await _dialogService.ShowErrorAsync("FAILED_UPDATE".GetLocalized(), ex);
+                await _dialogService.ShowErrorAsync("Cập nhật thất bại", ex);
             }
         }
     }
@@ -177,7 +177,7 @@ public sealed partial class PlanksPage : Page
         }
         catch (Exception ex)
         {
-            await _dialogService.ShowErrorAsync("FAILED_UPDATE".GetLocalized(), ex);
+            await _dialogService.ShowErrorAsync("Cập nhật thất bại", ex);
         }
     }
 

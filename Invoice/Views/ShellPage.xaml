@@ -60,7 +60,7 @@
                 </NavigationViewItem>
                 <NavigationViewItem Content="Sản phẩm" helpers:NavigationHelper.NavigateTo="Invoice.ViewModels.ProductsViewModel">
                     <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe7c3;"/>
+                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE74C;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
                 <NavigationViewItem Content="Giá thành phần" helpers:NavigationHelper.NavigateTo="Invoice.ViewModels.DetailPriceViewModel">

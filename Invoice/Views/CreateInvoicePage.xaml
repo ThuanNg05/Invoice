@@ -71,19 +71,19 @@
                 </StackPanel>
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,10,0,10" Spacing="10">
-                <AppBarButton x:Uid="Btn_Add" Background="#07af00" Foreground="{ThemeResource SettingsForegroundBrush}" 
+                <AppBarButton Label="Thêm" Background="#07af00" Foreground="{ThemeResource SettingsForegroundBrush}" 
                               CornerRadius="10" Icon="Add" Click="BtnAddProduct_Click" ToolTipService.ToolTip="Press F1">
                     <AppBarButton.KeyboardAccelerators>
                         <KeyboardAccelerator Key="F1"/>
                     </AppBarButton.KeyboardAccelerators>
                 </AppBarButton>
-                <AppBarButton x:Uid="Btn_Save" Background="#6514db" Foreground="{ThemeResource SettingsForegroundBrush}"
+                <AppBarButton Label="Lưu" Background="#6514db" Foreground="{ThemeResource SettingsForegroundBrush}"
                               CornerRadius="10" Icon="Save" Click="SaveInvoice_Click" ToolTipService.ToolTip="Press F2">
                     <AppBarButton.KeyboardAccelerators>
                         <KeyboardAccelerator Key="F2"/>
                     </AppBarButton.KeyboardAccelerators>
                 </AppBarButton>
-                <AppBarButton x:Uid="Btn_Reset" Background="#24a6d5" Foreground="{ThemeResource SettingsForegroundBrush}"
+                <AppBarButton Label="Đặt lại" Background="#24a6d5" Foreground="{ThemeResource SettingsForegroundBrush}"
                               CornerRadius="10" Icon="Refresh" Click="ResetInvoice_Click" ToolTipService.ToolTip="Press F5">
                     <AppBarButton.KeyboardAccelerators>
                         <KeyboardAccelerator Key="F5"/>

@@ -77,7 +77,7 @@ public partial class HistoryViewModel : ViewModelBase, INavigationAware
             {
                 CustomersList.Add(customer);
             }
-        }, "LOAD_FAILED".GetLocalized());
+        }, "Lỗi nạp dữ liệu");
     }
 
     [RelayCommand]
@@ -96,7 +96,7 @@ public partial class HistoryViewModel : ViewModelBase, INavigationAware
             {
                 Source.Add(item);
             }
-        }, "LOAD_FAILED".GetLocalized());
+        }, "Lỗi nạp dữ liệu");
     }
 
     [RelayCommand]

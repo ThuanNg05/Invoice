@@ -75,11 +75,11 @@ public partial class App : Application
         QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 
         //ApplicationLanguages.PrimaryLanguageOverride = "vi-VN";
-        //var culture = new System.Globalization.CultureInfo("vi-VN");
-        //System.Globalization.CultureInfo.DefaultThreadCurrentCulture = culture;
-        //System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = culture;
-        //Thread.CurrentThread.CurrentCulture = culture;
-        //Thread.CurrentThread.CurrentUICulture = culture;
+        var culture = new System.Globalization.CultureInfo("vi-VN");
+        System.Globalization.CultureInfo.DefaultThreadCurrentCulture = culture;
+        System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = culture;
+        Thread.CurrentThread.CurrentCulture = culture;
+        Thread.CurrentThread.CurrentUICulture = culture;
 
         Debug.WriteLine("Building Host...");          
         Host = Microsoft.Extensions.Hosting.Host.
